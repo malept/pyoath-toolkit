@@ -22,4 +22,5 @@ setup(name='oath_toolkit',
           'Programming Language :: Python :: 2.7',
           'Programming Language :: Python :: Implementation :: CPython',
           'Programming Language :: Python :: Implementation :: PyPy',
+          'Topic :: Software Development :: Libraries :: Python Modules',
       ])
