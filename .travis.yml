@@ -3,6 +3,10 @@ python:
   - "2.7"
   - "2.6"
   - "pypy"
+before_install:
+  - sudo add-apt-repository --yes ppa:malept/oath-toolkit
+  - sudo apt-get update -qq
+  - sudo apt-get install -qq liboath0
 install:
   - pip install -r requirements-dev.txt --use-mirrors
   - if test $(python --version 2>&1 | head -n 1 | awk '{print $2}' | cut -d. -f1-2) = "2.6"; then pip install unittest2 --use-mirrors; fi
