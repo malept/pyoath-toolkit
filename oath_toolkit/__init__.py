@@ -14,6 +14,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from impl_cffi import OATH
+from .impl_cffi import OATH
 
 __all__ = ['OATH']

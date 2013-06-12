@@ -17,6 +17,12 @@
 import base64
 from cffi import FFI
 import hmac
+import sys
+
+if sys.version_info < (3,):
+    to_bytes = lambda s: s
+else:
+    to_bytes = lambda s: bytes(s, 'utf-8')
 
 declarations = '''
 typedef _Bool bool;
@@ -118,7 +124,7 @@ class OATH:
         self._handle_retval(self.c.oath_init())
 
     def generate_secret_key(self, key):
-        return base64.b32encode(hmac.new(key).digest())
+        return base64.b32encode(hmac.new(to_bytes(key)).digest())
 
     def hotp_generate(self, secret, moving_factor, digits, add_checksum=False,
                       truncation_offset=None):
