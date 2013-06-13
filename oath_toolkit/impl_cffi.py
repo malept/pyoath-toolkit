@@ -14,15 +14,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from ._compat import to_bytes
 import base64
 from cffi import FFI
 import hmac
-import sys
-
-if sys.version_info < (3,):
-    to_bytes = lambda s: s
-else:
-    to_bytes = lambda s: bytes(s, 'utf-8')
 
 declarations = '''
 typedef _Bool bool;

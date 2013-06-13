@@ -15,14 +15,8 @@
 # limitations under the License.
 
 from .impl_cffi import OATH
-import sys
+from .tests import unittest
 import time
-
-if sys.version_info < (2, 7):
-    unittest_mod = 'unittest2'
-else:
-    unittest_mod = 'unittest'
-unittest = __import__(unittest_mod)
 
 DEFAULT_TIME_STEP_SIZE = 30
 DIGITS = 6
