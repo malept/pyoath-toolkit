@@ -25,13 +25,27 @@ class URITestCase(unittest.TestCase):
     def setUpClass(cls):
         cls.oath = OATH()
 
-    def test_basic(self):
-        key = b'Hello!\xDE\xAD\xBE\xEF'
-        secret = self.oath.generate_secret_key(key)
-        expected = (secret, '''\
+    def setUp(self):
+        self.key = b'Hello!\xDE\xAD\xBE\xEF'
+        self.secret = self.oath.generate_secret_key(self.key)
+
+    def test_totp(self):
+        expected = (self.secret, '''\
 otpauth://totp/Example:alice%40google.com?\
 secret={0}&issuer=Example\
-'''.format(url_quote(secret)))
-        actual = uri.generate(self.oath, 'totp', key, 'alice@google.com',
+'''.format(url_quote(self.secret)))
+        actual = uri.generate(self.oath, 'totp', self.key, 'alice@google.com',
                               'Example')
+        self.assertEqual(expected, actual)
+
+    def test_hotp(self):
+        with self.assertRaises(ValueError):
+            uri.generate(self.oath, 'hotp', self.key, 'alice@google.com',
+                         'Example')
+        expected = (self.secret, '''\
+otpauth://hotp/Example:alice%40google.com?\
+secret={0}&issuer=Example&counter=42\
+'''.format(url_quote(self.secret)))
+        actual = uri.generate(self.oath, 'hotp', self.key, 'alice@google.com',
+                              'Example', 42)
         self.assertEqual(expected, actual)

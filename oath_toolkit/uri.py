@@ -19,7 +19,7 @@ from ._compat import url_quote
 URI = 'otpauth://{key_type}/{issuer}:{user}?secret={secret}&issuer={issuer}'
 
 
-def generate(oath, key_type, key, user, issuer):
+def generate(oath, key_type, key, user, issuer, counter=None):
     '''
     Generates a URI suitable for Google Authenticator.
     See: https://code.google.com/p/google-authenticator/wiki/KeyUriFormat
@@ -29,9 +29,12 @@ def generate(oath, key_type, key, user, issuer):
     :param str key: the string used to generate the secret key
     :param str user: the username
     :param str issuer: issuer name
+    :param int counter: initial counter value (HOTP only)
     :returns: a tuple of (secret, URI)
     :rtype: (:class:`str`, :class:`str`)
     '''
+    if key_type == 'hotp' and counter is None:
+        raise ValueError('Using the key_type "hotp" requires a counter')
     secret = oath.generate_secret_key(key)
     keys = [
         'key_type',
@@ -39,8 +42,13 @@ def generate(oath, key_type, key, user, issuer):
         'user',
         'secret',
     ]
+    tpl = str(URI)
+    if counter is not None:
+        counter = str(counter)
+        keys.append('counter')
+        tpl += '&counter={counter}'
     l = locals()
     params = dict([(k, url_quote(l[k]))
                    for k in keys])
-    uri = URI.format(**params)
+    uri = tpl.format(**params)
     return secret, uri
