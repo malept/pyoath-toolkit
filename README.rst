@@ -27,3 +27,9 @@ License
 -------
 
 Apache License 2.0: See ``LICENSE``.
+
+Build Status
+------------
+
+.. image:: https://travis-ci.org/malept/pyoath-toolkit.png?branch=master
+   :alt: Travis CI status, see https://travis-ci.org/malept/pyoath-toolkit
