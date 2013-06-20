@@ -16,10 +16,10 @@
 
 import sys
 
-if sys.version_info < (3,):
+if sys.version_info < (3,):  # pragma: no cover
     from urllib import quote as url_quote
     to_bytes = lambda s: s
-else:
+else:  # pragma: no cover
     from urllib.parse import quote as url_quote
     to_bytes = lambda s: bytes(s, 'utf-8') if isinstance(s, str) else s
 

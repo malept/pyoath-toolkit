@@ -16,9 +16,9 @@
 
 import sys
 
-if sys.version_info < (2, 7):
+if sys.version_info < (2, 7):  # pragma: no cover
     unittest_mod = 'unittest2'
-else:
+else:  # pragma: no cover
     unittest_mod = 'unittest'
 unittest = __import__(unittest_mod)
 
