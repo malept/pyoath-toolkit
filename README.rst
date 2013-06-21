@@ -18,10 +18,15 @@ This module requires the following:
 * Python 2.6, 2.7, 3.3, or PyPy. `According to Travis CI`_, it does not work on
   PyPy 1.9.0. I have tested it successfully on PyPy 2.0.2.
 * The `CFFI`_ package.
+* If you wish to use the ``oath_toolkit.qrcode`` module, the `Pillow`_ and
+  `qrcode`_ libraries are required. Please note that ``qrcode`` does not
+  currently work on Python 3.3.
 
 .. _OATH Toolkit download page: http://www.nongnu.org/oath-toolkit/download.html
 .. _According to Travis CI: https://travis-ci.org/malept/pyoath-toolkit/jobs/7969476
 .. _CFFI: http://pypi.python.org/pypi/cffi
+.. _Pillow: http://pypi.python.org/pypi/Pillow
+.. _qrcode: http://pypi.python.org/pypi/qrcode
 
 License
 -------
