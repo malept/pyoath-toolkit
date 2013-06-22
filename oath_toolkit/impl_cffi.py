@@ -109,7 +109,7 @@ oath_rc      oath_totp_validate2         (const char *secret,
 '''
 
 
-class OATH:
+class OATH(object):
     def __init__(self, library=None):
         if not library:
             library = 'oath'
