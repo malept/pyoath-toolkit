@@ -31,7 +31,7 @@ This module requires the following:
 License
 -------
 
-Apache License 2.0: See ``LICENSE``.
+Apache License 2.0; see the ``LICENSE`` file for details.
 
 Build Status
 ------------
