@@ -1,16 +1,23 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import os.path
 from setuptools import setup
+import sys
+
+sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
+import oath_toolkit
 
 with open('README.rst') as f:
-    description = f.read()
+    long_description = f.read()
 
 setup(name='oath_toolkit',
-      version='1.0',
-      description='Python bindings for OATH Toolkit',
-      long_description=description,
+      version=oath_toolkit.__version__,
+      description=oath_toolkit.__description__,
+      long_description=long_description,
       author='Mark Lee',
+      author_email='pyoath-toolkit@lazymalevolence.com',
+      url='https://github.com/malept/pyoath-toolkit',
       packages=['oath_toolkit'],
       install_requires=['cffi'],
       classifiers=[
