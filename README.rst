@@ -21,12 +21,15 @@ This module requires the following:
 * If you wish to use the ``oath_toolkit.qrcode`` module, the `Pillow`_ and
   `qrcode`_ libraries are required. Please note that ``qrcode`` does not
   currently work on Python 3.3.
+* If you would like to build the documentation, install `Sphinx`_ and run
+  ``python setup.py build_sphinx``.
 
 .. _OATH Toolkit download page: http://www.nongnu.org/oath-toolkit/download.html
 .. _According to Travis CI: https://travis-ci.org/malept/pyoath-toolkit/jobs/7969476
 .. _CFFI: http://pypi.python.org/pypi/cffi
 .. _Pillow: http://pypi.python.org/pypi/Pillow
 .. _qrcode: http://pypi.python.org/pypi/qrcode
+.. _Sphinx: http://sphinx-doc.org/
 
 License
 -------
