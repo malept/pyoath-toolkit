@@ -32,7 +32,7 @@ def generate(oath, key_type, key, user, issuer, counter=None):
     :param str issuer: issuer name
     :param int counter: initial counter value (HOTP only)
     :returns: a tuple of (secret, image object)
-    :rtype: (:class:`str`, :class:`PIL.Image.Image`)
+    :rtype: (:class:`str`, :class:`pillow:PIL.Image.Image`)
     '''
     qr = QRCode()
     secret, oath_uri = uri.generate(oath, key_type, key, user, issuer, counter)
