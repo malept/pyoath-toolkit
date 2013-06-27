@@ -19,4 +19,4 @@ from .impl_cffi import OATH
 __all__ = ['OATH']
 
 __description__ = 'Python bindings to the OATH Toolkit library.'
-__version__ = '1.0'
+__version__ = '1.0.dev1'
