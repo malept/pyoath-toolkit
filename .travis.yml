@@ -11,4 +11,6 @@ before_install:
 install:
   - pip install -r requirements-dev.txt --use-mirrors
   - if test $(python --version 2>&1 | head -n 1 | awk '{print $2}' | cut -d. -f1-2) = "2.6"; then pip install unittest2 --use-mirrors; fi
-script:  ./run_tests.py
+script:
+  - python setup.py check
+  - ./run_tests.py
