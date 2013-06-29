@@ -29,10 +29,6 @@ static char *const OATH_VERSION;
 static time_t const OATH_TOTP_DEFAULT_START_TIME;
 static const int OATH_TOTP_DEFAULT_TIME_STEP_SIZE;
 
-
-/* Warning: having this enum declared here fails in CFFI 0.3 + C extension.
- * Works with CFFI 0.3 + ctypes fallback.
- */
 typedef enum {
   OATH_OK = 0,
   OATH_CRYPTO_ERROR = -1,
