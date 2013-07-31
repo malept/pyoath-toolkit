@@ -25,11 +25,16 @@ import oath_toolkit
 
 # -- General configuration ----------------------------------------------------
 
-AUTHOR = u'Mark Lee'
+AUTHORS = u'Mark Lee'
 TITLE = u'OATH Toolkit Python Bindings'
 LONG_TITLE = u'{0} Documentation'.format(TITLE)
 SUMMARY = oath_toolkit.__description__
-COPYRIGHT = u'2013, {0}'.format(AUTHOR)
+SHORT_COPYRIGHT = u'2013, {0}. Some Rights Reserved.'.format(AUTHORS)
+COPYRIGHT = u'''{0}
+This work is licensed under a
+Creative Commons Attribution-ShareAlike 3.0
+Unported License'''.format(SHORT_COPYRIGHT)
+
 
 # If your documentation needs a minimal Sphinx version, state it here.
 #needs_sphinx = '1.0'
@@ -38,6 +43,7 @@ COPYRIGHT = u'2013, {0}'.format(AUTHOR)
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
 extensions = [
     'sphinx.ext.autodoc',
+    'sphinx.ext.coverage',
     'sphinx.ext.intersphinx',
     'sphinx.ext.viewcode',
 ]
@@ -86,7 +92,7 @@ exclude_patterns = ['_build']
 #default_role = None
 
 # If true, '()' will be appended to :func: etc. cross-reference text.
-add_function_parentheses = True
+add_function_parentheses = False
 
 # If true, the current module name will be prepended to all description
 # unit titles (such as .. function::).
@@ -94,7 +100,7 @@ add_function_parentheses = True
 
 # If true, sectionauthor and moduleauthor directives will be shown in the
 # output. They are ignored by default.
-#show_authors = False
+show_authors = True
 
 # The name of the Pygments (syntax highlighting) style to use.
 pygments_style = 'sphinx'
@@ -109,6 +115,7 @@ pygments_style = 'sphinx'
 
 intersphinx_mapping = {
     'pillow': ('http://pillow.readthedocs.org/en/latest/', None),
+    'py': ('http://docs.python.org/2.7/', None)
 }
 
 # -- Options for HTML output --------------------------------------------------
@@ -155,7 +162,15 @@ html_static_path = ['_static']
 #html_use_smartypants = True
 
 # Custom sidebar templates, maps document names to template names.
-#html_sidebars = {}
+html_sidebars = {
+    '**': [
+        'localtoc.html',
+        'relations.html',
+        'sourcelink.html',
+        'searchbox.html',
+        'copyright_sidebar.html',
+    ],
+}
 
 # Additional templates that should be rendered to pages, maps page names to
 # template names.
@@ -208,7 +223,7 @@ latex_elements = {
 # (source start file, target name, title, author, documentclass
 #  [howto/manual]).
 latex_documents = [
-    ('index', 'OATHToolkitPythonBindings.tex', LONG_TITLE, AUTHOR, 'manual'),
+    ('index', 'OATHToolkitPythonBindings.tex', LONG_TITLE, AUTHORS, 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
@@ -237,7 +252,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    ('index', 'oathtoolkitpythonbindings', LONG_TITLE, [AUTHOR], 1)
+    ('index', 'oathtoolkitpythonbindings', LONG_TITLE, [AUTHORS], 1)
 ]
 
 # If true, show URL addresses after external links.
@@ -250,7 +265,7 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    ('index', 'OATHToolkitPythonBindings', LONG_TITLE, AUTHOR,
+    ('index', 'OATHToolkitPythonBindings', LONG_TITLE, AUTHORS,
      'OATHToolkitPythonBindings', SUMMARY, 'Miscellaneous'),
 ]
 
@@ -271,8 +286,8 @@ texinfo_documents = [
 
 # Bibliographic Dublin Core info.
 epub_title = TITLE
-epub_author = AUTHOR
-epub_publisher = AUTHOR
+epub_author = AUTHORS
+epub_publisher = AUTHORS
 epub_copyright = COPYRIGHT
 
 # The language of the text. It defaults to the language option

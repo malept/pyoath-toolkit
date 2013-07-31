@@ -25,14 +25,15 @@ def generate(oath, key_type, key, user, issuer, counter=None):
     Generates a QR code suitable for Google Authenticator.
     See: https://code.google.com/p/google-authenticator/wiki/KeyUriFormat
 
-    :param OATH oath: OATH object
+    :param oath_toolkit.OATH oath: OATH object
     :param str key_type: the auth type, either ``totp`` or ``hotp``
     :param str key: the string used to generate the secret key
     :param str user: the username
     :param str issuer: issuer name
-    :param int counter: initial counter value (HOTP only)
-    :returns: a tuple of (secret, image object)
-    :rtype: (:class:`str`, :class:`pillow:PIL.Image.Image`)
+    :param counter: initial counter value (HOTP only)
+    :type counter: :func:`int` or :data:`None`
+    :returns: a :func:`tuple` of (secret, image object)
+    :rtype: (:func:`str`, :class:`pillow:PIL.Image.Image`)
     '''
     qr = QRCode()
     secret, oath_uri = uri.generate(oath, key_type, key, user, issuer, counter)

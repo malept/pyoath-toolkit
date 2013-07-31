@@ -106,6 +106,18 @@ oath_rc      oath_totp_validate2         (const char *secret,
 
 
 class OATH(object):
+    '''
+    Wrapper for `liboath`_ using `CFFI`_.
+
+    :param library: The name of the liboath C library to load, sans a file
+                    extension and the ``lib`` prefix. Defaults to ``oath``, if
+                    passed :data:`None`.
+    :type library: :func:`str` or :data:`None`
+
+    .. _liboath: http://nongnu.org/oath-toolkit/liboath-api/liboath-oath.html
+    .. _CFFI: http://cffi.readthedocs.org/
+    '''
+
     def __init__(self, library=None):
         if not library:
             library = 'oath'
@@ -115,10 +127,33 @@ class OATH(object):
         self._handle_retval(self.c.oath_init())
 
     def generate_secret_key(self, key):
+        '''
+        Given a key, generate a secret compatible with a one-time
+        password generator.
+
+        :param str key: A key used to seed the one-time password generator
+        :return: A base32-encoded HMAC secret
+        :rtype: :func:`str`
+        '''
         return base64.b32encode(hmac.new(to_bytes(key)).digest())
 
     def hotp_generate(self, secret, moving_factor, digits, add_checksum=False,
                       truncation_offset=None):
+        '''
+        Generates a one-time password using the HOTP algorithm (:rfc:`4226`).
+
+        :param str secret: The secret string used to generate the one-time
+                           password.
+        :param int moving_factor: unsigned, can be :func:`long`, in theory.
+        :param int digits: unsigned, the number of digits of the one-time
+                           password.
+        :param bool add_checksum: Whether to add a checksum digit (depending
+                                  on the version of ``liboath`` used, this may
+                                  be ignored).
+        :param truncation_offset: A truncation offset to use, if not set to
+                                  :data:`None`.
+        :type truncation_offset: :func:`int` or :data:`None`
+        '''
         if truncation_offset is None:
             truncation_offset = (2 ** 32) - 1
         generated = self._ffi.new('char *')
@@ -129,12 +164,38 @@ class OATH(object):
         return self._ffi.string(generated)
 
     def hotp_validate(self, secret, start_moving_factor, window, otp):
+        '''
+        Validates a one-time password generated using the HOTP algorithm
+        (:rfc:`4226`).
+
+        :param str secret: The secret used to generate the one-time password.
+        :param int start_moving_factor: unsigned, can be :func:`long`, in
+                                        theory.
+        :param int window: The number of OTPs before and after the start OTP
+                           to test.
+        :param str otp: The one-time password to validate.
+        :return: :data:`True` if valid
+        :raise: :class:`RuntimeError` if invalid
+        '''
         retval = self.c.oath_hotp_validate(secret, len(secret),
                                            start_moving_factor, window, otp)
         self._handle_retval(retval)
         return True
 
     def totp_generate(self, secret, now, time_step_size, time_offset, digits):
+        '''
+        Generates a one-time password using the TOTP algorithm (:rfc:`6238`).
+
+        :param str secret: The secret string used to generate the one-time
+                           password.
+        :param int now: The UNIX timestamp (usually the current one)
+        :param time_sleep_size: Unsigned, the time step system parameter. If
+                                set to :data:`None`, defaults to ``30``.
+        :type time_sleep_size: :func:`int` or :data:`None`
+        :param int time_offset: The UNIX timestamp of when to start counting
+                                time steps (usually should be ``0``).
+        :param int digits: The number of digits of the one-time password.
+        '''
         if time_step_size is None:
             time_step_size = 30  # self.c.OATH_TOTP_DEFAULT_TIME_STEP_SIZE
         generated = self._ffi.new('char *')
@@ -146,6 +207,26 @@ class OATH(object):
 
     def totp_validate(self, secret, now, time_step_size, start_offset, window,
                       otp, otp_pos=None):
+        '''
+        Validates a one-time password generated using the TOTP algorithm
+        (:rfc:`6238`).
+
+        :param str secret: The secret used to generate the one-time password.
+        :param int now: The UNIX timestamp (usually the current one)
+        :param time_sleep_size: Unsigned, the time step system parameter. If
+                                set to :data:`None`, defaults to ``30``.
+        :type time_sleep_size: :func:`int` or :data:`None`
+        :param int start_offset: The UNIX timestamp of when to start counting
+                                 time steps (usually should be ``0``).
+        :param int window: The number of OTPs before and after the start OTP
+                           to test.
+        :param str otp: The one-time password to validate.
+        :param otp_pos: The output search position in search window
+                        (defaults to :data:`None`).
+        :type otp_pos: :func:`int` or :data:`None`
+        :return: :data:`True` if valid
+        :raise: :class:`RuntimeError` if invalid
+        '''
         if time_step_size is None:
             time_step_size = 30  # self.c.OATH_TOTP_DEFAULT_TIME_STEP_SIZE
         if otp_pos is None:

@@ -6,14 +6,6 @@ oath_toolkit Package
     :undoc-members:
     :show-inheritance:
 
-:mod:`impl_cffi` Module
------------------------
-
-.. automodule:: oath_toolkit.impl_cffi
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
 :mod:`qrcode` Module
 --------------------
 

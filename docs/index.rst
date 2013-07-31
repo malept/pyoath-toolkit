@@ -1,5 +1,10 @@
 .. include:: ../README.rst
 
+Contributors
+------------
+
+.. include:: ../CONTRIBUTORS.rst
+
 API Documentation
 -----------------
 
@@ -8,11 +13,9 @@ API Documentation
 
    oath_toolkit
 
-
 Indices and tables
 ==================
 
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
-
