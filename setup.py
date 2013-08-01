@@ -1,12 +1,16 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import os.path
+import os
 from setuptools import setup
 import sys
 
+os.environ['SETUP_NO_CFFI'] = '1'
+
 sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
 from oath_toolkit import metadata
+
+del os.environ['SETUP_NO_CFFI']
 
 with open('README.rst') as f:
     long_description = f.read()

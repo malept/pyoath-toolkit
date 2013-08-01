@@ -14,7 +14,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from .impl_cffi import OATH
+import os
+
+if os.environ.get('SETUP_NO_CFFI', False) != '1':
+    from .impl_cffi import OATH
 from .metadata import DESCRIPTION, VERSION
 
 __all__ = ['OATH']
