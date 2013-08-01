@@ -14,10 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from .impl_cffi import OATH
-from .metadata import DESCRIPTION, VERSION
+DESCRIPTION = 'Python bindings to the OATH Toolkit library.'
+VERSION = '1.0.dev1'
 
-__all__ = ['OATH']
-
-__description__ = DESCRIPTION
-__version__ = VERSION
+__all__ = ['DESCRIPTION', 'VERSION']
