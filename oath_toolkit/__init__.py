@@ -16,7 +16,7 @@
 
 import os
 
-if os.environ.get('SETUP_NO_CFFI', False) != '1':
+if not os.environ.get('READTHEDOCS'):
     from .impl_cffi import OATH
 from .metadata import DESCRIPTION, VERSION
 

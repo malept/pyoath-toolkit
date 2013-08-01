@@ -5,15 +5,16 @@ import os
 from setuptools import setup
 import sys
 
-os.environ['SETUP_NO_CFFI'] = '1'
-
 sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
 from oath_toolkit import metadata
 
-del os.environ['SETUP_NO_CFFI']
-
 with open('README.rst') as f:
     long_description = f.read()
+
+if os.environ.get('READTHEDOCS'):
+    requires = []
+else:
+    requires = ['cffi']
 
 setup(name='oath_toolkit',
       version=metadata.VERSION,
@@ -23,7 +24,7 @@ setup(name='oath_toolkit',
       author_email='pyoath-toolkit@lazymalevolence.com',
       url='https://github.com/malept/pyoath-toolkit',
       packages=['oath_toolkit'],
-      install_requires=['cffi'],
+      install_requires=requires,
       classifiers=[
           'Development Status :: 4 - Beta',
           'Intended Audience :: Developers',
