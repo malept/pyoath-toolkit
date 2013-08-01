@@ -16,8 +16,11 @@
 
 from __future__ import absolute_import
 
+import os
 from . import uri
-from qrcode import QRCode
+
+if not os.environ.get('READTHEDOCS'):
+    from qrcode import QRCode
 
 
 def generate(oath, key_type, key, user, issuer, counter=None):

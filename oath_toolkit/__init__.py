@@ -14,10 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import os
-
-if not os.environ.get('READTHEDOCS'):
-    from .impl_cffi import OATH
+from .impl_cffi import OATH
 from .metadata import DESCRIPTION, VERSION
 
 __all__ = ['OATH']

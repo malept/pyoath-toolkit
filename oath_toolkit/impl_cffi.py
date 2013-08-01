@@ -16,8 +16,11 @@
 
 from ._compat import to_bytes
 import base64
-from cffi import FFI
 import hmac
+import os
+
+if not os.environ.get('READTHEDOCS'):
+    from cffi import FFI
 
 declarations = '''
 typedef _Bool bool;
