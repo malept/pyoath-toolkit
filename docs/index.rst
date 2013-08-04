@@ -1,5 +1,10 @@
 .. include:: ../README.rst
 
+Contributing
+------------
+
+.. include:: ../CONTRIBUTING.rst
+
 Contributors
 ------------
 
