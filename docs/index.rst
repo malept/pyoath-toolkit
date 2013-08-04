@@ -8,7 +8,7 @@ Contributing
 Contributors
 ------------
 
-.. include:: ../CONTRIBUTORS.rst
+.. include:: ../AUTHORS.rst
 
 API Documentation
 -----------------
