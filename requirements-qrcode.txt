@@ -1,2 +1,2 @@
-pillow
-qrcode
+pillow >= 2.0.0
+qrcode >= 3.0

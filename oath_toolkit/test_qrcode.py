@@ -22,8 +22,7 @@ from .tests import unittest
 import sys
 
 # The tests crash on Python 2.6 and I don't know why
-# The qrcode module is not currently supported in Python 3
-if (2, 7) <= sys.version_info < (3,):  # pragma: no cover
+if (2, 7) <= sys.version_info:  # pragma: no cover
     import qrcode
 else:  # pragma: no cover
     qrcode = None
