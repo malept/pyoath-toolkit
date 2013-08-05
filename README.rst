@@ -19,8 +19,7 @@ This module requires the following:
   PyPy 1.9.0. I have tested it successfully on PyPy 2.0.2.
 * The `CFFI`_ package.
 * If you wish to use the ``oath_toolkit.qrcode`` module, the `Pillow`_ and
-  `qrcode`_ libraries are required. Please note that ``qrcode`` does not
-  currently work on Python 3.3.
+  `qrcode`_ libraries are required.
 * If you would like to build the documentation, install `Sphinx`_ and run
   ``python setup.py build_sphinx``.
 
@@ -30,6 +29,14 @@ This module requires the following:
 .. _Pillow: http://pypi.python.org/pypi/Pillow
 .. _qrcode: http://pypi.python.org/pypi/qrcode
 .. _Sphinx: http://sphinx-doc.org/
+
+Basic installation from Git::
+
+    pip install git+git://github.com/malept/pyoath-toolkit.git#egg=pyoath-toolkit
+
+Installation from Git with the ``qrcode`` feature::
+
+    pip install git+git://github.com/malept/pyoath-toolkit.git#egg=pyoath-toolkit[qrcode]
 
 License
 -------
