@@ -19,7 +19,7 @@ import base64
 import hmac
 import os
 
-if not os.environ.get('READTHEDOCS'):
+if not os.environ.get('READTHEDOCS') and not os.environ.get('SETUP_PY'):
     from cffi import FFI
 
 declarations = '''

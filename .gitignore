@@ -2,3 +2,4 @@
 .tox
 build
 docs/_build
+dist
