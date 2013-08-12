@@ -156,6 +156,8 @@ class OATH(object):
         :param truncation_offset: A truncation offset to use, if not set to
                                   :data:`None`.
         :type truncation_offset: :func:`int` or :data:`None`
+        :return: one-time password
+        :rtype: :func:`str`
         '''
         if truncation_offset is None:
             truncation_offset = (2 ** 32) - 1
@@ -198,6 +200,8 @@ class OATH(object):
         :param int time_offset: The UNIX timestamp of when to start counting
                                 time steps (usually should be ``0``).
         :param int digits: The number of digits of the one-time password.
+        :return: one-time password
+        :rtype: :func:`str`
         '''
         if time_step_size is None:
             time_step_size = 30  # self.c.OATH_TOTP_DEFAULT_TIME_STEP_SIZE
