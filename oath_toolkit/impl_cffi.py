@@ -247,5 +247,7 @@ class OATH(object):
     def _handle_retval(self, retval):
         if retval != self.c.OATH_OK:
             errno = self._ffi.cast('oath_rc', retval)
-            err_str = self._ffi.string(self.c.oath_strerror(int(errno)))
-            raise RuntimeError(err_str)
+            err_str = self._ffi.string(self.c.oath_strerror(errno))
+            err = RuntimeError(err_str)
+            err.code = errno
+            raise err
