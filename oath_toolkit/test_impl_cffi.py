@@ -65,3 +65,12 @@ class CFFITestCase(unittest.TestCase):
         otp = self.oath.totp_generate(self.secret, now, None, 0, DIGITS)
         with self.assertRaises(RuntimeError):
             self.oath.totp_validate(self.secret, now, None, 60, WINDOW, otp)
+
+    def test_library_version(self):
+        version = self.oath.library_version
+        self.assertIsNotNone(version)
+        self.assertNotEqual(self.oath._ffi.NULL, version)
+
+    def check_library_version(self):
+        self.assertTrue(self.oath.check_library_version('0'))
+        self.assertFalse(self.oath.check_library_version('999'))
