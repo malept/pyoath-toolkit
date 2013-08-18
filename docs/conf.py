@@ -44,9 +44,16 @@ Unported License'''.format(SHORT_COPYRIGHT)
 extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.coverage',
+    'sphinx.ext.ifconfig',
     'sphinx.ext.intersphinx',
     'sphinx.ext.viewcode',
 ]
+try:
+    import rst2pdf
+except ImportError:
+    rst2pdf = None
+if rst2pdf:
+    extensions.append('rst2pdf.pdfbuilder')
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -338,3 +345,9 @@ epub_copyright = COPYRIGHT
 
 # If false, no index is generated.
 #epub_use_index = True
+
+# -- Options for PDF output --------------------------------------------------
+
+pdf_documents = [
+    ('index', u'pyoath-toolkit', TITLE, AUTHORS),
+]

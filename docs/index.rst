@@ -18,9 +18,11 @@ API Documentation
 
    oath_toolkit
 
-Indices and tables
-==================
+.. ifconfig:: builder == 'html'
 
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
+    Indices and tables
+    ==================
+
+    + :ref:`genindex`
+    + :ref:`modindex`
+    + :ref:`search`
