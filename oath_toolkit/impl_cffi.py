@@ -78,6 +78,7 @@ oath_rc      oath_authenticate_usersfile (const char *usersfile,
  */
 oath_rc      oath_init                   (void);
 oath_rc      oath_done                   (void);
+const char * oath_check_version          (const char *req_version);
 oath_rc      oath_hotp_generate          (const char *secret,
                                           size_t secret_length,
                                           uint64_t moving_factor,
@@ -128,6 +129,23 @@ class OATH(object):
         self._ffi.cdef(declarations)
         self.c = self._ffi.dlopen(library)
         self._handle_retval(self.c.oath_init())
+
+    @property
+    def library_version(self):
+        '''
+        The version of liboath being used.
+        :rtype: :func:`str`
+        '''
+        return self._ffi.string(self.c.oath_check_version('0'))
+
+    def check_library_version(self, version):
+        '''
+        Determines whether the library version is greater than or equal to the
+        specified version.
+        :param str version: The dotted version number to check
+        :rtype: :func:`bool`
+        '''
+        return self.c.oath_check_version(version) != self._ffi.NULL
 
     def generate_secret_key(self, key):
         '''
