@@ -134,18 +134,18 @@ class OATH(object):
     def library_version(self):
         '''
         The version of liboath being used.
-        :rtype: :func:`str`
+        :rtype: :func:`bytes`
         '''
-        return self._ffi.string(self.c.oath_check_version('0'))
+        return self._ffi.string(self.c.oath_check_version(b'0'))
 
     def check_library_version(self, version):
         '''
         Determines whether the library version is greater than or equal to the
         specified version.
-        :param str version: The dotted version number to check
+        :param bytes version: The dotted version number to check
         :rtype: :func:`bool`
         '''
-        return self.c.oath_check_version(version) != self._ffi.NULL
+        return self.c.oath_check_version(to_bytes(version)) != self._ffi.NULL
 
     def generate_secret_key(self, key):
         '''
