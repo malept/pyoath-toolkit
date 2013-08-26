@@ -5,6 +5,9 @@ This module is a set of pure Python bindings for the `OATH Toolkit`_ library.
 Please note that it is *OATH* (open authentication, e.g., one-time passwords)
 and not *OAUTH* (an open standard for authorization).
 
+.. image:: https://travis-ci.org/malept/pyoath-toolkit.png?branch=master
+   :alt: Travis CI status, see https://travis-ci.org/malept/pyoath-toolkit
+
 .. _OATH Toolkit: http://www.nongnu.org/oath-toolkit/
 
 Installation
@@ -42,9 +45,3 @@ License
 -------
 
 Apache License 2.0; see the ``LICENSE`` file for details.
-
-Build Status (master)
----------------------
-
-.. image:: https://travis-ci.org/malept/pyoath-toolkit.png?branch=master
-   :alt: Travis CI status, see https://travis-ci.org/malept/pyoath-toolkit
