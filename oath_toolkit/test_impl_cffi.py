@@ -71,6 +71,6 @@ class CFFITestCase(unittest.TestCase):
         self.assertIsNotNone(version)
         self.assertNotEqual(self.oath._ffi.NULL, version)
 
-    def check_library_version(self):
+    def test_check_library_version(self):
         self.assertTrue(self.oath.check_library_version('0'))
         self.assertFalse(self.oath.check_library_version('999'))
