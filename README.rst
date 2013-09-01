@@ -44,7 +44,16 @@ Installation from Git with the ``qrcode`` feature::
 Examples
 --------
 
-Examples can be found in the ``examples/`` directory, which includes a port of ``oathtool``.
+.. code-block:: python
+
+   from oath_toolkit import OATH
+   from time import time
+
+   oath = OATH()
+   one_time_password = oath.totp_generate(b'hello world', time(), None, 0, 6)
+
+More complex examples can be found in the ``examples/`` directory, which
+includes a port of ``oathtool``.
 
 License
 -------
