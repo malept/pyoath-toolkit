@@ -1,4 +1,2 @@
--r requirements.txt
--r requirements-qrcode.txt
-flake8
+-r requirements-test.txt
 sphinx
