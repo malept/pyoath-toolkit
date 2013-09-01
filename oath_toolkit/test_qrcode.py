@@ -19,17 +19,9 @@ from __future__ import absolute_import
 from . import OATH, qrcode as oath_qrcode
 from ._compat import url_quote
 from .tests import unittest
-import sys
-
-# The tests crash on Python 2.6 and I don't know why
-if (2, 7) <= sys.version_info:  # pragma: no cover
-    import qrcode
-else:  # pragma: no cover
-    qrcode = None
+import qrcode
 
 
-@unittest.skipIf(qrcode is None,
-                 'The qrcode module does not work in this version of Python')
 class QRCodeTestCase(unittest.TestCase):
 
     @classmethod
