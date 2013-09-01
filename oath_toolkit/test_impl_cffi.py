@@ -30,7 +30,7 @@ class CFFITestCase(unittest.TestCase):
         cls.oath = OATH()
 
     def setUp(self):
-        self.secret = self.oath.generate_secret_key('CFFITestCase secret')
+        self.secret = b'CFFITestCase secret'
 
     def test_totp(self):
         now = time.time()

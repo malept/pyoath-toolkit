@@ -16,7 +16,7 @@
 
 from __future__ import absolute_import
 
-from . import OATH, qrcode as oath_qrcode
+from . import qrcode as oath_qrcode
 from ._compat import url_quote
 from .tests import unittest
 import qrcode
@@ -24,13 +24,9 @@ import qrcode
 
 class QRCodeTestCase(unittest.TestCase):
 
-    @classmethod
-    def setUpClass(cls):
-        cls.oath = OATH()
-
     def setUp(self):
         self.key = b'Hello!\xDE\xAD\xBE\xEF'
-        self.secret = self.oath.generate_secret_key(self.key)
+        self.secret = b'JBSWY3DPEHPK3PXP'
 
     def test_totp(self):
         expected_uri = '''\
@@ -39,13 +35,13 @@ secret={0}&issuer=Example\
 '''.format(url_quote(self.secret))
         expected_img = qrcode.make(expected_uri)
         expected = (self.secret, list(expected_img.getdata()))
-        secret, img = oath_qrcode.generate(self.oath, 'totp', self.key,
+        secret, img = oath_qrcode.generate('totp', self.key,
                                            'alice@google.com', 'Example')
         self.assertEqual(expected, (secret, list(img.getdata())))
 
     def test_hotp(self):
         with self.assertRaises(ValueError):
-            oath_qrcode.generate(self.oath, 'hotp', self.key,
+            oath_qrcode.generate('hotp', self.key,
                                  'alice@google.com', 'Example')
         expected_uri = '''\
 otpauth://hotp/Example:alice%40google.com?\
@@ -53,6 +49,6 @@ secret={0}&issuer=Example&counter=42\
 '''.format(url_quote(self.secret))
         expected_img = qrcode.make(expected_uri)
         expected = (self.secret, list(expected_img.getdata()))
-        secret, img = oath_qrcode.generate(self.oath, 'hotp', self.key,
+        secret, img = oath_qrcode.generate('hotp', self.key,
                                            'alice@google.com', 'Example', 42)
         self.assertEqual(expected, (secret, list(img.getdata())))

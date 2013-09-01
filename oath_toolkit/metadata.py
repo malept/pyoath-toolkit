@@ -15,6 +15,6 @@
 # limitations under the License.
 
 DESCRIPTION = 'Python bindings to the OATH Toolkit library.'
-VERSION = '1.0.dev1'
+VERSION = '1.0.dev2'
 
 __all__ = ['DESCRIPTION', 'VERSION']

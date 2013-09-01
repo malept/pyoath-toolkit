@@ -15,8 +15,6 @@
 # limitations under the License.
 
 from ._compat import to_bytes
-import base64
-import hmac
 import os
 
 if not os.environ.get('READTHEDOCS') and not os.environ.get('SETUP_PY'):
@@ -63,16 +61,11 @@ typedef enum {
      and tests/tst_errors.c. */
   OATH_LAST_ERROR = -25
 } oath_rc;
+
+/* from oath-toolkit */
 const char * oath_strerror               (oath_rc err);
 const char * oath_strerror_name          (oath_rc err);
 
-/* from oath-toolkit */
-oath_rc      oath_authenticate_usersfile (const char *usersfile,
-                                          const char *username,
-                                          const char *otp,
-                                          size_t window,
-                                          const char *passwd,
-                                          time_t *last_otp);
 /* for some reason, need to keep the following function in,
  * or it segfaults.
  */
@@ -147,24 +140,13 @@ class OATH(object):
         '''
         return self.c.oath_check_version(to_bytes(version)) != self._ffi.NULL
 
-    def generate_secret_key(self, key):
-        '''
-        Given a key, generate a secret compatible with a one-time
-        password generator.
-
-        :param str key: A key used to seed the one-time password generator
-        :return: A base32-encoded HMAC secret
-        :rtype: :func:`str`
-        '''
-        return base64.b32encode(hmac.new(to_bytes(key)).digest())
-
     def hotp_generate(self, secret, moving_factor, digits, add_checksum=False,
                       truncation_offset=None):
         '''
         Generates a one-time password using the HOTP algorithm (:rfc:`4226`).
 
-        :param str secret: The secret string used to generate the one-time
-                           password.
+        :param bytes secret: The secret string used to generate the one-time
+                             password.
         :param int moving_factor: unsigned, can be :func:`long`, in theory.
         :param int digits: unsigned, the number of digits of the one-time
                            password.
@@ -175,11 +157,12 @@ class OATH(object):
                                   :data:`None`.
         :type truncation_offset: :func:`int` or :data:`None`
         :return: one-time password
-        :rtype: :func:`str`
+        :rtype: :func:`bytes`
         '''
         if truncation_offset is None:
             truncation_offset = (2 ** 32) - 1
         generated = self._ffi.new('char *')
+        secret = to_bytes(secret)
         retval = self.c.oath_hotp_generate(secret, len(secret), moving_factor,
                                            digits, add_checksum,
                                            truncation_offset, generated)
@@ -191,12 +174,12 @@ class OATH(object):
         Validates a one-time password generated using the HOTP algorithm
         (:rfc:`4226`).
 
-        :param str secret: The secret used to generate the one-time password.
+        :param bytes secret: The secret used to generate the one-time password.
         :param int start_moving_factor: unsigned, can be :func:`long`, in
                                         theory.
         :param int window: The number of OTPs before and after the start OTP
                            to test.
-        :param str otp: The one-time password to validate.
+        :param bytes otp: The one-time password to validate.
         :return: :data:`True` if valid
         :raise: :class:`RuntimeError` if invalid
         '''
@@ -209,8 +192,8 @@ class OATH(object):
         '''
         Generates a one-time password using the TOTP algorithm (:rfc:`6238`).
 
-        :param str secret: The secret string used to generate the one-time
-                           password.
+        :param bytes secret: The secret string used to generate the one-time
+                             password.
         :param int now: The UNIX timestamp (usually the current one)
         :param time_sleep_size: Unsigned, the time step system parameter. If
                                 set to :data:`None`, defaults to ``30``.
@@ -219,11 +202,12 @@ class OATH(object):
                                 time steps (usually should be ``0``).
         :param int digits: The number of digits of the one-time password.
         :return: one-time password
-        :rtype: :func:`str`
+        :rtype: :func:`bytes`
         '''
         if time_step_size is None:
             time_step_size = 30  # self.c.OATH_TOTP_DEFAULT_TIME_STEP_SIZE
         generated = self._ffi.new('char *')
+        secret = to_bytes(secret)
         retval = self.c.oath_totp_generate(secret, len(secret), int(now),
                                            time_step_size, time_offset, digits,
                                            generated)
@@ -236,7 +220,7 @@ class OATH(object):
         Validates a one-time password generated using the TOTP algorithm
         (:rfc:`6238`).
 
-        :param str secret: The secret used to generate the one-time password.
+        :param bytes secret: The secret used to generate the one-time password.
         :param int now: The UNIX timestamp (usually the current one)
         :param time_sleep_size: Unsigned, the time step system parameter. If
                                 set to :data:`None`, defaults to ``30``.
@@ -245,7 +229,7 @@ class OATH(object):
                                  time steps (usually should be ``0``).
         :param int window: The number of OTPs before and after the start OTP
                            to test.
-        :param str otp: The one-time password to validate.
+        :param bytes otp: The one-time password to validate.
         :param otp_pos: The output search position in search window
                         (defaults to :data:`None`).
         :type otp_pos: :func:`int` or :data:`None`

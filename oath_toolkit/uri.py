@@ -15,16 +15,16 @@
 # limitations under the License.
 
 from ._compat import url_quote
+from base64 import b32encode
 
 URI = 'otpauth://{key_type}/{issuer}:{user}?secret={secret}&issuer={issuer}'
 
 
-def generate(oath, key_type, key, user, issuer, counter=None):
+def generate(key_type, key, user, issuer, counter=None):
     '''
     Generates a URI suitable for Google Authenticator.
     See: https://code.google.com/p/google-authenticator/wiki/KeyUriFormat
 
-    :param oath_toolkit.OATH oath: OATH object
     :param str key_type: the auth type, either ``totp`` or ``hotp``
     :param str key: the string used to generate the secret key
     :param str user: the username
@@ -36,7 +36,7 @@ def generate(oath, key_type, key, user, issuer, counter=None):
     '''
     if key_type == 'hotp' and counter is None:
         raise ValueError('Using the key_type "hotp" requires a counter')
-    secret = oath.generate_secret_key(key)
+    secret = b32encode(key)
     keys = [
         'key_type',
         'issuer',
