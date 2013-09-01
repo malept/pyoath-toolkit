@@ -41,6 +41,11 @@ Installation from Git with the ``qrcode`` feature::
 
     pip install git+git://github.com/malept/pyoath-toolkit.git#egg=pyoath-toolkit[qrcode]
 
+Examples
+--------
+
+Examples can be found in the ``examples/`` directory, which includes a port of ``oathtool``.
+
 License
 -------
 

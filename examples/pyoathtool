@@ -1,0 +1,220 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+#
+# Copyright 2013 Mark Lee
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+from __future__ import print_function
+
+try:
+    import argcomplete
+except ImportError:
+    argcomplete = None
+import argparse
+from base64 import b32decode, b32encode
+from calendar import timegm
+try:
+    import curses
+except ImportError:
+    curses = None
+from datetime import datetime, timedelta
+from dateutil.tz import tzlocal
+from dateutil.parser import parse as dt_parse
+from oath_toolkit import OATH
+from oath_toolkit.metadata import VERSION
+import os
+import parsedatetime
+import sys
+import time
+
+USAGE = '%(prog)s [OPTIONS]... KEY [OTP]'
+DESCRIPTION = '''\
+Version {0}
+
+Generate and validate OATH one-time passwords using pyoath-toolkit.
+
+This is a functional/CLI-compatible port of oath-toolkit's oathtool.
+'''.format(VERSION)
+EPILOG = '''
+Report bugs to: <https://github.com/malept/pyoath-toolkit/issues>
+pyoath-toolkit home page: <https://pyoath-toolkit.readthedocs.org/>\
+'''
+
+
+class CustomHelpFormatter(argparse.RawDescriptionHelpFormatter,
+                          argparse.ArgumentDefaultsHelpFormatter):
+    def __init__(self, prog):
+        super(CustomHelpFormatter, self).__init__(prog=prog)
+        #FIXME figure out why this fails when running the oathtool testsuite
+        #FIXME disabling when OATHTOOL is set in the meantime
+        if not os.environ.get('OATHTOOL') and \
+           not os.environ.get('COLUMNS') and curses:
+            win = curses.initscr()
+            self._width = win.getmaxyx()[1] - 2
+            curses.endwin()
+        self._max_help_position = self._width * 3 / 10
+
+
+def parse_args(prog, args):
+    formatter = CustomHelpFormatter
+    parser = argparse.ArgumentParser(prog, usage=USAGE,
+                                     description=DESCRIPTION, epilog=EPILOG,
+                                     formatter_class=formatter)
+    parser.add_argument('-V', '--version', action='store_true',
+                        help='Print version and exit')
+    parser.add_argument('--hotp', action='store_true', default=True,
+                        help='use event-based HOTP mode')
+    parser.add_argument('--totp', action='store_true', default=False,
+                        help='use time-variant TOTP mode')
+    parser.add_argument('-b', '--base32', action='store_true',
+                        help='use base32 encoding of KEY instead of hex')
+    parser.add_argument('-c', '--counter', default=0, type=int,
+                        help='HOTP counter value')
+    parser.add_argument('-s', '--time-step-size', metavar='DURATION',
+                        default='30s', help='TOTP time-step duration')
+    parser.add_argument('-S', '--start-time', metavar='TIME',
+                        default='1970-01-01 00:00:00 UTC',
+                        help='when to start counting time steps for TOTP')
+    parser.add_argument('-N', '--now', metavar='TIME', default='now',
+                        help='use this time as current time for TOTP')
+    parser.add_argument('-d', '--digits', default=6, type=int,
+                        help='number of digits in one-time password')
+    parser.add_argument('-w', '--window', metavar='width', default=0, type=int,
+                        help='window of counter values to test when '
+                             'validating OTPs')
+    parser.add_argument('-v', '--verbose', action='store_true', default=False,
+                        help='explain what is being done')
+    parser.add_argument('key', metavar='KEY',
+                        help='The secret key used for the one-time password')
+    parser.add_argument('otp', metavar='OTP', nargs='?',
+                        help='The one-time password to validate against the '
+                             'secret key')
+    if argcomplete:
+        argcomplete.autocomplete(parser)
+    return parser.parse_args(args)
+
+
+def validate_otp(oath, otp_type, verbose, *args):
+    validate = getattr(oath, '{0}_validate'.format(otp_type))
+    try:
+        validate(*args)
+        if verbose:
+            print('Validated')
+        print(0)
+        return 0
+    except RuntimeError, e:
+        if verbose:
+            print(str(e), file=sys.stderr)
+        code = int(e.code)
+        print(code)
+        return 0
+
+
+def str_to_timestamp_dt_tuple(pdt, dt_str):
+    '''
+    Very hacky function to convert date strings (relative/absolute) to
+    timestamps and datetime objects.
+    '''
+    dt = None
+    if dt_str == 'now':
+        dt_str = '@{0}'.format(int(time.time()))
+    elif dt_str == 'hour':
+        dt = datetime.utcnow() + timedelta(hours=1)
+    if dt_str.startswith('@'):
+        timestamp = int(dt_str[1:])
+        dt = datetime.utcfromtimestamp(timestamp)
+    else:
+        if not dt:
+            try:
+                dt = dt_parse(dt_str)
+            except ValueError:
+                dt = datetime(*pdt.parse(dt_str)[0][:6], tzinfo=tzlocal())
+        timestamp = int(timegm(dt.utctimetuple()))
+    return timestamp, dt
+
+
+def main(argv):
+    args = parse_args(argv[0], argv[1:])
+    oath = OATH()
+    if args.base32:
+        b32_str = args.key
+        secret = b32decode(args.key.upper())
+        hex_str = ''.join([hex(ord(c))[2:] for c in secret])
+    else:  # hex -> binary -> Base32
+        if len(args.key) % 2 != 0:
+            print('hex decoding of secret key failed', file=sys.stderr)
+            return 1
+        hex_str = args.key
+        secret = ''.join([chr(int(args.key[pos * 2:(pos + 1) * 2], 16))
+                          for pos in range(len(args.key) / 2)
+                          if len(args.key[pos * 2:(pos + 1) * 2]) == 2])
+        b32_str = b32encode(secret)
+    if args.verbose:
+        print('Hex secret: {0}'.format(hex_str))
+        print('Base32 secret: {0}'.format(b32_str))
+        print('Digits: {0}'.format(args.digits))
+        print('Window size: {0}'.format(args.window))
+        print('Start counter: {0}'.format(args.counter))
+    if args.totp:
+        pdt = parsedatetime.Calendar()
+        time_step_size = int(args.time_step_size[:-1])
+        if args.time_step_size[-1] == 'm':
+            time_step_size *= 60
+        elif args.time_step_size[-1] == 'h':
+            time_step_size *= 3600
+        now, dt_now = str_to_timestamp_dt_tuple(pdt, args.now)
+        time_offset, dt_time_offset = \
+            str_to_timestamp_dt_tuple(pdt, args.start_time)
+        if args.verbose:
+            print('Step size (seconds): {0}'.format(time_step_size))
+            print('Start time: {0} ({1})'.format(dt_time_offset, time_offset))
+            print('Current time: {0} ({1})'.format(dt_now, now))
+
+        if args.otp:  # validate
+            if args.verbose:
+                print('OTP: {0}'.format(args.otp))
+                print()
+            return validate_otp(oath, 'totp', args.verbose, secret, now,
+                                time_step_size, time_offset, args.window,
+                                args.otp)
+        else:  # generate
+            otps = [oath.totp_generate(secret, now + (time_step_size * i),
+                                       time_step_size, time_offset,
+                                       args.digits)
+                    for i in range(args.window + 1)]
+            print(' '.join(otps))
+    else:  # hotp
+        if args.verbose:
+            print('Start counter: {0}'.format(args.counter))
+        if args.otp:  # validate
+            if args.verbose:
+                print('OTP: {0}'.format(args.otp))
+                print()
+            if len(args.otp) != args.digits:
+                msg = '''\
+given one-time password has bad length: {0} != {1}\
+'''.format(args.digits, len(args.otp))
+                print(msg)
+                return 1
+            return validate_otp(oath, 'hotp', args.verbose, secret,
+                                args.counter, args.window, args.otp)
+        else:  # generate
+
+            otps = [oath.hotp_generate(secret, args.counter + i, args.digits)
+                    for i in range(args.window + 1)]
+            print(' '.join(otps))
+    return 0
+
+if __name__ == '__main__':
+    sys.exit(main(sys.argv))
