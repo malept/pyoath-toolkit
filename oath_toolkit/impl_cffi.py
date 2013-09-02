@@ -195,9 +195,9 @@ class OATH(object):
         :param bytes secret: The secret string used to generate the one-time
                              password.
         :param int now: The UNIX timestamp (usually the current one)
-        :param time_sleep_size: Unsigned, the time step system parameter. If
-                                set to :data:`None`, defaults to ``30``.
-        :type time_sleep_size: :func:`int` or :data:`None`
+        :param time_step_size: Unsigned, the time step system parameter. If
+                               set to :data:`None`, defaults to ``30``.
+        :type time_step_size: :func:`int` or :data:`None`
         :param int time_offset: The UNIX timestamp of when to start counting
                                 time steps (usually should be ``0``).
         :param int digits: The number of digits of the one-time password.
@@ -222,9 +222,9 @@ class OATH(object):
 
         :param bytes secret: The secret used to generate the one-time password.
         :param int now: The UNIX timestamp (usually the current one)
-        :param time_sleep_size: Unsigned, the time step system parameter. If
-                                set to :data:`None`, defaults to ``30``.
-        :type time_sleep_size: :func:`int` or :data:`None`
+        :param time_step_size: Unsigned, the time step system parameter. If
+                               set to :data:`None`, defaults to ``30``.
+        :type time_step_size: :func:`int` or :data:`None`
         :param int start_offset: The UNIX timestamp of when to start counting
                                  time steps (usually should be ``0``).
         :param int window: The number of OTPs before and after the start OTP
