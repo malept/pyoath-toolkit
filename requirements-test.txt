@@ -1,3 +1,4 @@
 -r requirements.txt
 -r requirements-qrcode.txt
+-r requirements-wtforms.txt
 flake8

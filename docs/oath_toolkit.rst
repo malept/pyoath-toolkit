@@ -22,3 +22,9 @@ oath_toolkit Package
     :undoc-members:
     :show-inheritance:
 
+:mod:`wtforms` Module
+---------------------
+
+.. automodule:: oath_toolkit.wtforms
+    :members:
+    :show-inheritance:
