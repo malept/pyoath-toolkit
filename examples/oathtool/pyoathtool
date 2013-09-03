@@ -23,6 +23,7 @@ except ImportError:
     argcomplete = None
 import argparse
 from base64 import b32decode, b32encode
+import binascii
 from calendar import timegm
 try:
     import curses
@@ -150,15 +151,13 @@ def main(argv):
     if args.base32:
         b32_str = args.key
         secret = b32decode(args.key.upper())
-        hex_str = ''.join([hex(ord(c))[2:] for c in secret])
+        hex_str = binascii.hexlify(secret)
     else:  # hex -> binary -> Base32
         if len(args.key) % 2 != 0:
             print('hex decoding of secret key failed', file=sys.stderr)
             return 1
         hex_str = args.key
-        secret = ''.join([chr(int(args.key[pos * 2:(pos + 1) * 2], 16))
-                          for pos in range(len(args.key) / 2)
-                          if len(args.key[pos * 2:(pos + 1) * 2]) == 2])
+        secret = binascii.unhexlify(args.key)
         b32_str = b32encode(secret)
     if args.verbose:
         print('Hex secret: {0}'.format(hex_str))
