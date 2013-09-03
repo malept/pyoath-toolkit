@@ -56,7 +56,7 @@ Examples
    one_time_password = oath.totp_generate(b'hello world', time(), None, 0, 6)
 
 More complex examples can be found in the ``examples/`` directory, which
-includes a port of ``oathtool``.
+includes a port of ``oathtool`` and a simple Flask app.
 
 License
 -------
