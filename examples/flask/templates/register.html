@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% from '_formhelpers.html' import render_field %}
+{% block title %}Register{% endblock %}
+{% block content %}
+{{ flash }}
+{% if user %}
+<p>You are now registered. Use this QR code to register this account with your two-factor authentication app:</p>
+<img src="{{ url_for('oath_qrcode') }}" alt="[Two-factor auth QR Code]" />
+<p><a href="{{ url_for('login') }}">Login</a></p>
+{% elif form %}
+<form action="" method="post">
+  {{ form.csrf_token }}
+  {{ render_field(form.username) }}
+  {{ render_field(form.password) }}
+  <input type="submit" value="Register" />
+</form>
+{% endif %}
+{% endblock %}

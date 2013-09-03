@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% from '_formhelpers.html' import render_field %}
+{% block title %}Login{% endblock %}
+{% block content %}
+{{ flash }}
+{% if form %}
+<form action="" method="post">
+  {{ form.csrf_token }}
+  <dl>
+  {{ render_field(form.username) }}
+  {{ render_field(form.password) }}
+  {{ render_field(form.otp) }}
+  </dl>
+  <input type="submit" value="Login" />
+</form>
+{% endif %}
+{% endblock %}

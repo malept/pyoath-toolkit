@@ -1,0 +1,5 @@
+Flask-Login
+Flask-Script
+Flask-SQLAlchemy
+Flask-WTF
+pyoath-toolkit
