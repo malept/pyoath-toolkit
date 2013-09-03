@@ -16,6 +16,11 @@
 
 import sys
 
+try:
+    unicode
+except NameError:
+    unicode = None
+
 if sys.version_info < (3,):  # pragma: no cover
     from urllib import quote as url_quote
     to_bytes = lambda s: s.encode('utf-8') if isinstance(s, unicode) else s
