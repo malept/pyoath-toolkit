@@ -23,6 +23,8 @@ This module requires the following:
 * The `CFFI`_ package.
 * If you wish to use the ``oath_toolkit.qrcode`` module, the `Pillow`_ and
   `qrcode`_ libraries are required.
+* If you wish to use the ``oath_toolkit.wtforms`` module, the `WTForms`_
+  library is required.
 * If you would like to build the documentation, install `Sphinx`_ and run
   ``python setup.py build_sphinx``.
 
@@ -31,6 +33,7 @@ This module requires the following:
 .. _CFFI: http://pypi.python.org/pypi/cffi
 .. _Pillow: http://pypi.python.org/pypi/Pillow
 .. _qrcode: http://pypi.python.org/pypi/qrcode
+.. _WTForms: http://pypi.python.org/pypi/WTForms
 .. _Sphinx: http://sphinx-doc.org/
 
 Basic installation from Git::

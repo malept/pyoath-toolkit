@@ -26,7 +26,7 @@ def generate(key_type, key, user, issuer, counter=None):
     See: https://code.google.com/p/google-authenticator/wiki/KeyUriFormat
 
     :param str key_type: the auth type, either ``totp`` or ``hotp``
-    :param str key: the string used to generate the secret key
+    :param str key: the secret key
     :param str user: the username
     :param str issuer: issuer name
     :param counter: initial counter value (HOTP only)

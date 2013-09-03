@@ -13,6 +13,14 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+'''
+`CFFI`_-based bindings for OATH Toolkit.
+
+Most of the docs and declarations come from the OATH Toolkit `docs`_.
+
+.. _CFFI: http://cffi.readthedocs.org/
+.. _docs: http://www.nongnu.org/oath-toolkit/liboath-api/liboath-oath.html
+'''
 
 from ._compat import to_bytes
 import os
@@ -127,6 +135,7 @@ class OATH(object):
     def library_version(self):
         '''
         The version of liboath being used.
+
         :rtype: :func:`bytes`
         '''
         return self._ffi.string(self.c.oath_check_version(b'0'))
@@ -135,6 +144,7 @@ class OATH(object):
         '''
         Determines whether the library version is greater than or equal to the
         specified version.
+
         :param bytes version: The dotted version number to check
         :rtype: :func:`bool`
         '''
