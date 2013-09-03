@@ -23,7 +23,7 @@ if not os.environ.get('READTHEDOCS'):
     from qrcode import QRCode
 
 
-def generate(key_type, key, user, issuer, counter=None):
+def generate(key_type, key, user, issuer, counter=None, **kwargs):
     '''
     Generates a QR code suitable for Google Authenticator.
     See: https://code.google.com/p/google-authenticator/wiki/KeyUriFormat
@@ -34,10 +34,14 @@ def generate(key_type, key, user, issuer, counter=None):
     :param str issuer: issuer name
     :param counter: initial counter value (HOTP only)
     :type counter: :func:`int` or :data:`None`
+    :param \*\*kwargs: Arguments passed to the :class:`qrcode.QRCode`
+                       constructor
     :returns: a :func:`tuple` of (secret, image object)
     :rtype: (:func:`str`, :class:`pillow:PIL.Image.Image`)
     '''
-    qr = QRCode()
+    qr = QRCode(**kwargs)
     secret, oath_uri = uri.generate(key_type, key, user, issuer, counter)
     qr.add_data(oath_uri)
+    if kwargs.get('version') is None:
+        qr.make(fit=True)
     return secret, qr.make_image()
