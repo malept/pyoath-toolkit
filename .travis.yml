@@ -10,7 +10,7 @@ before_install:
   - sudo apt-get install -qq liboath0
 install:
   - pip install -r requirements-test.txt --use-mirrors
-  - if test $(python --version 2>&1 | head -n 1 | awk '{print $2}' | cut -d. -f1-2) = "2.6"; then pip install unittest2 --use-mirrors; fi
+  - if [[ $TRAVIS_PYTHON_VERSION == '2.6' ]]; then pip install unittest2 --use-mirrors; fi
 script:
-  - if test $(python --version 2>&1 | head -n 1 | awk '{print $2}' | cut -d. -f1-2) != "2.6"; then python setup.py check; fi
+  - if [[ $TRAVIS_PYTHON_VERSION != '2.6' ]]; then python setup.py check; fi
   - ./run_tests.py
