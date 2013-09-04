@@ -1,2 +1,3 @@
 pillow >= 2.0.0
-qrcode >= 3.0
+# qrcode 4.0 broke in a way that doesn't install six
+qrcode >= 3.0, != 4.0
