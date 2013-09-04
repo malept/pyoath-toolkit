@@ -18,7 +18,7 @@ import sys
 
 try:
     unicode
-except NameError:
+except NameError:  # pragma: no cover
     unicode = None
 
 if sys.version_info < (3,):  # pragma: no cover
