@@ -18,8 +18,7 @@ This module requires the following:
 * ``liboath`` is installed. If you can't find it with your distribution's
   package manager, please consult the `OATH Toolkit download page`_. This
   has been tested with 1.12.6.
-* Python 2.6, 2.7, 3.3, or PyPy. `According to Travis CI`_, it does not work on
-  PyPy 1.9.0. I have tested it successfully on PyPy 2.0.2.
+* Python 2.6, 2.7, 3.3, or PyPy >= 2.0.
 * The `CFFI`_ package.
 * If you wish to use the ``oath_toolkit.qrcode`` module, the `Pillow`_ and
   `qrcode`_ libraries are required.
