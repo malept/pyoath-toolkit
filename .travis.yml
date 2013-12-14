@@ -3,7 +3,7 @@ python:
   - "3.3"
   - "2.7"
   - "2.6"
-#  - "pypy"
+  - "pypy"
 before_install:
   - sudo add-apt-repository --yes ppa:malept/oath-toolkit
   - sudo apt-get update -qq
