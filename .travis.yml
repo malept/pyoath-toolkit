@@ -4,10 +4,12 @@ python:
   - "2.7"
   - "2.6"
   - "pypy"
+# tcl8.5 is required for pillow + pypy
 before_install:
   - sudo add-apt-repository --yes ppa:malept/oath-toolkit
   - sudo apt-get update -qq
   - sudo apt-get install -qq liboath0
+  - if [[ $TRAVIS_PYTHON_VERSION == 'pypy' ]]; then sudo apt-get install -qq tcl8.5; fi
 install:
   - pip install -r requirements-test.txt --use-mirrors
   - if [[ $TRAVIS_PYTHON_VERSION == '2.6' ]]; then pip install unittest2 --use-mirrors; fi
