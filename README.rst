@@ -15,21 +15,21 @@ Installation
 
 This module requires the following:
 
-* ``liboath`` is installed. If you can't find it with your distribution's
+* ``liboath`` from OATH Toolkit. If you can't find it with your distribution's
   package manager, please consult the `OATH Toolkit download page`_. This
   has been tested with 1.12.6.
 * Python 2.6, 2.7, 3.3, or PyPy >= 2.0.
 * The `CFFI`_ package.
-* If you wish to use the ``oath_toolkit.qrcode`` module, the `Pillow`_ and
-  `qrcode`_ libraries are required.
-* If you wish to use the ``oath_toolkit.wtforms`` module, the `WTForms`_
-  library is required.
+* For optional `QR code`_ support, the `Pillow`_ and `qrcode`_ libraries
+  are required.
+* For optional WTForms integration, the `WTForms`_ library is required.
 * If you would like to build the documentation, install `Sphinx`_ and run
   ``python setup.py build_sphinx``.
 
 .. _OATH Toolkit download page: http://www.nongnu.org/oath-toolkit/download.html
 .. _According to Travis CI: https://travis-ci.org/malept/pyoath-toolkit/jobs/7969476
 .. _CFFI: http://pypi.python.org/pypi/cffi
+.. _QR code: https://en.wikipedia.org/wiki/QR_code
 .. _Pillow: http://pypi.python.org/pypi/Pillow
 .. _qrcode: http://pypi.python.org/pypi/qrcode
 .. _WTForms: http://pypi.python.org/pypi/WTForms
@@ -55,7 +55,8 @@ Examples
    one_time_password = oath.totp_generate(b'hello world', time(), None, 0, 6)
 
 More complex examples can be found in the ``examples/`` directory, which
-includes a port of ``oathtool`` and a simple Flask app.
+includes a port of ``oathtool`` and a simple Flask app, which shows how
+WTForms integration works.
 
 License
 -------
