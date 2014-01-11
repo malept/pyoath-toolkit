@@ -29,7 +29,7 @@ AUTHORS = u'Mark Lee'
 TITLE = u'OATH Toolkit Python Bindings'
 LONG_TITLE = u'{0} Documentation'.format(TITLE)
 SUMMARY = oath_toolkit.__description__
-SHORT_COPYRIGHT = u'2013, {0}. Some Rights Reserved.'.format(AUTHORS)
+SHORT_COPYRIGHT = u'2013, 2014, {0}. Some Rights Reserved.'.format(AUTHORS)
 COPYRIGHT = u'''{0}
 This work is licensed under a
 Creative Commons Attribution-ShareAlike 3.0
