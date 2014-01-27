@@ -17,7 +17,8 @@
 
 from __future__ import print_function
 
-from flake8.main import check_file
+from flake8.engine import get_style_guide
+from flake8.main import print_report
 import os
 import sys
 
@@ -32,20 +33,20 @@ CODE_DIR = os.path.join(BASE_DIR, 'oath_toolkit')
 
 def main():
     # flake8
-    for root, dirs, files in os.walk(CODE_DIR):
-        error_count = sum([check_file(os.path.join(root, f))
-                           for f in files if f.endswith('.py')])
-        if error_count > 0:
-            print('Total Errors: {0}'.format(error_count), file=sys.stderr)
-            return 1
+    flake8 = get_style_guide(exclude=['.tox', 'build'])
+    report = flake8.check_files([BASE_DIR])
+
+    exit_code = print_report(report, flake8)
+    if exit_code > 0:
+        return exit_code
 
     # unit tests
     suite = TestLoader().discover(CODE_DIR, top_level_dir=BASE_DIR)
     result = TextTestRunner().run(suite)
-    if len(result.errors) > 0:
-        return 1
-    else:
+    if result.wasSuccessful():
         return 0
+    else:
+        return 1
 
 if __name__ == '__main__':
     sys.exit(main())
