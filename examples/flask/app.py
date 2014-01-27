@@ -27,6 +27,7 @@ from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.wtf import Form
 from io import BytesIO
 from oath_toolkit import qrcode
+from oath_toolkit._compat import unicode
 from oath_toolkit.wtforms import TOTPValidator
 from random import SystemRandom
 from sqlalchemy.exc import InvalidRequestError
@@ -58,7 +59,10 @@ class User(db.Model, UserMixin):
     oath_secret = db.Column(db.BINARY(255), nullable=False)
 
     def get_id(self):
-        return unicode(self.id)
+        if unicode:
+            return unicode(self.id)
+        else:
+            return str(self.id)
 
 
 @login_manager.user_loader
