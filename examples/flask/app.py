@@ -27,13 +27,17 @@ from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.wtf import Form
 from io import BytesIO
 from oath_toolkit import qrcode
-from oath_toolkit._compat import unicode
 from oath_toolkit.wtforms import TOTPValidator
 from random import SystemRandom
 from sqlalchemy.exc import InvalidRequestError
 from sqlalchemy.event import listens_for
 from wtforms import PasswordField, TextField, ValidationError, validators
 from wtforms.ext.sqlalchemy.orm import model_form
+
+try:
+    unicode
+except NameError:
+    unicode = None
 
 OTP_DIGITS = 6
 
