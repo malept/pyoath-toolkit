@@ -73,23 +73,23 @@ class OTPValidator(object):
         '''
         raise NotImplementedError
 
+    def _error_msg(self, field, msg):
+        if self.verbose:
+            return field.gettext(msg)
+        else:
+            # generic error
+            return field.gettext(u'OTP is invalid.')
+
     def __call__(self, form, field):
-        generic_error = field.gettext(u'OTP is invalid.')
         if not field.data:
             raise ValidationError(field.gettext(u'Field is required.'))
         elif len(field.data) != self.digits:
-            if self.verbose:
-                msg = field.gettext(u'OTP must be {digits} digits.')
-            else:
-                msg = generic_error
+            msg = self._error_msg(field, u'OTP must be {digits} digits.')
             raise ValidationError(msg.format(digits=self.digits))
         try:
             self.otp_validate(form, field)
         except RuntimeError as e:
-            if self.verbose:
-                msg = field.gettext('Error validating OTP: {err}')
-            else:
-                msg = generic_error
+            msg = self._error_msg(field, u'Error validating OTP: {err}')
             raise ValidationError(msg.format(err=str(e)))
 
 
