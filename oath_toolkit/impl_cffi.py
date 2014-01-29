@@ -174,6 +174,11 @@ class OATH(object):
         '''
         Base32-encodes data.
 
+        :param data: The data to be encoded. Must be castable into a
+                     :func:`bytes` object.
+        :param bool human_readable: if :data:`True`, transforms the Base32
+                                    string into space-separated chunks of 4
+                                    characters, removing trailing ``=``.
         :rtype: bytes
         '''
         if not data:
@@ -188,7 +193,8 @@ class OATH(object):
 
     def base32_decode(self, data):
         '''
-        Decodes Base32 data.
+        Decodes Base32 data. Unlike :func:`base64.b32decode`, it handles
+        human-readable Base32 strings.
 
         :param bytes data: The data to be decoded.
         :rtype: bytes
