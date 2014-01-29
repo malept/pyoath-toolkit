@@ -22,7 +22,10 @@ Most of the docs and declarations come from the OATH Toolkit `docs`_.
 .. _docs: http://www.nongnu.org/oath-toolkit/liboath-api/liboath-oath.html
 '''
 
-from ._compat import to_bytes
+from __future__ import division
+
+from ._compat import bytify, to_bytes, zip_longest
+import base64
 import os
 
 if not os.environ.get('READTHEDOCS') and not os.environ.get('SETUP_PY'):
@@ -80,6 +83,10 @@ const char * oath_strerror_name          (oath_rc err);
 oath_rc      oath_init                   (void);
 oath_rc      oath_done                   (void);
 const char * oath_check_version          (const char *req_version);
+int          oath_base32_decode          (const char *in,
+                                          size_t inlen,
+                                          char **out,
+                                          size_t *outlen);
 oath_rc      oath_hotp_generate          (const char *secret,
                                           size_t secret_length,
                                           uint64_t moving_factor,
@@ -149,6 +156,61 @@ class OATH(object):
         :rtype: :func:`bool`
         '''
         return self.c.oath_check_version(to_bytes(version)) != self._ffi.NULL
+
+    @staticmethod
+    def _chunk_iterable(iterable, n, fillvalue=None):
+        '''
+        Collects data into fixed-length chunks or blocks.
+
+        >>> list(OATH._chunk_iterable('ABCDEFG', 3, 'x'))
+        ['ABC', 'DEF', 'Gxx']
+
+        Copied from the Python documentation in the itertools module.
+        '''
+        args = [iter(iterable)] * n
+        return zip_longest(fillvalue=fillvalue, *args)
+
+    def base32_encode(self, data, human_readable=False):
+        '''
+        Base32-encodes data.
+
+        :rtype: bytes
+        '''
+        if not data:
+            return b''
+        encoded = base64.b32encode(to_bytes(data))
+        if human_readable:
+            chunked_iterable = self._chunk_iterable(encoded, 4)
+            encoded = b' '.join([bytify(chunk)
+                                 for chunk in chunked_iterable])
+            encoded = encoded.rstrip(b'=')
+        return encoded
+
+    def base32_decode(self, data):
+        '''
+        Decodes Base32 data.
+
+        :param bytes data: The data to be decoded.
+        :rtype: bytes
+        '''
+        if not data:
+            raise RuntimeError('Invalid base32 string')
+        elif not (data.isupper() or data.islower()):
+            raise RuntimeError(
+                'Base32 string cannot be both upper- and lowercased')
+        if self.check_library_version(b'2.0.0'):  # pragma: no cover
+            # FIXME needs code coverage somehow
+            output = self._ffi.new('char **')
+            output_len = self._ffi.new('size_t *')
+            self._handle_retval(self.c.oath_base32_decode(to_bytes(data),
+                                                          len(data), output,
+                                                          output_len))
+            return self._ffi.string(output[0], output_len[0])
+        else:
+            data = data.replace(' ', '').upper()
+            if len(data) % 8 != 0:
+                data = data.ljust((int(len(data) / 8) + 1) * 8, '=')
+            return base64.b32decode(data)
 
     def hotp_generate(self, secret, moving_factor, digits, add_checksum=False,
                       truncation_offset=None):

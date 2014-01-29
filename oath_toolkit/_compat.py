@@ -14,6 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import itertools
 import sys
 
 try:
@@ -21,11 +22,26 @@ try:
 except NameError:  # pragma: no cover
     unicode = None
 
-if sys.version_info < (3,):  # pragma: no cover
+_py2 = sys.version_info < (3,)
+
+if _py2:  # pragma: no cover
     from urllib import quote as url_quote
     to_bytes = lambda s: s.encode('utf-8') if isinstance(s, unicode) else s
+    zip_longest = itertools.izip_longest
 else:  # pragma: no cover
     from urllib.parse import quote as url_quote
     to_bytes = lambda s: bytes(s, 'utf-8') if isinstance(s, str) else s
+    zip_longest = itertools.zip_longest
 
-__all__ = ['to_bytes', 'url_quote']
+
+def bytify(chunk):
+    '''
+    Transforms a tuple chunk of bytes data from :func:`itertools.izip_longest`
+    into a :func:`bytes` object.
+    '''
+    if _py2:  # pragma: no cover
+        return b''.join(chunk)
+    else:  # pragma: no cover
+        return bytes(chunk)
+
+__all__ = ['bytify', 'to_bytes', 'url_quote', 'zip_longest']
