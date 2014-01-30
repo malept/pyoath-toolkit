@@ -263,7 +263,7 @@ class OATH(object):
         '''
         retval = self.c.oath_hotp_validate(secret, len(secret),
                                            start_moving_factor, window, otp)
-        self._handle_retval(retval)
+        self._handle_retval(retval, True)
         return True
 
     def totp_generate(self, secret, now, time_step_size, time_offset, digits):
@@ -321,11 +321,21 @@ class OATH(object):
         retval = self.c.oath_totp_validate2(secret, len(secret), int(now),
                                             time_step_size, start_offset,
                                             window, otp_pos, otp)
-        self._handle_retval(retval)
+        self._handle_retval(retval, True)
         return True
 
-    def _handle_retval(self, retval):
-        if retval != self.c.OATH_OK:
+    def _handle_retval(self, retval, positive_ok=False):
+        '''
+        Handles the ``oath_rc`` return value from a ``liboath`` function call.
+
+        :type retval: int
+        :param bool positive_ok: Whether positive integers are acceptable (as
+                                 is the case in validation functions), or throw
+                                 exceptions.
+        :raises: :class:`RuntimeError` containing error message on non-OK
+                 return value.
+        '''
+        if retval != self.c.OATH_OK and (not positive_ok or retval < 0):
             errno = self._ffi.cast('oath_rc', retval)
             err_str = self._ffi.string(self.c.oath_strerror(errno))
             err = RuntimeError(err_str)

@@ -60,11 +60,17 @@ class CFFITestCase(unittest.TestCase):
                                          WINDOW, otp)
         self.assertTrue(result)
 
+    def test_hotp_fail(self):
+        moving_factor = 12
+        otp = self.oath.hotp_generate(self.secret, moving_factor + 1, DIGITS)
+        with self.assertRaises(RuntimeError):  # outside of window
+            self.oath.hotp_validate(self.secret, moving_factor, 0, otp)
+
     def test_totp_fail(self):
         now = time.time()
-        otp = self.oath.totp_generate(self.secret, now, None, 0, DIGITS)
-        with self.assertRaises(RuntimeError):
-            self.oath.totp_validate(self.secret, now, None, 60, WINDOW, otp)
+        otp = self.oath.totp_generate(self.secret, now, 30, 0, DIGITS)
+        with self.assertRaises(RuntimeError):  # outside of window
+            self.oath.totp_validate(self.secret, now + 60, None, 30, 0, otp)
 
     def test_library_version(self):
         version = self.oath.library_version
