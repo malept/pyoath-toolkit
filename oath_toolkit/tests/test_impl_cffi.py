@@ -14,8 +14,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from .impl_cffi import OATH
-from .tests import unittest
+from ..impl_cffi import OATH
+from . import unittest
 import time
 
 DEFAULT_TIME_STEP_SIZE = 30

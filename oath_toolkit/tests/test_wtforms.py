@@ -16,8 +16,8 @@
 
 from __future__ import absolute_import
 
-from .tests import unittest
-from .wtforms import HOTPValidator, TOTPValidator
+from . import unittest
+from ..wtforms import HOTPValidator, TOTPValidator
 from time import time
 from wtforms import ValidationError
 

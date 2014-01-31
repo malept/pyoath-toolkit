@@ -16,9 +16,9 @@
 
 from __future__ import absolute_import
 
-from . import qrcode as oath_qrcode
-from ._compat import url_quote
-from .tests import unittest
+from .. import qrcode as oath_qrcode
+from .._compat import url_quote
+from . import unittest
 import qrcode
 
 
