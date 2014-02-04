@@ -89,10 +89,10 @@ class CFFITestCase(unittest.TestCase):
             self.oath.base32_decode('')
         with self.assertRaises((RuntimeError, TypeError)):
             self.oath.base32_decode('NIXnix')
-        self.assertEqual(b'foo', self.oath.base32_decode('MZXW6==='))
-        self.assertEqual(b'foo', self.oath.base32_decode('MZ XW 6'))
-        self.assertEqual(b'foo', self.oath.base32_decode('MZ XW 6==='))
-        dropbox = 'gr6d 5br7 25s6 vnck v4vl hlao re'
+        self.assertEqual(b'foo', self.oath.base32_decode(b'MZXW6==='))
+        self.assertEqual(b'foo', self.oath.base32_decode(b'MZ XW 6'))
+        self.assertEqual(b'foo', self.oath.base32_decode(b'MZ XW 6==='))
+        dropbox = b'gr6d 5br7 25s6 vnck v4vl hlao re'
         self.assertEqual(16, len(self.oath.base32_decode(dropbox)))
 
     def test_base32_encode(self):

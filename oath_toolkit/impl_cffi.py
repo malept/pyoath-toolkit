@@ -213,9 +213,9 @@ class OATH(object):
                                                           output_len))
             return self._ffi.string(output[0], output_len[0])
         else:
-            data = data.replace(' ', '').upper()
+            data = data.replace(b' ', b'').upper()
             if len(data) % 8 != 0:
-                data = data.ljust((int(len(data) / 8) + 1) * 8, '=')
+                data = data.ljust((int(len(data) / 8) + 1) * 8, b'=')
             return base64.b32decode(data)
 
     def hotp_generate(self, secret, moving_factor, digits, add_checksum=False,
