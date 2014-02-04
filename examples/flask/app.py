@@ -25,7 +25,6 @@ from flask.ext.login import (
 from flask.ext.script import Manager
 from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.wtf import Form
-from io import BytesIO
 from oath_toolkit import qrcode
 from oath_toolkit.wtforms import TOTPValidator
 from random import SystemRandom
@@ -129,9 +128,9 @@ def oath_qrcode():
     img = qrcode.generate('totp', current_user.oath_secret,
                           current_user.username, 'Test App',
                           border=2, box_size=4)[1]
-    stream = BytesIO()
-    img.save(stream, 'PNG')
-    resp = make_response(stream.getvalue(), 200)
+    resp = make_response()
+    resp.status_code = 200
+    img.save(resp.stream, 'PNG')
     resp.headers['Content-Type'] = 'image/png'
     return resp
 
