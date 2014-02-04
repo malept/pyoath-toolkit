@@ -36,8 +36,8 @@ def generate(key_type, key, user, issuer, counter=None, **kwargs):
     :type counter: :func:`int` or :data:`None`
     :param \*\*kwargs: Arguments passed to the :class:`qrcode.QRCode`
                        constructor
-    :returns: a :func:`tuple` of (secret, image object)
-    :rtype: (:func:`str`, :class:`pillow:PIL.Image.Image`)
+    :returns: a :func:`tuple` of (Base32-encoded secret, image object)
+    :rtype: (:func:`str`, :class:`qrcode.image.base.BaseImage`)
     '''
     qr = QRCode(**kwargs)
     secret, oath_uri = uri.generate(key_type, key, user, issuer, counter)

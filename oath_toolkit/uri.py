@@ -31,7 +31,7 @@ def generate(key_type, key, user, issuer, counter=None):
     :param str issuer: issuer name
     :param counter: initial counter value (HOTP only)
     :type counter: :func:`int` or :data:`None`
-    :returns: a :func:`tuple` of (secret, URI)
+    :returns: a :func:`tuple` of (Base32-encoded secret, URI)
     :rtype: (:func:`str`, :func:`str`)
     '''
     if key_type == 'hotp' and counter is None:

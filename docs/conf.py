@@ -121,7 +121,6 @@ pygments_style = 'sphinx'
 # intersphinx
 
 intersphinx_mapping = {
-    'pillow': ('http://pillow.readthedocs.org/en/latest/', None),
     'py': ('http://docs.python.org/2.7/', None)
 }
 
