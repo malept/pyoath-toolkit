@@ -86,9 +86,9 @@ class CFFITestCase(unittest.TestCase):
         with self.assertRaises((RuntimeError, TypeError)):
             self.oath.base32_decode(None)
         with self.assertRaises((RuntimeError, TypeError)):
-            self.oath.base32_decode('')
+            self.oath.base32_decode(b'')
         with self.assertRaises((RuntimeError, TypeError)):
-            self.oath.base32_decode('NIXnix')
+            self.oath.base32_decode(b'NIXnix')
         self.assertEqual(b'foo', self.oath.base32_decode(b'MZXW6==='))
         self.assertEqual(b'foo', self.oath.base32_decode(b'MZ XW 6'))
         self.assertEqual(b'foo', self.oath.base32_decode(b'MZ XW 6==='))
@@ -98,8 +98,8 @@ class CFFITestCase(unittest.TestCase):
     def test_base32_encode(self):
         # From oath-toolkit, liboath/tests/tst_coding.c
         self.assertEqual(b'', self.oath.base32_encode(None))
-        self.assertEqual(b'', self.oath.base32_encode(''))
-        self.assertEqual(b'MZXW6===', self.oath.base32_encode('foo'))
-        base32_encoded = self.oath.base32_encode('foo',
+        self.assertEqual(b'', self.oath.base32_encode(b''))
+        self.assertEqual(b'MZXW6===', self.oath.base32_encode(b'foo'))
+        base32_encoded = self.oath.base32_encode(b'foo',
                                                  human_readable=True)
         self.assertEqual(b'MZXW 6', base32_encoded)
