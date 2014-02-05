@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+{% block title %}Account: Two Factor Authentication{% endblock %}
+{% block content %}
+<h2>Account: Two Factor Authentication</h2>
+<p>Two factor authentication is <strong>{{ tfa_status }}</strong>.</p>
+<form class="pure-form" action="{% url 'otp_setup' %}" method="post">
+  {% csrf_token %}
+  <input class="pure-button pure-button-primary" type="submit" name="{{ tfa_button_name }}" value="{{ tfa_button_value }}" />
+</form>
+{% endblock content %}

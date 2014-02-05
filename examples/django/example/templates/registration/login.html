@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Login</h2>
+<form class="pure-form pure-form-aligned" action="" method="post">
+  {% csrf_token %}
+  <div class="pure-control-group">
+    {{ form.username.errors }}
+    {{ form.username.label_tag }}
+    {{ form.username }}
+  </div>
+  <div class="pure-control-group">
+    {{ form.password.errors }}
+    {{ form.password.label_tag }}
+    {{ form.password }}
+  </div>
+  <div class="pure-controls">
+    <input type="submit" class="pure-button pure-button-primary" value="Login" />
+  </div>
+</form>
+{% endblock content %}

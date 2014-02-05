@@ -26,11 +26,12 @@ _py2 = sys.version_info < (3,)
 
 if _py2:  # pragma: no cover
     from urllib import quote as url_quote
-    to_bytes = lambda s: s.encode('utf-8') if isinstance(s, unicode) else s
+    to_bytes = \
+        lambda s, e='utf-8': s.encode(e) if isinstance(s, unicode) else s
     zip_longest = itertools.izip_longest
 else:  # pragma: no cover
     from urllib.parse import quote as url_quote
-    to_bytes = lambda s: bytes(s, 'utf-8') if isinstance(s, str) else s
+    to_bytes = lambda s, e='utf-8': bytes(s, e) if isinstance(s, str) else s
     zip_longest = itertools.zip_longest
 
 

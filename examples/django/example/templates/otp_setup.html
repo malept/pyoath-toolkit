@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block title %}Account: Two Factor Authentication (Setup){% endblock %}
+{% block content %}
+<h2>Account: Two Factor Authentication (Setup)</h2>
+<figure>
+  <img alt="[QR Code]" src="{% url 'otp_qrcode' %}" />
+  <figcaption>If you cannot use the QR code, manually input this passphrase: <kbd>{{ device.secret_base32 }}</kbd></figcaption>
+</figure>
+<p>Please verify that your two-factor authentication device works:</p>
+<form class="pure-form" action="{% url 'otp_setup_verify' %}" method="post">
+  {% csrf_token %}
+  <div class="pure-control-group">
+    {{ form.token.errors }}
+    {{ form.token.label_tag }}
+    {{ form.token }}
+  </div>
+  <div class="pure-controls">
+    <input class="pure-button pure-button-primary" type="submit" value="Verify" />
+  </div>
+</form>
+{% endblock content %}

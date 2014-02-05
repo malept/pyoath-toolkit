@@ -1,0 +1,3 @@
+-r requirements.txt
+-r requirements-qrcode.txt
+-r requirements-django-otp.txt

@@ -121,8 +121,22 @@ pygments_style = 'sphinx'
 # intersphinx
 
 intersphinx_mapping = {
+    'django': ('https://docs.djangoproject.com/en/1.6/',
+               'https://docs.djangoproject.com/en/1.6/_objects/'),
+    'djangootp': ('https://pythonhosted.org/django-otp/', None),
     'py': ('http://docs.python.org/2.7/', None)
 }
+
+# autodoc and viewcode need valid settings in order to process Django modules.
+import django.conf
+django.conf.settings.configure(
+    DATABASES={
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': '/tmp/pyoath-toolkit-docs.sqlite',
+        }
+    }
+)
 
 # -- Options for HTML output --------------------------------------------------
 

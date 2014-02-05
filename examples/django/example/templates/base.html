@@ -1,0 +1,18 @@
+<!DOCTYPE html>{# vim: set ts=2 sts=2 sw=2 : #}
+<html>
+<head>
+  <title>{% block title %}Example{% endblock %}</title>
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/pure/0.3.0/pure-min.css" />
+  <style>.error,.errorlist{background:#f5ab9e;color:#8c3a2b}.warning{background:#fcebbd;color:#af9540}.success{background:#d3eda3;color:#72962e}.info{background:#e1f2fa;color:#5992aa}</style>
+</head>
+<body>
+  {% if messages %}
+  <ul class="messages">
+    {% for message in messages %}
+    <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+    {% endfor %}
+  </ul>
+  {% endif %}
+  {% block content %}{% endblock %}
+</body>
+<html>

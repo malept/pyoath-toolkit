@@ -28,7 +28,7 @@ else:
     from unittest import TestLoader, TextTestRunner
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-CODE_DIR = os.path.join(BASE_DIR, 'oath_toolkit')
+TESTS_DIR = os.path.join(BASE_DIR, 'oath_toolkit', 'tests')
 
 
 def main():
@@ -40,8 +40,9 @@ def main():
     if exit_code > 0:
         return exit_code
 
-    # unit tests
-    suite = TestLoader().discover(CODE_DIR, top_level_dir=BASE_DIR)
+    # oath_toolkit unit tests only
+    # django_otp_otk unit tests need to be run via Django's testrunner
+    suite = TestLoader().discover(TESTS_DIR, top_level_dir=BASE_DIR)
     result = TextTestRunner().run(suite)
     if result.wasSuccessful():
         return 0

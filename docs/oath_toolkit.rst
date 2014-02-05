@@ -6,6 +6,13 @@ oath_toolkit Package
     :undoc-members:
     :show-inheritance:
 
+:mod:`django_otp` Package
+-------------------------
+
+.. automodule:: oath_toolkit.django_otp.models
+    :members:
+    :show-inheritance:
+
 :mod:`qrcode` Module
 --------------------
 

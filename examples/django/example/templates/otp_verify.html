@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Enter your authentication code</h2>
+<form class="pure-form pure-form-aligned" action="" method="post">
+  {% csrf_token %}
+  {{ form.non_field_errors }}
+  <div class="pure-control-group">
+    {{ form.otp_device.errors }}
+    {{ form.otp_device.label_tag }}
+    {{ form.otp_device }}
+  </div>
+  <div class="pure-control-group">
+    {{ form.otp_token.errors }}
+    {{ form.otp_token.label_tag }}
+    {{ form.otp_token }}
+  </div>
+  <div class="pure-controls">
+    <input type="submit" class="pure-button pure-button-primary" value="Verify" />
+  </div>
+</form>
+{% endblock content %}

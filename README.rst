@@ -20,6 +20,9 @@ This module requires the following:
   has been tested with 1.12.6.
 * Python 2.6, 2.7, 3.3, or PyPy >= 2.0.
 * The `CFFI`_ package.
+* For optional ``django-otp`` integration, the django-otp_ library is required.
+  Additionally, the OTP models use a field that only exists in Django_ 1.6 and
+  above.
 * For optional `QR code`_ support, the `Pillow`_ and `qrcode`_ libraries
   are required.
 * For optional WTForms integration, the `WTForms`_ library is required.
@@ -29,6 +32,8 @@ This module requires the following:
 .. _OATH Toolkit download page: http://www.nongnu.org/oath-toolkit/download.html
 .. _According to Travis CI: https://travis-ci.org/malept/pyoath-toolkit/jobs/7969476
 .. _CFFI: http://pypi.python.org/pypi/cffi
+.. _django-otp: https://pypi.python.org/pypi/django-otp
+.. _Django: https://www.djangoproject.com/
 .. _QR code: https://en.wikipedia.org/wiki/QR_code
 .. _Pillow: http://pypi.python.org/pypi/Pillow
 .. _qrcode: http://pypi.python.org/pypi/qrcode
@@ -55,14 +60,21 @@ Examples
    one_time_password = oath.totp_generate(b'hello world', time(), None, 0, 6)
 
 More complex examples can be found in the ``examples/`` directory, which
-includes a port of ``oathtool`` and a simple Flask app, which shows how
-WTForms integration works.
+includes a port of ``oathtool``, a sample Django project, and a simple Flask
+app, which shows how WTForms integration works.
 
 License
 -------
 
-The code is licensed under the Apache License 2.0; see the ``LICENSE`` file
-for details.
+Unless otherwise noted in the respective files, the code is licensed under the
+Apache License 2.0; see the ``LICENSE`` file for details on the Apache license.
+The otherwise-licensed files have the requisite separate license details.
+Specifically:
+
+* ``oath_toolkit/django_otp/tests.py`` is originally licensed under the
+  two-clause BSD license.
+* ``examples/django/example/forms.py`` is originally licensed under the MIT
+  license.
 
 The documentation is licensed under the Creative Commons
 Attribution-ShareAlike 3.0 Unported License; see the ``LICENSE.docs``

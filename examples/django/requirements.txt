@@ -1,0 +1,1 @@
+pyoath-toolkit[django-otp]

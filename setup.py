@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import os
-from setuptools import setup
+from setuptools import find_packages, setup
 import sys
 
 os.environ['SETUP_PY'] = '1'
@@ -16,6 +16,10 @@ with open('README.rst') as f:
 requires = []
 if not os.environ.get('READTHEDOCS'):
     requires = [l for l in open('requirements.txt')]
+extras_require = {}
+for extra in ['django-otp', 'qrcode', 'wtforms']:
+    req_txt = 'requirements-{0}.txt'.format(extra)
+    extras_require[extra] = [l for l in open(req_txt)]
 
 setup(name='pyoath-toolkit',
       version=metadata.VERSION,
@@ -24,11 +28,9 @@ setup(name='pyoath-toolkit',
       author='Mark Lee',
       author_email='pyoath-toolkit@lazymalevolence.com',
       url='https://pyoath-toolkit.readthedocs.org/',
-      packages=['oath_toolkit'],
+      packages=find_packages(),
       install_requires=requires,
-      extras_require={
-          'qrcode': [l for l in open('requirements-qrcode.txt')],
-      },
+      extras_require=extras_require,
       classifiers=[
           'Development Status :: 4 - Beta',
           'Intended Audience :: Developers',
