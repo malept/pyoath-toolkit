@@ -2,6 +2,7 @@
 *.egg-info
 .coverage
 .tox
+.vagrant
 build
 docs/_build
 dist
