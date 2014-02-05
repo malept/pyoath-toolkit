@@ -11,7 +11,7 @@ before_install:
   - sudo apt-get install -qq liboath0
   - if [[ $TRAVIS_PYTHON_VERSION == 'pypy' ]]; then sudo apt-get install -qq tcl8.5 tk8.5; fi
 install:
-  - pip install -r requirements-test.txt requirements-django-otp.txt --use-mirrors
+  - pip install -r requirements-test.txt -r requirements-django-otp.txt --use-mirrors
   - if [[ $TRAVIS_PYTHON_VERSION == '2.6' ]]; then pip install unittest2 --use-mirrors; fi
 script:
   - if [[ $TRAVIS_PYTHON_VERSION != '2.6' ]]; then python setup.py check; fi
