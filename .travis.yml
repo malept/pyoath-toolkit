@@ -16,4 +16,4 @@ install:
 script:
   - if [[ $TRAVIS_PYTHON_VERSION != '2.6' ]]; then python setup.py check; fi
   - ./run_tests.py
-  - PYTHONPATH=. ./tests/run_django_tests.sh
+  - PYOTK_UNINSTALLED=1 ./tests/run_django_tests.sh
