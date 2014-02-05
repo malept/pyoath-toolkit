@@ -16,4 +16,4 @@ install:
 script:
   - if [[ $TRAVIS_PYTHON_VERSION != '2.6' ]]; then python setup.py check; fi
   - ./run_tests.py
-  - ./tests/run_django_tests.sh
+  - PYTHONPATH=. ./tests/run_django_tests.sh
