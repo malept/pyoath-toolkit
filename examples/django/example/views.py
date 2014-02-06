@@ -11,7 +11,8 @@ from django.utils.translation import ugettext as u_, ugettext_lazy as ul_
 from django_otp import devices_for_user, login as otp_login
 from django_otp.decorators import otp_required
 from django_otp.forms import OTPTokenForm
-from oath_toolkit.django_otp.models import OToolkitTOTPDevice as TOTPDevice
+from oath_toolkit.django_otp.totp.models import (
+    OToolkitTOTPDevice as TOTPDevice)
 from .forms import DeviceValidationForm
 
 

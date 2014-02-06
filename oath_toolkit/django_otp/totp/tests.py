@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 #
 # Originally from django-otp 0.2.2:
-# * django_otp/plugins/otp_hotp/tests.py
 # * django_otp/plugins/otp_totp/tests.py
 #
 # Copyright (c) 2012, Peter Sagerson

@@ -16,27 +16,26 @@
 
 from binascii import hexlify, unhexlify
 from django.contrib.sites.models import get_current_site
-from django.db.models import (
-    BigIntegerField, BinaryField, PositiveSmallIntegerField)
-from django.utils.translation import gettext_lazy as __
+from django.db.models import BinaryField, PositiveSmallIntegerField
 from django_otp.models import Device
 from oath_toolkit import OATH, qrcode
 from oath_toolkit._compat import to_bytes
 from random import SystemRandom
-from time import time
 
+ASCII_MIN = 0
+ASCII_MAX = 127
 SECRET_SIZE = 40
 rand = SystemRandom()
 
 
 def _random_data():
-    return b''.join([to_bytes(chr(rand.randint(0, 127)), 'ascii')
+    return b''.join([to_bytes(chr(rand.randint(ASCII_MIN, ASCII_MAX)), 'ascii')
                     for _ in range(SECRET_SIZE)])
 
 
-class OToolkitTOTPDevice(Device):
+class OToolkitDevice(Device):
     '''
-    TOTP-based django-otp_ ``Device``, using :mod:`oath_toolkit`.
+    Abstract model for a :mod:`oath_toolkit`-based django-otp_ ``Device``.
 
     .. _django-otp: https://pypi.python.org/pypi/django-otp
 
@@ -50,26 +49,6 @@ class OToolkitTOTPDevice(Device):
         Defaults to 40 random bytes.
 
         :type: :class:`django.db.models.BinaryField`
-
-    .. attribute:: time_step_size
-
-        The time step, in seconds. In
-        :class:`django_otp.plugins.otp_totp.models.TOTPDevice`, this field is
-        named ``step``.
-
-        Defaults to 30.
-
-        :type: :class:`django.db.models.PositiveSmallIntegerField`
-
-    .. attribute:: start_offset
-
-        The UNIX timestamp of when to start counting time steps. In
-        :class:`django_otp.plugins.otp_totp.models.TOTPDevice`, this field is
-        named ``t0``.
-
-        Defaults to ``0``.
-
-        :type: :class:`django.db.models.BigIntegerField`
 
     .. attribute:: window
 
@@ -86,20 +65,17 @@ class OToolkitTOTPDevice(Device):
 
         The number of digits in the token.
 
-        Defaults to 6.
+        Defaults to ``6``.
 
         :type: :class:`django.db.models.PositiveSmallIntegerField`
     '''
-    select_name = __('Time-based OTP (TOTP) generator')
 
     secret = BinaryField(max_length=SECRET_SIZE, default=_random_data)
-    time_step_size = PositiveSmallIntegerField(default=30)
-    start_offset = BigIntegerField(default=0)
     window = PositiveSmallIntegerField(default=1)
     digits = PositiveSmallIntegerField(default=6, choices=[(6, 6), (8, 8)])
 
     class Meta:
-        verbose_name = 'OATH Toolkit TOTP Device'
+        abstract = True
 
     def secret_qrcode(self, request):
         '''
@@ -108,7 +84,7 @@ class OToolkitTOTPDevice(Device):
         :rtype: :class:`qrcode.image.base.BaseImage`
         '''
         site = get_current_site(request)
-        return qrcode.generate('totp', self.secret,
+        return qrcode.generate(self.oath_type, self.secret,
                                self.user.username, site.name,
                                border=2, box_size=4)[1]
 
@@ -144,14 +120,12 @@ class OToolkitTOTPDevice(Device):
             self._oath = OATH()
         return self._oath
 
-    def verify_token(self, token):
+    def _do_verify_token(self, token, validator_func, *args):
         token = bytes(token)
         if len(token) != self.digits:
             token = token.rjust(self.digits, b'0')
+        args += (self.window, token)
         try:
-            return self.oath.totp_validate(bytes(self.secret), time(),
-                                           self.time_step_size,
-                                           self.start_offset,
-                                           self.window, token)
+            return validator_func(bytes(self.secret), *args)
         except RuntimeError:
             return False

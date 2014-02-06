@@ -39,7 +39,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django_otp',
-    'oath_toolkit.django_otp',
+    'oath_toolkit.django_otp.totp',
     'example',
 )
 
