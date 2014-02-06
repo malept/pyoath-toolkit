@@ -9,7 +9,7 @@ INSTALLED_APPS = (
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django_otp',
-    'oath_toolkit.django_otp',
+    'oath_toolkit.django_otp.totp',
     'test_django',
 )
 DATABASES = {
