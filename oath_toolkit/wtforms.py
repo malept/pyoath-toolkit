@@ -98,9 +98,10 @@ class HOTPValidator(OTPValidator):
     Validator for HOTP-based passwords.
 
     :param int digits: The expected number of digits in the OTP.
-    :param int window: The number of OTPs before and after the start OTP
+    :param int window: The number of OTPs after the start offset OTP
                        to test.
-    :param int start_moving_factor: unsigned, can be :func:`long`, in theory.
+    :param int start_moving_factor: Unsigned, can be :func:`long`, in theory.
+                                    The start counter in the OTP stream.
     :param bool verbose_errors: Whether to raise verbose validation errors.
     :param callable get_secret: If specified, a callable which returns the
                                 OATH secret used to validate the OTP.

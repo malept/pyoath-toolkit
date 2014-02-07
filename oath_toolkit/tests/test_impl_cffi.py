@@ -58,7 +58,7 @@ class CFFITestCase(unittest.TestCase):
         self.assertNotEqual(otp, otp3)
         result = self.oath.hotp_validate(self.secret, moving_factor,
                                          WINDOW, otp)
-        self.assertTrue(result)
+        self.assertGreaterEqual(result, 0)
 
     def test_hotp_fail(self):
         moving_factor = 12

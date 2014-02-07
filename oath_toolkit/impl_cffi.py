@@ -225,7 +225,9 @@ class OATH(object):
 
         :param bytes secret: The secret string used to generate the one-time
                              password.
-        :param int moving_factor: unsigned, can be :func:`long`, in theory.
+        :param int moving_factor: unsigned, can be :func:`long`, in theory. A
+                                  counter indicating where in OTP stream to
+                                  generate an OTP.
         :param int digits: unsigned, the number of digits of the one-time
                            password.
         :param bool add_checksum: Whether to add a checksum digit (depending
@@ -253,18 +255,21 @@ class OATH(object):
         (:rfc:`4226`).
 
         :param bytes secret: The secret used to generate the one-time password.
-        :param int start_moving_factor: unsigned, can be :func:`long`, in
-                                        theory.
-        :param int window: The number of OTPs before and after the start OTP
+        :param int start_moving_factor: Unsigned, can be :func:`long`, in
+                                        theory. The start counter in the
+                                        OTP stream.
+        :param int window: The number of OTPs after the start offset OTP
                            to test.
         :param bytes otp: The one-time password to validate.
-        :return: :data:`True` if valid
+        :return: The position in the OTP window, where ``0`` is the first
+                 position.
+        :rtype: int
         :raise: :class:`RuntimeError` if invalid
         '''
         retval = self.c.oath_hotp_validate(secret, len(secret),
                                            start_moving_factor, window, otp)
         self._handle_retval(retval, True)
-        return True
+        return retval
 
     def totp_generate(self, secret, now, time_step_size, time_offset, digits):
         '''
