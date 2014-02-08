@@ -1,6 +1,6 @@
 #!/bin/bash
 
-RUN_CMD="`which django-admin.py` test oath_toolkit.django_otp.totp"
+RUN_CMD="`which django-admin.py` test oath_toolkit.django_otp.totp oath_toolkit.django_otp.hotp"
 [[ "$1" == "COVERAGE" ]] && RUN_CMD="coverage run $RUN_CMD"
 
 BASE_DIR=`dirname $0`/..

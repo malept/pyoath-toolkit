@@ -71,7 +71,8 @@ Apache License 2.0; see the ``LICENSE`` file for details on the Apache license.
 The otherwise-licensed files have the requisite separate license details.
 Specifically:
 
-* ``oath_toolkit/django_otp/tests.py`` is originally licensed under the
+* ``oath_toolkit/django_otp/hotp/tests.py`` and
+  ``oath_toolkit/django_otp/totp/tests.py`` are originally licensed under the
   two-clause BSD license.
 * ``examples/django/example/forms.py`` is originally licensed under the MIT
   license.
