@@ -8,3 +8,4 @@ docs/_build
 dist
 __pycache__
 *.sqlite3
+.*.sw?
