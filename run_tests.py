@@ -41,7 +41,7 @@ def main():
         return exit_code
 
     # oath_toolkit unit tests only
-    # django_otp_otk unit tests need to be run via Django's testrunner
+    # django_otp unit tests need to be run via Django's testrunner
     suite = TestLoader().discover(TESTS_DIR, top_level_dir=BASE_DIR)
     result = TextTestRunner().run(suite)
     if result.wasSuccessful():
