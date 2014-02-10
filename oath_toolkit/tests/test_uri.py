@@ -26,10 +26,10 @@ class URITestCase(unittest.TestCase):
         self.secret = b'JBSWY3DPEHPK3PXP'
 
     def test_totp(self):
-        expected = (self.secret, '''\
+        expected = '''\
 otpauth://totp/Example:alice%40google.com?\
 secret={0}&issuer=Example\
-'''.format(url_quote(self.secret)))
+'''.format(url_quote(self.secret))
         actual = uri.generate('totp', self.key, 'alice@google.com',
                               'Example')
         self.assertEqual(expected, actual)
@@ -38,10 +38,10 @@ secret={0}&issuer=Example\
         with self.assertRaises(ValueError):
             uri.generate('hotp', self.key, 'alice@google.com',
                          'Example')
-        expected = (self.secret, '''\
+        expected = '''\
 otpauth://hotp/Example:alice%40google.com?\
 secret={0}&issuer=Example&counter=42\
-'''.format(url_quote(self.secret)))
+'''.format(url_quote(self.secret))
         actual = uri.generate('hotp', self.key, 'alice@google.com',
                               'Example', 42)
         self.assertEqual(expected, actual)

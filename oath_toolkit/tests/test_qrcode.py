@@ -34,10 +34,10 @@ otpauth://totp/Example:alice%40google.com?\
 secret={0}&issuer=Example\
 '''.format(url_quote(self.secret))
         expected_img = qrcode.make(expected_uri)
-        expected = (self.secret, list(expected_img.getdata()))
-        secret, img = oath_qrcode.generate('totp', self.key,
-                                           'alice@google.com', 'Example')
-        self.assertEqual(expected, (secret, list(img.getdata())))
+        expected = list(expected_img.getdata())
+        img = oath_qrcode.generate('totp', self.key,
+                                   'alice@google.com', 'Example')
+        self.assertEqual(expected, list(img.getdata()))
 
     def test_hotp(self):
         with self.assertRaises(ValueError):
@@ -48,7 +48,7 @@ otpauth://hotp/Example:alice%40google.com?\
 secret={0}&issuer=Example&counter=42\
 '''.format(url_quote(self.secret))
         expected_img = qrcode.make(expected_uri)
-        expected = (self.secret, list(expected_img.getdata()))
-        secret, img = oath_qrcode.generate('hotp', self.key,
-                                           'alice@google.com', 'Example', 42)
-        self.assertEqual(expected, (secret, list(img.getdata())))
+        expected = list(expected_img.getdata())
+        img = oath_qrcode.generate('hotp', self.key,
+                                   'alice@google.com', 'Example', 42)
+        self.assertEqual(expected, list(img.getdata()))

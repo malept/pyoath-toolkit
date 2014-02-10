@@ -86,7 +86,7 @@ class OToolkitDevice(Device):
         site = get_current_site(request)
         return qrcode.generate(self.oath_type, self.secret,
                                self.user.username, site.name,
-                               border=2, box_size=4)[1]
+                               border=2, box_size=4)
 
     @property
     def secret_base32(self):

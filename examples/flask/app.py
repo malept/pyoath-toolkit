@@ -127,7 +127,7 @@ def register():
 def oath_qrcode():
     img = qrcode.generate('totp', current_user.oath_secret,
                           current_user.username, 'Test App',
-                          border=2, box_size=4)[1]
+                          border=2, box_size=4)
     resp = make_response()
     resp.status_code = 200
     img.save(resp.stream, 'PNG')

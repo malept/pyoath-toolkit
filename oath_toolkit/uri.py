@@ -31,8 +31,8 @@ def generate(key_type, key, user, issuer, counter=None):
     :param str issuer: issuer name
     :param counter: initial counter value (HOTP only)
     :type counter: :func:`int` or :data:`None`
-    :returns: a :func:`tuple` of (Base32-encoded secret, URI)
-    :rtype: (:func:`str`, :func:`str`)
+    :returns: a URI
+    :rtype: :func:`str`
     '''
     if key_type == 'hotp' and counter is None:
         raise ValueError('Using the key_type "hotp" requires a counter')
@@ -51,5 +51,4 @@ def generate(key_type, key, user, issuer, counter=None):
     l = locals()
     params = dict([(k, url_quote(l[k]))
                    for k in keys])
-    uri = tpl.format(**params)
-    return secret, uri
+    return tpl.format(**params)
