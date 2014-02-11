@@ -24,12 +24,9 @@ Most of the docs and declarations come from the OATH Toolkit `docs`_.
 
 from __future__ import division
 
-from ._compat import bytify, to_bytes, zip_longest
-import base64
-import os
+from ._compat import to_bytes
 
-if not os.environ.get('READTHEDOCS') and not os.environ.get('SETUP_PY'):
-    from cffi import FFI
+from cffi import FFI
 
 declarations = '''
 typedef _Bool bool;
@@ -117,7 +114,7 @@ oath_rc      oath_totp_validate2         (const char *secret,
 '''
 
 
-class OATH(object):
+class OATHImpl(object):
     '''
     Wrapper for `liboath`_ using `CFFI`_.
 
@@ -138,6 +135,9 @@ class OATH(object):
         self.c = self._ffi.dlopen(library)
         self._handle_retval(self.c.oath_init())
 
+    def __del__(self):  # pragma: no cover
+        self._handle_retval(self.c.oath_done())
+
     @property
     def library_version(self):
         '''
@@ -157,66 +157,20 @@ class OATH(object):
         '''
         return self.c.oath_check_version(to_bytes(version)) != self._ffi.NULL
 
-    @staticmethod
-    def _chunk_iterable(iterable, n, fillvalue=None):
-        '''
-        Collects data into fixed-length chunks or blocks.
-
-        >>> list(OATH._chunk_iterable('ABCDEFG', 3, 'x'))
-        ['ABC', 'DEF', 'Gxx']
-
-        Copied from the Python documentation in the itertools module.
-        '''
-        args = [iter(iterable)] * n
-        return zip_longest(fillvalue=fillvalue, *args)
-
-    def base32_encode(self, data, human_readable=False):
-        '''
-        Base32-encodes data.
-
-        :param data: The data to be encoded. Must be castable into a
-                     :func:`bytes` object.
-        :param bool human_readable: if :data:`True`, transforms the Base32
-                                    string into space-separated chunks of 4
-                                    characters, removing trailing ``=``.
-        :rtype: bytes
-        '''
-        if not data:
-            return b''
-        encoded = base64.b32encode(to_bytes(data))
-        if human_readable:
-            chunked_iterable = self._chunk_iterable(encoded, 4)
-            encoded = b' '.join([bytify(chunk)
-                                 for chunk in chunked_iterable])
-            encoded = encoded.rstrip(b'=')
-        return encoded
-
     def base32_decode(self, data):
         '''
         Decodes Base32 data. Unlike :func:`base64.b32decode`, it handles
-        human-readable Base32 strings.
+        human-readable Base32 strings. Requires liboath 2.0.
 
         :param bytes data: The data to be decoded.
         :rtype: bytes
         '''
-        if not data:
-            raise RuntimeError('Invalid base32 string')
-        elif not (data.isupper() or data.islower()):
-            raise RuntimeError(
-                'Base32 string cannot be both upper- and lowercased')
-        if self.check_library_version(b'2.0.0'):  # pragma: no cover
-            # FIXME needs code coverage somehow
-            output = self._ffi.new('char **')
-            output_len = self._ffi.new('size_t *')
-            self._handle_retval(self.c.oath_base32_decode(to_bytes(data),
-                                                          len(data), output,
-                                                          output_len))
-            return self._ffi.string(output[0], output_len[0])
-        else:
-            data = data.replace(b' ', b'').upper()
-            if len(data) % 8 != 0:
-                data = data.ljust((int(len(data) / 8) + 1) * 8, b'=')
-            return base64.b32decode(data)
+        output = self._ffi.new('char **')
+        output_len = self._ffi.new('size_t *')
+        self._handle_retval(self.c.oath_base32_decode(to_bytes(data),
+                                                      len(data), output,
+                                                      output_len))
+        return self._ffi.string(output[0], output_len[0])
 
     def hotp_generate(self, secret, moving_factor, digits, add_checksum=False,
                       truncation_offset=None):
@@ -346,3 +300,5 @@ class OATH(object):
             err = RuntimeError(err_str)
             err.code = errno
             raise err
+
+oath = OATHImpl()
