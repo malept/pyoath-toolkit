@@ -13,6 +13,14 @@ oath_toolkit Package
     :members:
     :show-inheritance:
 
+.. automodule:: oath_toolkit.django_otp.hotp.models
+    :members:
+    :show-inheritance:
+
+.. automodule:: oath_toolkit.django_otp.totp.models
+    :members:
+    :show-inheritance:
+
 :mod:`qrcode` Module
 --------------------
 
