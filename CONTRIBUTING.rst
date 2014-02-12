@@ -12,8 +12,9 @@ tracker`_ is the only one to use at the moment.
 .. _Gitorious: https://gitorious.org/pyoath-toolkit
 .. _issue tracker: https://github.com/malept/pyoath-toolkit/issues
 
-A Vagrant_ environment is available for developing pyoath-toolkit. Simply run
-the following command (once Vagrant is installed)::
+A Vagrant_ environment is available for developing ``pyoath-toolkit``. Run
+the following command in the top-level source directory (once Vagrant
+is installed)::
 
     $ vagrant up
 
