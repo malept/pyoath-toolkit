@@ -10,6 +10,7 @@ before_install:
   - sudo apt-get update -qq
   - sudo apt-get install -qq liboath0
   - if [[ $TRAVIS_PYTHON_VERSION == 'pypy' ]]; then sudo apt-get install -qq tcl8.5 tk8.5; fi
+  - if [[ $TRAVIS_PYTHON_VERSION != 'pypy' ]]; then sudo apt-get install -qq liboath-dev; fi
 install:
   - pip install -r requirements-test.txt -r requirements-django-otp.txt cffi
   - if [[ $TRAVIS_PYTHON_VERSION != 'pypy' ]]; then pip install Cython; fi
