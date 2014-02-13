@@ -11,9 +11,11 @@ before_install:
   - sudo apt-get install -qq liboath0
   - if [[ $TRAVIS_PYTHON_VERSION == 'pypy' ]]; then sudo apt-get install -qq tcl8.5 tk8.5; fi
 install:
-  - pip install -r requirements-test.txt -r requirements-django-otp.txt --use-mirrors
+  - pip install -r requirements-test.txt -r requirements-django-otp.txt cffi --use-mirrors
+  - if [[ $TRAVIS_PYTHON_VERSION != 'pypy' ]]; then pip install Cython --use-mirrors; fi
   - if [[ $TRAVIS_PYTHON_VERSION == '2.6' ]]; then pip install unittest2 --use-mirrors; fi
+  - pip install .
 script:
   - if [[ $TRAVIS_PYTHON_VERSION != '2.6' ]]; then python setup.py check; fi
-  - ./run_tests.py
-  - PYOTK_UNINSTALLED=1 ./tests/run_django_tests.sh
+  - ./tests/run_tests.py
+  - ./tests/run_django_tests.sh
