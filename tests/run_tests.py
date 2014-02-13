@@ -42,10 +42,14 @@ def main():
     if exit_code > 0:
         return exit_code
 
+    verbosity = 1
+    if '--verbose' in sys.argv:
+        verbosity += 1
+
     # oath_toolkit unit tests only
     # django_otp unit tests need to be run via Django's testrunner
     suite = TestLoader().discover(TESTS_DIR, top_level_dir=BASE_UT_DIR)
-    result = TextTestRunner(verbosity=2).run(suite)
+    result = TextTestRunner(verbosity=verbosity).run(suite)
     if result.wasSuccessful():
         return 0
     else:
