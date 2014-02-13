@@ -17,7 +17,10 @@
 import base64
 import os
 if not os.environ.get('READTHEDOCS') and not os.environ.get('SETUP_PY'):
-    from .impl_cffi import oath
+    try:
+        from .impl_cython import oath
+    except ImportError:
+        from .impl_cffi import oath
 from .metadata import DESCRIPTION, VERSION
 
 __description__ = DESCRIPTION

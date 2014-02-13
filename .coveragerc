@@ -1,7 +1,6 @@
 [report]
 include =
-    oath_toolkit/*
-    */oath_toolkit/django_otp/*
+    */oath_toolkit/*
 
 # Regexes for lines to exclude from consideration
 exclude_lines =

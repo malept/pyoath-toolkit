@@ -9,5 +9,5 @@ PPATH="$BASE_DIR/tests"
 [[ -n "$PYOTK_UNINSTALLED" ]] && PPATH="$PPATH:$BASE_DIR"
 PYTHONPATH="$PPATH" DJANGO_SETTINGS_MODULE=test_django.settings $RUN_CMD
 EXIT=$?
-[[ "$1" == "COVERAGE" ]] && coverage report -m
+[[ "$1" == "COVERAGE" ]] && coverage report -m --include='*/django_otp/*'
 exit $EXIT

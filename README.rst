@@ -1,7 +1,7 @@
 Python bindings for OATH Toolkit
 ================================
 
-This module is a set of pure Python bindings for the `OATH Toolkit`_ library.
+This module is a set of Python bindings for the `OATH Toolkit`_ library.
 Please note that it is *OATH* (open authentication, e.g., one-time passwords)
 and not *OAUTH* (an open standard for authorization).
 
@@ -19,7 +19,15 @@ This module requires the following:
   package manager, please consult the `OATH Toolkit download page`_. This
   has been tested with 1.12.6.
 * Python 2.6, 2.7, 3.3, or PyPy >= 2.0.
-* The `CFFI`_ package.
+* One of the following:
+
+  * If you are not running PyPy and installing from Git, Cython 0.18 or higher
+    and a C compiler is recommended, plus the development/header files for
+    ``liboath``.
+  * If you are not running PyPy and installing from an officially released
+    tarball, a C compiler is recommended, plus the development/header files
+    for ``liboath``.
+* The `CFFI`_ package (this is included with PyPy).
 * For optional ``django-otp`` integration, the django-otp_ library is required.
   Additionally, the OTP models use a field that only exists in Django_ 1.6 and
   above.

@@ -14,11 +14,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from ..impl_cffi import oath
+try:  # pragma: no cover
+    from ..impl_cffi import oath
+except ImportError:  # pragma: no cover
+    oath = None
 from . import unittest
 from .impl_base import ImplTestMixin
 
 
+@unittest.skipIf(oath is None, 'Could not import CFFI implementation')
 class CFFITestCase(ImplTestMixin, unittest.TestCase):
 
     @classmethod

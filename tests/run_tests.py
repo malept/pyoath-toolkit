@@ -19,6 +19,7 @@ from __future__ import print_function
 
 from flake8.engine import get_style_guide
 from flake8.main import print_report
+from oath_toolkit import tests
 import os
 import sys
 
@@ -27,8 +28,9 @@ if sys.version_info < (2, 7):
 else:
     from unittest import TestLoader, TextTestRunner
 
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-TESTS_DIR = os.path.join(BASE_DIR, 'oath_toolkit', 'tests')
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+TESTS_DIR = os.path.dirname(tests.__file__)
+BASE_UT_DIR = os.path.dirname(os.path.dirname(TESTS_DIR))
 
 
 def main():
@@ -42,8 +44,8 @@ def main():
 
     # oath_toolkit unit tests only
     # django_otp unit tests need to be run via Django's testrunner
-    suite = TestLoader().discover(TESTS_DIR, top_level_dir=BASE_DIR)
-    result = TextTestRunner().run(suite)
+    suite = TestLoader().discover(TESTS_DIR, top_level_dir=BASE_UT_DIR)
+    result = TextTestRunner(verbosity=2).run(suite)
     if result.wasSuccessful():
         return 0
     else:

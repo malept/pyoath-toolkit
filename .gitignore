@@ -9,3 +9,5 @@ dist
 __pycache__
 *.sqlite3
 .*.sw?
+*.c
+*.so

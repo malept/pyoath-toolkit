@@ -14,7 +14,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-DESCRIPTION = 'Python bindings for the OATH Toolkit library.'
-VERSION = '1.0.dev8'
+from .impl_base import ImplTestMixin
+try:  # pragma: no cover
+    from ..impl_cython import oath
+except ImportError:  # pragma: no cover
+    oath = None
+from . import unittest
 
-__all__ = ['DESCRIPTION', 'VERSION']
+
+@unittest.skipIf(oath is None, 'Could not import Cython implementation')
+class CythonTestCase(ImplTestMixin, unittest.TestCase):
+
+    @classmethod
+    def setUpClass(cls):
+        cls.oath = oath
