@@ -21,13 +21,10 @@ This module requires the following:
 * Python 2.6, 2.7, 3.3, or PyPy >= 2.0.
 * One of the following:
 
-  * If you are not running PyPy and installing from Git, Cython 0.18 or higher
-    and a C compiler is recommended, plus the development/header files for
-    ``liboath``.
-  * If you are not running PyPy and installing from an officially released
-    tarball, a C compiler is recommended, plus the development/header files
-    for ``liboath``.
-* The `CFFI`_ package (this is included with PyPy).
+  + For CPython, a Cython_/C extension is available. In order to compile this,
+    the development/header files for ``liboath`` and a C compiler are
+    required. If installing from Git, Cython 0.18 or higher is also required.
+  + The `CFFI`_ package (this is included with PyPy).
 * For optional ``django-otp`` integration, the django-otp_ library is required.
   Additionally, the OTP models use a field that only exists in Django_ 1.6 and
   above.
@@ -38,7 +35,7 @@ This module requires the following:
   ``python setup.py build_sphinx``.
 
 .. _OATH Toolkit download page: http://www.nongnu.org/oath-toolkit/download.html
-.. _According to Travis CI: https://travis-ci.org/malept/pyoath-toolkit/jobs/7969476
+.. _Cython: http://cython.org/
 .. _CFFI: http://pypi.python.org/pypi/cffi
 .. _django-otp: https://pypi.python.org/pypi/django-otp
 .. _Django: https://www.djangoproject.com/
