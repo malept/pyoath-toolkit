@@ -25,6 +25,7 @@ Most of the docs and declarations come from the OATH Toolkit `docs`_.
 from __future__ import division
 
 from ._compat import to_bytes
+from .exc import OATHError
 
 from cffi import FFI
 
@@ -218,7 +219,7 @@ class OATHImpl(object):
         :return: The position in the OTP window, where ``0`` is the first
                  position.
         :rtype: int
-        :raise: :class:`RuntimeError` if invalid
+        :raise: :class:`OATHError` if invalid
         '''
         retval = self.c.oath_hotp_validate(secret, len(secret),
                                            start_moving_factor, window, otp)
@@ -271,7 +272,7 @@ class OATHImpl(object):
                         (defaults to :data:`None`).
         :type otp_pos: :func:`int` or :data:`None`
         :return: :data:`True` if valid
-        :raise: :class:`RuntimeError` if invalid
+        :raise: :class:`OATHError` if invalid
         '''
         if time_step_size is None:
             time_step_size = 30  # self.c.OATH_TOTP_DEFAULT_TIME_STEP_SIZE
@@ -291,13 +292,13 @@ class OATHImpl(object):
         :param bool positive_ok: Whether positive integers are acceptable (as
                                  is the case in validation functions), or throw
                                  exceptions.
-        :raises: :class:`RuntimeError` containing error message on non-OK
+        :raises: :class:`OATHError` containing error message on non-OK
                  return value.
         '''
         if retval != self.c.OATH_OK and (not positive_ok or retval < 0):
             errno = self._ffi.cast('oath_rc', retval)
             err_str = self._ffi.string(self.c.oath_strerror(errno))
-            err = RuntimeError(err_str)
+            err = OATHError(err_str)
             err.code = errno
             raise err
 

@@ -21,6 +21,7 @@ if not os.environ.get('READTHEDOCS') and not os.environ.get('SETUP_PY'):
         from .impl_cython import oath
     except ImportError:
         from .impl_cffi import oath
+from .exc import OATHError
 from .metadata import DESCRIPTION, VERSION
 
 __description__ = DESCRIPTION
@@ -95,9 +96,9 @@ class OATH(object):
         :rtype: bytes
         '''
         if not data:
-            raise RuntimeError('Invalid base32 string')
+            raise OATHError('Invalid base32 string')
         elif not (data.isupper() or data.islower()):
-            raise RuntimeError(
+            raise OATHError(
                 'Base32 string cannot be both upper- and lowercased')
         if self.check_library_version(b'2.0.0'):  # pragma: no cover
             # FIXME needs code coverage somehow?
@@ -147,7 +148,7 @@ class OATH(object):
         :return: The position in the OTP window, where ``0`` is the first
                  position.
         :rtype: int
-        :raise: :class:`RuntimeError` if invalid
+        :raise: :class:`OATHError` if invalid
         '''
         return self._impl.hotp_validate(secret, start_moving_factor,
                                         window, otp)
@@ -191,7 +192,7 @@ class OATH(object):
                         (defaults to :data:`None`).
         :type otp_pos: :func:`int` or :data:`None`
         :return: :data:`True` if valid
-        :raise: :class:`RuntimeError` if invalid
+        :raise: :class:`OATHError` if invalid
         '''
         return self._impl.totp_validate(secret, now, time_step_size,
                                         start_offset, window, otp, otp_pos)

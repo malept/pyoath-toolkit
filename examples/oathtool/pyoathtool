@@ -33,6 +33,7 @@ from datetime import datetime, timedelta
 from dateutil.tz import tzlocal
 from dateutil.parser import parse as dt_parse
 from oath_toolkit import OATH
+from oath_toolkit.exc import OATHError
 from oath_toolkit.metadata import VERSION
 import os
 import parsedatetime
@@ -114,7 +115,7 @@ def validate_otp(oath, otp_type, verbose, *args):
             print('Validated')
         print(0)
         return 0
-    except RuntimeError, e:
+    except OATHError, e:
         if verbose:
             print(str(e), file=sys.stderr)
         code = int(e.code)

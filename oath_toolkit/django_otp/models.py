@@ -20,6 +20,7 @@ from django.db.models import BinaryField, PositiveSmallIntegerField
 from django_otp.models import Device
 from oath_toolkit import OATH, qrcode
 from oath_toolkit._compat import to_bytes
+from oath_toolkit.exc import OATHError
 from random import SystemRandom
 
 ASCII_MIN = 0
@@ -127,5 +128,5 @@ class OToolkitDevice(Device):
         args += (self.window, token)
         try:
             return validator_func(bytes(self.secret), *args)
-        except RuntimeError:
+        except OATHError:
             return False

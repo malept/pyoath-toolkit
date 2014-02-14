@@ -15,6 +15,7 @@
 # limitations under the License.
 
 import time
+from ..exc import OATHError
 
 DEFAULT_TIME_STEP_SIZE = 30
 DIGITS = 6
@@ -57,13 +58,13 @@ class ImplTestMixin(object):
     def test_hotp_fail(self):
         moving_factor = 12
         otp = self.oath.hotp_generate(self.secret, moving_factor + 1, DIGITS)
-        with self.assertRaises(RuntimeError):  # outside of window
+        with self.assertRaises(OATHError):  # outside of window
             self.oath.hotp_validate(self.secret, moving_factor, 0, otp)
 
     def test_totp_fail(self):
         now = time.time()
         otp = self.oath.totp_generate(self.secret, now, 30, 0, DIGITS)
-        with self.assertRaises(RuntimeError):  # outside of window
+        with self.assertRaises(OATHError):  # outside of window
             self.oath.totp_validate(self.secret, now + 60, None, 30, 0, otp)
 
     def test_library_version(self):
@@ -77,8 +78,8 @@ class ImplTestMixin(object):
 
     def test_base32_decode(self):
         # From oath-toolkit, liboath/tests/tst_coding.c
-        with self.assertRaises((RuntimeError, TypeError)):
+        with self.assertRaises((OATHError, TypeError)):
             self.oath.base32_decode(None)
-        with self.assertRaises((RuntimeError, TypeError)):
+        with self.assertRaises((OATHError, TypeError)):
             self.oath.base32_decode(b'*')
         self.assertEqual(b'foo', self.oath.base32_decode(b'MZXW6==='))

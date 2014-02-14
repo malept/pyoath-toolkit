@@ -23,6 +23,7 @@ from __future__ import absolute_import
 
 from . import OATH
 from ._compat import to_bytes
+from .exc import OATHError
 from abc import ABCMeta, abstractmethod
 import time
 from wtforms import ValidationError
@@ -69,7 +70,7 @@ class OTPValidator(object):
         This should call the appropriate OTP validation method.
 
         :return: :data:`True` on success
-        :raises: :class:`RuntimeError` on failure
+        :raises: :class:`OATHError` on failure
         '''
         raise NotImplementedError
 
@@ -88,7 +89,7 @@ class OTPValidator(object):
             raise ValidationError(msg.format(digits=self.digits))
         try:
             self.otp_validate(form, field)
-        except RuntimeError as e:
+        except OATHError as e:
             msg = self._error_msg(field, u'Error validating OTP: {err}')
             raise ValidationError(msg.format(err=str(e)))
 

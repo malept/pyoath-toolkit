@@ -3,6 +3,8 @@
 cimport coath_toolkit as c
 from libc cimport stdlib
 
+from .exc import OATHError
+
 cdef class OATHImpl:
     def __cinit__(self):
         c.oath_init()
@@ -88,7 +90,7 @@ cdef class OATHImpl:
         :return: The position in the OTP window, where ``0`` is the first
                  position.
         :rtype: int
-        :raise: :class:`RuntimeError` if invalid
+        :raise: :class:`OATHError` if invalid
         '''
         retval = c.oath_hotp_validate(secret, len(secret),
                                       start_moving_factor, window, otp)
@@ -142,7 +144,7 @@ cdef class OATHImpl:
                         (defaults to :data:`None`).
         :type otp_pos: :func:`int` or :data:`None`
         :return: :data:`True` if valid
-        :raise: :class:`RuntimeError` if invalid
+        :raise: :class:`OATHError` if invalid
         '''
         cdef int otp_pos_
         cdef int* c_otp_pos
@@ -168,12 +170,12 @@ cdef class OATHImpl:
         :param bool positive_ok: Whether positive integers are acceptable (as
                                  is the case in validation functions), or throw
                                  exceptions.
-        :raises: :class:`RuntimeError` containing error message on non-OK
+        :raises: :class:`OATHError` containing error message on non-OK
                  return value.
         '''
         if retval != c.OATH_OK and (not positive_ok or retval < 0):
             err_str = c.oath_strerror(retval)
-            err = RuntimeError(err_str)
+            err = OATHError(err_str)
             err.code = retval
             raise err
 

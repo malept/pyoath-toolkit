@@ -15,6 +15,7 @@
 # limitations under the License.
 
 from .. import OATH
+from ..exc import OATHError
 from . import unittest
 from .impl_base import ImplTestMixin
 
@@ -28,9 +29,9 @@ class OATHTestCase(ImplTestMixin, unittest.TestCase):
 
     def test_base32_decode(self):
         # From oath-toolkit, liboath/tests/tst_coding.c
-        with self.assertRaises((RuntimeError, TypeError)):
+        with self.assertRaises((OATHError, TypeError)):
             self.oath.base32_decode(b'')
-        with self.assertRaises((RuntimeError, TypeError)):
+        with self.assertRaises((OATHError, TypeError)):
             self.oath.base32_decode(b'NIXnix')
         self.assertEqual(b'foo', self.oath.base32_decode(b'MZ XW 6'))
         self.assertEqual(b'foo', self.oath.base32_decode(b'MZ XW 6==='))
