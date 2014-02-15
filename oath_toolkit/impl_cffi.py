@@ -271,7 +271,9 @@ class OATHImpl(object):
         :param otp_pos: The output search position in search window
                         (defaults to :data:`None`).
         :type otp_pos: :func:`int` or :data:`None`
-        :return: :data:`True` if valid
+        :return: The absolute position in the OTP window, where ``0`` is the
+                 first position.
+        :rtype: int
         :raise: :class:`OATHError` if invalid
         '''
         if time_step_size is None:
@@ -282,7 +284,7 @@ class OATHImpl(object):
                                             time_step_size, start_offset,
                                             window, otp_pos, otp)
         self._handle_retval(retval, True)
-        return True
+        return retval
 
     def _handle_retval(self, retval, positive_ok=False):
         '''

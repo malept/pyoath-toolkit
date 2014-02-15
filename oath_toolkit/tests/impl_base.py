@@ -42,7 +42,7 @@ class ImplTestMixin(object):
         self.assertNotEqual(otp, otp3)
         result = self.oath.totp_validate(self.secret, now, time_step_size,
                                          time_offset, WINDOW, otp)
-        self.assertTrue(result)
+        self.assertGreaterEqual(result, 0)
 
     def test_hotp(self):
         moving_factor = 12

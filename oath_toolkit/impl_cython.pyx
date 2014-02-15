@@ -143,7 +143,9 @@ cdef class OATHImpl:
         :param otp_pos: The output search position in search window
                         (defaults to :data:`None`).
         :type otp_pos: :func:`int` or :data:`None`
-        :return: :data:`True` if valid
+        :return: The absolute position in the OTP window, where ``0`` is the
+                 first position.
+        :rtype: int
         :raise: :class:`OATHError` if invalid
         '''
         cdef int otp_pos_
@@ -160,7 +162,7 @@ cdef class OATHImpl:
         if otp_pos is not None:
             otp_pos = otp_pos_
         self._handle_retval(retval, True)
-        return True
+        return retval
 
     def _handle_retval(self, retval, positive_ok=False):
         '''

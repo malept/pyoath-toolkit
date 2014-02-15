@@ -191,7 +191,9 @@ class OATH(object):
         :param otp_pos: The output search position in search window
                         (defaults to :data:`None`).
         :type otp_pos: :func:`int` or :data:`None`
-        :return: :data:`True` if valid
+        :return: The absolute position in the OTP window, where ``0`` is the
+                 first position.
+        :rtype: int
         :raise: :class:`OATHError` if invalid
         '''
         return self._impl.totp_validate(secret, now, time_step_size,

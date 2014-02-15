@@ -56,6 +56,9 @@ class OToolkitTOTPDevice(OToolkitDevice):
         verbose_name = u'OATH Toolkit TOTP Device'
 
     def verify_token(self, token):
-        return self._do_verify_token(token, self.oath.totp_validate,
-                                     time(), self.time_step_size,
-                                     self.start_offset)
+        verified = self._do_verify_token(token, self.oath.totp_validate,
+                                         time(), self.time_step_size,
+                                         self.start_offset)
+        if verified is not False:
+            verified = True
+        return verified
