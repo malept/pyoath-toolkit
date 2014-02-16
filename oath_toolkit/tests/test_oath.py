@@ -33,10 +33,10 @@ class OATHTestCase(ImplTestMixin, unittest.TestCase):
             self.oath.base32_decode(b'')
         with self.assertRaises((OATHError, TypeError)):
             self.oath.base32_decode(b'NIXnix')
-        self.assertEqual(b'foo', self.oath.base32_decode(b'MZ XW 6'))
-        self.assertEqual(b'foo', self.oath.base32_decode(b'MZ XW 6==='))
+        self.assertEqual(b'foo', self.oath._py_base32_decode(b'MZ XW 6'))
+        self.assertEqual(b'foo', self.oath._py_base32_decode(b'MZ XW 6==='))
         dropbox = b'gr6d 5br7 25s6 vnck v4vl hlao re'
-        self.assertEqual(16, len(self.oath.base32_decode(dropbox)))
+        self.assertEqual(16, len(self.oath._py_base32_decode(dropbox)))
         super(OATHTestCase, self).test_base32_decode()
 
     def test_base32_encode(self):

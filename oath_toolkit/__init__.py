@@ -17,9 +17,9 @@
 import base64
 import os
 if not os.environ.get('READTHEDOCS') and not os.environ.get('SETUP_PY'):
-    try:
+    try:  # pragma: no cover
         from .impl_cython import oath
-    except ImportError:
+    except ImportError:  # pragma: no cover
         from .impl_cffi import oath
 from .exc import OATHError
 from .metadata import DESCRIPTION, VERSION
@@ -87,6 +87,12 @@ class OATH(object):
             encoded = encoded.rstrip(b'=')
         return encoded
 
+    def _py_base32_decode(self, data):
+        data = data.replace(b' ', b'').upper()
+        if len(data) % 8 != 0:
+            data = data.ljust((int(len(data) / 8) + 1) * 8, b'=')
+        return base64.b32decode(data)
+
     def base32_decode(self, data):
         '''
         Decodes Base32 data. Unlike :func:`base64.b32decode`, it handles
@@ -101,13 +107,9 @@ class OATH(object):
             raise OATHError(
                 'Base32 string cannot be both upper- and lowercased')
         if self.check_library_version(b'2.0.0'):  # pragma: no cover
-            # FIXME needs code coverage somehow?
             return self._impl.base32_decode(data)
-        else:
-            data = data.replace(b' ', b'').upper()
-            if len(data) % 8 != 0:
-                data = data.ljust((int(len(data) / 8) + 1) * 8, b'=')
-            return base64.b32decode(data)
+        else:  # pragma: no cover
+            return self._py_base32_decode(data)
 
     def hotp_generate(self, secret, moving_factor, digits, add_checksum=False,
                       truncation_offset=None):
