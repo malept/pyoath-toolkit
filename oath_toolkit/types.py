@@ -14,7 +14,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-DESCRIPTION = 'Python bindings for the OATH Toolkit library.'
-VERSION = '1.0.dev10'
+from collections import namedtuple
 
-__all__ = ['DESCRIPTION', 'VERSION']
+OTPPosition = namedtuple('OTPPosition', ['absolute', 'relative'])

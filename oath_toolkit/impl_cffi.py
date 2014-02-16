@@ -26,6 +26,7 @@ from __future__ import division
 
 from ._compat import to_bytes
 from .exc import OATHError
+from .types import OTPPosition
 
 from cffi import FFI
 
@@ -218,13 +219,13 @@ class OATHImpl(object):
         :param bytes otp: The one-time password to validate.
         :return: The position in the OTP window, where ``0`` is the first
                  position.
-        :rtype: int
+        :rtype: :class:`oath_toolkit.types.OTPPosition`
         :raise: :class:`OATHError` if invalid
         '''
         retval = self.c.oath_hotp_validate(secret, len(secret),
                                            start_moving_factor, window, otp)
         self._handle_retval(retval, True)
-        return retval
+        return OTPPosition(absolute=None, relative=retval)
 
     def totp_generate(self, secret, now, time_step_size, time_offset, digits):
         '''
@@ -253,7 +254,7 @@ class OATHImpl(object):
         return self._ffi.string(generated)
 
     def totp_validate(self, secret, now, time_step_size, start_offset, window,
-                      otp, otp_pos=None):
+                      otp):
         '''
         Validates a one-time password generated using the TOTP algorithm
         (:rfc:`6238`).
@@ -268,23 +269,19 @@ class OATHImpl(object):
         :param int window: The number of OTPs before and after the start OTP
                            to test.
         :param bytes otp: The one-time password to validate.
-        :param otp_pos: The output search position in search window
-                        (defaults to :data:`None`).
-        :type otp_pos: :func:`int` or :data:`None`
-        :return: The absolute position in the OTP window, where ``0`` is the
-                 first position.
-        :rtype: int
+        :return: The absolute and relative positions in the OTP window, where
+                 ``0`` is the first position.
+        :rtype: :class:`oath_toolkit.types.OTPPosition`
         :raise: :class:`OATHError` if invalid
         '''
         if time_step_size is None:
             time_step_size = 30  # self.c.OATH_TOTP_DEFAULT_TIME_STEP_SIZE
-        if otp_pos is None:
-            otp_pos = self._ffi.NULL
+        addr_otp_pos = self._ffi.new('int *')
         retval = self.c.oath_totp_validate2(secret, len(secret), int(now),
                                             time_step_size, start_offset,
-                                            window, otp_pos, otp)
+                                            window, addr_otp_pos, otp)
         self._handle_retval(retval, True)
-        return retval
+        return OTPPosition(absolute=retval, relative=addr_otp_pos[0])
 
     def _handle_retval(self, retval, positive_ok=False):
         '''

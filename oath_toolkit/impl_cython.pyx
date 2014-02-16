@@ -4,6 +4,7 @@ cimport coath_toolkit as c
 from libc cimport stdlib
 
 from .exc import OATHError
+from .types import OTPPosition
 
 cdef class OATHImpl:
     def __cinit__(self):
@@ -89,13 +90,13 @@ cdef class OATHImpl:
         :param bytes otp: The one-time password to validate.
         :return: The position in the OTP window, where ``0`` is the first
                  position.
-        :rtype: int
+        :rtype: :class:`oath_toolkit.types.OTPPosition`
         :raise: :class:`OATHError` if invalid
         '''
         retval = c.oath_hotp_validate(secret, len(secret),
                                       start_moving_factor, window, otp)
         self._handle_retval(retval, True)
-        return retval
+        return OTPPosition(absolute=None, relative=retval)
 
     def totp_generate(self, secret, now, time_step_size, time_offset, digits):
         '''
@@ -125,7 +126,7 @@ cdef class OATHImpl:
         return <bytes>generated
 
     def totp_validate(self, secret, now, time_step_size, start_offset, window,
-                      otp, otp_pos=None):
+                      otp):
         '''
         Validates a one-time password generated using the TOTP algorithm
         (:rfc:`6238`).
@@ -140,29 +141,20 @@ cdef class OATHImpl:
         :param int window: The number of OTPs before and after the start OTP
                            to test.
         :param bytes otp: The one-time password to validate.
-        :param otp_pos: The output search position in search window
-                        (defaults to :data:`None`).
-        :type otp_pos: :func:`int` or :data:`None`
-        :return: The absolute position in the OTP window, where ``0`` is the
-                 first position.
-        :rtype: int
+        :return: The absolute and relative positions in the OTP window, where
+                 ``0`` is the first position.
+        :rtype: :class:`oath_toolkit.types.OTPPosition`
         :raise: :class:`OATHError` if invalid
         '''
-        cdef int otp_pos_
-        cdef int* c_otp_pos
+        cdef int otp_pos
+        cdef int* c_otp_pos = &otp_pos
         if time_step_size is None:
             time_step_size = c.OATH_TOTP_DEFAULT_TIME_STEP_SIZE
-        if otp_pos is None:
-            c_otp_pos = NULL
-        else:
-            c_otp_pos = &otp_pos_
         retval = c.oath_totp_validate2(secret, len(secret), <int>now,
                                        time_step_size, start_offset,
                                        window, c_otp_pos, otp)
-        if otp_pos is not None:
-            otp_pos = otp_pos_
         self._handle_retval(retval, True)
-        return retval
+        return OTPPosition(absolute=retval, relative=otp_pos)
 
     def _handle_retval(self, retval, positive_ok=False):
         '''

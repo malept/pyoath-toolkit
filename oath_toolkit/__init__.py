@@ -175,7 +175,7 @@ class OATH(object):
                                         time_offset, digits)
 
     def totp_validate(self, secret, now, time_step_size, start_offset, window,
-                      otp, otp_pos=None):
+                      otp):
         '''
         Validates a one-time password generated using the TOTP algorithm
         (:rfc:`6238`).
@@ -190,13 +190,10 @@ class OATH(object):
         :param int window: The number of OTPs before and after the start OTP
                            to test.
         :param bytes otp: The one-time password to validate.
-        :param otp_pos: The output search position in search window
-                        (defaults to :data:`None`).
-        :type otp_pos: :func:`int` or :data:`None`
-        :return: The absolute position in the OTP window, where ``0`` is the
-                 first position.
-        :rtype: int
+        :return: The absolute and relative positions in the OTP window, where
+                 ``0`` is the first position.
+        :rtype: :class:`oath_toolkit.types.OTPPosition`
         :raise: :class:`OATHError` if invalid
         '''
         return self._impl.totp_validate(secret, now, time_step_size,
-                                        start_offset, window, otp, otp_pos)
+                                        start_offset, window, otp)

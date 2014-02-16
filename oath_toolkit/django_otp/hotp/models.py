@@ -46,7 +46,7 @@ class OToolkitHOTPDevice(OToolkitDevice):
         verified = self._do_verify_token(token, self.oath.hotp_validate,
                                          self.counter)
         if verified is not False:
-            self.counter = F('counter') + verified + 1
+            self.counter = F('counter') + verified.relative + 1
             self.save()
             # Update the counter value in this instance
             self.counter = self.__class__.objects.get(pk=self.pk).counter
