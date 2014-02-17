@@ -18,6 +18,6 @@ install:
   - pip install .
 script:
   - if [[ $TRAVIS_PYTHON_VERSION != '2.6' ]]; then python setup.py check; fi
-  - ./tests/run_tests.py
+  - if [[ $TRAVIS_PYTHON_VERSION == 'pypy' ]]; then ./tests/run_tests.py --verbose; else ./tests/run_tests.py; fi
   - ./tests/run_django_tests.sh
   - ./examples/oathtool/run_tests.sh
