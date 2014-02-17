@@ -26,11 +26,13 @@ _py2 = sys.version_info < (3,)
 
 if _py2:  # pragma: no cover
     from urllib import quote as url_quote
+    integer_types = (int, long)  # flake8: noqa
     to_bytes = \
         lambda s, e='utf-8': s.encode(e) if isinstance(s, unicode) else s
     zip_longest = itertools.izip_longest
 else:  # pragma: no cover
     from urllib.parse import quote as url_quote
+    integer_types = (int,)
     to_bytes = lambda s, e='utf-8': bytes(s, e) if isinstance(s, str) else s
     zip_longest = itertools.zip_longest
 
@@ -45,4 +47,4 @@ def bytify(chunk):
     else:  # pragma: no cover
         return bytes(chunk)
 
-__all__ = ['bytify', 'to_bytes', 'url_quote', 'zip_longest']
+__all__ = ['bytify', 'integer_types', 'to_bytes', 'url_quote', 'zip_longest']

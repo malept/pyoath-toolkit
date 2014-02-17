@@ -24,7 +24,7 @@ Most of the docs and declarations come from the OATH Toolkit `docs`_.
 
 from __future__ import division
 
-from ._compat import to_bytes
+from ._compat import integer_types, to_bytes
 from .exc import OATHError
 from .types import OTPPosition
 
@@ -33,7 +33,7 @@ from cffi import FFI
 declarations = '''
 typedef _Bool bool;
 /* cffi doesn't know about time_t */
-typedef int time_t;
+typedef long time_t;
 
 /* defines */
 static char *const OATH_VERSION;
@@ -247,7 +247,9 @@ class OATHImpl(object):
             time_step_size = 30  # self.c.OATH_TOTP_DEFAULT_TIME_STEP_SIZE
         generated = self._ffi.new('char *')
         secret = to_bytes(secret)
-        retval = self.c.oath_totp_generate(secret, len(secret), int(now),
+        if not isinstance(now, integer_types):
+            now = int(now)
+        retval = self.c.oath_totp_generate(secret, len(secret), now,
                                            time_step_size, time_offset, digits,
                                            generated)
         self._handle_retval(retval)
@@ -277,7 +279,9 @@ class OATHImpl(object):
         if time_step_size is None:
             time_step_size = 30  # self.c.OATH_TOTP_DEFAULT_TIME_STEP_SIZE
         addr_otp_pos = self._ffi.new('int *')
-        retval = self.c.oath_totp_validate2(secret, len(secret), int(now),
+        if not isinstance(now, integer_types):
+            now = int(now)
+        retval = self.c.oath_totp_validate2(secret, len(secret), now,
                                             time_step_size, start_offset,
                                             window, addr_otp_pos, otp)
         self._handle_retval(retval, True)

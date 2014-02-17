@@ -3,6 +3,7 @@
 cimport coath_toolkit as c
 from libc cimport stdlib
 
+from ._compat import integer_types
 from .exc import OATHError
 from .types import OTPPosition
 
@@ -119,7 +120,9 @@ cdef class OATHImpl:
         if time_step_size is None:
             time_step_size = c.OATH_TOTP_DEFAULT_TIME_STEP_SIZE
         secret = <bytes>secret
-        retval = c.oath_totp_generate(secret, len(secret), <int>now,
+        if not isinstance(now, integer_types):
+            now = <int>now
+        retval = c.oath_totp_generate(secret, len(secret), now,
                                       time_step_size, time_offset, digits,
                                       generated)
         self._handle_retval(retval)
@@ -150,7 +153,9 @@ cdef class OATHImpl:
         cdef int* c_otp_pos = &otp_pos
         if time_step_size is None:
             time_step_size = c.OATH_TOTP_DEFAULT_TIME_STEP_SIZE
-        retval = c.oath_totp_validate2(secret, len(secret), <int>now,
+        if not isinstance(now, integer_types):
+            now = <int>now
+        retval = c.oath_totp_validate2(secret, len(secret), now,
                                        time_step_size, start_offset,
                                        window, c_otp_pos, otp)
         self._handle_retval(retval, True)

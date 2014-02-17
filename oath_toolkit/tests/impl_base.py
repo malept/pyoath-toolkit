@@ -23,7 +23,12 @@ DEFAULT_TIME_STEP_SIZE = 30
 DIGITS = 6
 WINDOW = 2
 
-TestVector = namedtuple('TestVector', [
+TOTPGTestVector = namedtuple('TOTPGTestVector', [
+    'secs',
+    'T',
+    'otp',
+])
+TOTPVTestVector = namedtuple('TOTPVTestVector', [
     'now',
     'window',
     'otp',
@@ -35,21 +40,29 @@ TestVector = namedtuple('TestVector', [
 
 class ImplTestMixin(object):
 
-    def setUp(self):
-        self.secret = b'TestCase secret'
-        self.otk_secret = b'\x31\x32\x33\x34\x35\x36\x37\x38\x39\x30' * 2
-        self.tvectors_totp = [
-            # Derived from RFC 6238.
-            TestVector(0, 10, b"94287082", 1, 1, 1),
-            TestVector(1111111100, 10, b"07081804", 0, 0, 37037036),
-            TestVector(1111111109, 10, b"07081804", 0, 0, 37037036),
-            TestVector(1111111000, 10, b"07081804", 3, 3, 37037036),
-            TestVector(1111112000, 99, b"07081804", 30, -30, 37037036),
-            TestVector(1111111100, 10, b"14050471", 1, 1, 37037037),
-            TestVector(1111111109, 10, b"14050471", 1, 1, 37037037),
-            TestVector(1111111000, 10, b"14050471", 4, 4, 37037037),
-            TestVector(1111112000, 99, b"14050471", 29, -29, 37037037),
-        ]
+    secret = b'TestCase secret'
+    otk_secret = b'\x31\x32\x33\x34\x35\x36\x37\x38\x39\x30' * 2
+    totpg_vectors = [
+        # From RFC 6238.
+        TOTPGTestVector(59, 0x0000000000000001, b"94287082"),
+        TOTPGTestVector(1111111109, 0x00000000023523EC, b"07081804"),
+        TOTPGTestVector(1111111111, 0x00000000023523ED, b"14050471"),
+        TOTPGTestVector(1234567890, 0x000000000273EF07, b"89005924"),
+        TOTPGTestVector(2000000000, 0x0000000003F940AA, b"69279037"),
+        TOTPGTestVector(20000000000, 0x0000000027BC86AA, b"65353130"),
+    ]
+    totpv_vectors = [
+        # Derived from RFC 6238.
+        TOTPVTestVector(0, 10, b"94287082", 1, 1, 1),
+        TOTPVTestVector(1111111100, 10, b"07081804", 0, 0, 37037036),
+        TOTPVTestVector(1111111109, 10, b"07081804", 0, 0, 37037036),
+        TOTPVTestVector(1111111000, 10, b"07081804", 3, 3, 37037036),
+        TOTPVTestVector(1111112000, 99, b"07081804", 30, -30, 37037036),
+        TOTPVTestVector(1111111100, 10, b"14050471", 1, 1, 37037037),
+        TOTPVTestVector(1111111109, 10, b"14050471", 1, 1, 37037037),
+        TOTPVTestVector(1111111000, 10, b"14050471", 4, 4, 37037037),
+        TOTPVTestVector(1111112000, 99, b"14050471", 29, -29, 37037037),
+    ]
 
     def test_totp(self):
         now = time.time()
@@ -76,10 +89,19 @@ class ImplTestMixin(object):
         msg = '{0} (expected) != {1} (actual) @ index {2}'
         self.assertEqual(expected, actual, msg.format(expected, actual, idx))
 
+    def test_totp_generate_from_otk_tests(self):
+        time_step_size = 30
+        start_offset = 0
+        digits = 8
+        for i, tv in enumerate(self.totpg_vectors):
+            otp = self.oath.totp_generate(self.otk_secret, tv.secs,
+                                          time_step_size, start_offset, digits)
+            self.assertEqualAtIndex(tv.otp, otp, i)
+
     def test_totp_validate_from_otk_tests(self):
         time_step_size = None
         start_offset = 0
-        for i, tv in enumerate(self.tvectors_totp):
+        for i, tv in enumerate(self.totpv_vectors):
             result = self.oath.totp_validate(self.otk_secret, tv.now,
                                              time_step_size, start_offset,
                                              tv.window, tv.otp)
