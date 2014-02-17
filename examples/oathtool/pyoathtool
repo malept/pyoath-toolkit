@@ -22,7 +22,7 @@ try:
 except ImportError:
     argcomplete = None
 import argparse
-from base64 import b32decode, b32encode
+from base64 import b32encode
 import binascii
 from calendar import timegm
 try:
@@ -33,6 +33,7 @@ from datetime import datetime, timedelta
 from dateutil.tz import tzlocal
 from dateutil.parser import parse as dt_parse
 from oath_toolkit import OATH
+from oath_toolkit._compat import to_bytes
 from oath_toolkit.exc import OATHError
 from oath_toolkit.metadata import VERSION
 import os
@@ -97,9 +98,9 @@ def parse_args(prog, args):
                              'validating OTPs')
     parser.add_argument('-v', '--verbose', action='store_true', default=False,
                         help='explain what is being done')
-    parser.add_argument('key', metavar='KEY',
+    parser.add_argument('key', metavar='KEY', type=to_bytes,
                         help='The secret key used for the one-time password')
-    parser.add_argument('otp', metavar='OTP', nargs='?',
+    parser.add_argument('otp', metavar='OTP', nargs='?', type=to_bytes,
                         help='The one-time password to validate against the '
                              'secret key')
     if argcomplete:
@@ -110,12 +111,12 @@ def parse_args(prog, args):
 def validate_otp(oath, otp_type, verbose, *args):
     validate = getattr(oath, '{0}_validate'.format(otp_type))
     try:
-        validate(*args)
+        result = validate(*args)
         if verbose:
             print('Validated')
-        print(0)
+        print(result.relative)
         return 0
-    except OATHError, e:
+    except OATHError as e:
         if verbose:
             print(str(e), file=sys.stderr)
         code = int(e.code)
@@ -151,7 +152,7 @@ def main(argv):
     oath = OATH()
     if args.base32:
         b32_str = args.key
-        secret = b32decode(args.key.upper())
+        secret = oath.base32_decode(args.key)
         hex_str = binascii.hexlify(secret)
     else:  # hex -> binary -> Base32
         if len(args.key) % 2 != 0:
@@ -193,7 +194,7 @@ def main(argv):
                                        time_step_size, time_offset,
                                        args.digits)
                     for i in range(args.window + 1)]
-            print(' '.join(otps))
+            print(b' '.join(otps).decode('utf-8'))
     else:  # hotp
         if args.verbose:
             print('Start counter: {0}'.format(args.counter))
@@ -213,7 +214,7 @@ given one-time password has bad length: {0} != {1}\
 
             otps = [oath.hotp_generate(secret, args.counter + i, args.digits)
                     for i in range(args.window + 1)]
-            print(' '.join(otps))
+            print(b' '.join(otps).decode('utf-8'))
     return 0
 
 if __name__ == '__main__':

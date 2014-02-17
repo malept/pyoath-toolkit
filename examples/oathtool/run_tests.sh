@@ -1,8 +1,28 @@
-#!/bin/sh
-# Running this testsuite assumes that you've modified the oathtool test script
-# to run arbitrary OATHTOOL executables.
-# Also, it assumes that you have set OATH_TOOLKIT_DIR to the top-level
-# directory of the oath-toolkit sources.
+#!/bin/bash
+#
+# Downloads and runs the oathtool testsuite from a given git revision of
+# oath-toolkit.
 
-OATHTOOL=`dirname $0`/pyoathtool \
-    $OATH_TOOLKIT_DIR/oathtool/tests/tst_oathtool.sh
+[[ -z "$DOWNLOAD_DIR" ]] && DOWNLOAD_DIR=/tmp
+
+SHA1=38a385079b36d7f95d685055a13177a62ffe7d79
+GIT_TAG=oath-toolkit-2-4-1
+
+TEST=tst_oathtool.sh
+TEST_PATH="$DOWNLOAD_DIR/$TEST"
+
+if [[ ! -f "$TEST_PATH" ]]; then
+    wget -O "$TEST_PATH" "http://git.savannah.gnu.org/cgit/oath-toolkit.git/plain/oathtool/tests/$TEST?id=$GIT_TAG"
+
+    echo "$SHA1  $TEST_PATH" > "$TEST_PATH".sha1sum
+
+    if ! sha1sum --check --strict "$TEST_PATH".sha1sum; then
+        echo 'SHA1 checksum does not match.' >&2
+        exit 1
+    fi
+
+    sed -i -e '/OATHTOOL=/d' "$TEST_PATH"
+    chmod +x "$TEST_PATH"
+fi
+
+OATHTOOL=`dirname $0`/pyoathtool "$TEST_PATH"
