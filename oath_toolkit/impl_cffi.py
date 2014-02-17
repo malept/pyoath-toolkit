@@ -203,7 +203,7 @@ class OATHImpl(object):
                                            digits, add_checksum,
                                            truncation_offset, generated)
         self._handle_retval(retval)
-        return self._ffi.string(generated)
+        return self._ffi.string(generated, digits)
 
     def hotp_validate(self, secret, start_moving_factor, window, otp):
         '''
@@ -251,7 +251,7 @@ class OATHImpl(object):
                                            time_step_size, time_offset, digits,
                                            generated)
         self._handle_retval(retval)
-        return self._ffi.string(generated)
+        return self._ffi.string(generated, digits)
 
     def totp_validate(self, secret, now, time_step_size, start_offset, window,
                       otp):

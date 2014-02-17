@@ -57,12 +57,15 @@ class ImplTestMixin(object):
         time_offset = 0
         otp = self.oath.totp_generate(self.secret, now, time_step_size,
                                       time_offset, DIGITS)
+        self.assertEqual(DIGITS, len(otp))
         otp2 = self.oath.totp_generate(self.secret, now, time_step_size,
                                        time_offset, DIGITS)
+        self.assertEqual(DIGITS, len(otp2))
         self.assertEqual(otp, otp2)
         otp3 = self.oath.totp_generate(self.secret, now, time_step_size,
                                        time_offset + DEFAULT_TIME_STEP_SIZE,
                                        DIGITS)
+        self.assertEqual(DIGITS, len(otp3))
         self.assertNotEqual(otp, otp3)
         result = self.oath.totp_validate(self.secret, now, time_step_size,
                                          time_offset, WINDOW, otp)
@@ -87,9 +90,12 @@ class ImplTestMixin(object):
     def test_hotp(self):
         moving_factor = 12
         otp = self.oath.hotp_generate(self.secret, moving_factor, DIGITS)
+        self.assertEqual(DIGITS, len(otp))
         otp2 = self.oath.hotp_generate(self.secret, moving_factor, DIGITS)
+        self.assertEqual(DIGITS, len(otp2))
         self.assertEqual(otp, otp2)
         otp3 = self.oath.hotp_generate(self.secret, moving_factor + 1, DIGITS)
+        self.assertEqual(DIGITS, len(otp3))
         self.assertNotEqual(otp, otp3)
         result = self.oath.hotp_validate(self.secret, moving_factor,
                                          WINDOW, otp)
