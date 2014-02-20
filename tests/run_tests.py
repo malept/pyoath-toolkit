@@ -17,37 +17,61 @@
 
 from __future__ import print_function
 
-from flake8.engine import get_style_guide
-from flake8.main import print_report
+try:
+    import argcomplete
+except ImportError:
+    argcomplete = None
+import argparse
+try:
+    from django.core.management import execute_from_command_line
+    django_installed = True
+except ImportError:
+    django_installed = False
+try:
+    from flake8.engine import get_style_guide
+    from flake8.main import print_report
+    flake8_installed = True
+except ImportError:
+    flake8_installed = False
 from oath_toolkit import tests
 import os
 import sys
 
-if sys.version_info < (2, 7):
-    from unittest2 import TestLoader, TextTestRunner
-else:
-    from unittest import TestLoader, TextTestRunner
+TestLoader = tests.unittest.TestLoader
+TextTestRunner = tests.unittest.TextTestRunner
 
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+THIS_DIR = os.path.dirname(os.path.abspath(__file__))
+BASE_DIR = os.path.dirname(THIS_DIR)
 TESTS_DIR = os.path.dirname(tests.__file__)
 BASE_UT_DIR = os.path.dirname(os.path.dirname(TESTS_DIR))
 
 
-def main():
+def parse_args(prog, args):
+    parser = argparse.ArgumentParser(prog)
+    parser.add_argument('--no-flake8', dest='flake8', default=flake8_installed,
+                        action='store_false', help='Disable Flake8')
+    parser.add_argument('-v', '--verbose', action='store_true', default=False,
+                        help='Make unittest testrunner verbose')
+    parser.add_argument('--no-django', dest='django', default=django_installed,
+                        action='store_false',
+                        help='Disable running the Django OTP device testsuite')
+    parser.add_argument('--no-core-tests', dest='core', default=True,
+                        action='store_false',
+                        help='Disable running core tests')
+    if argcomplete:
+        argcomplete.autocomplete(parser)
+    return parser.parse_args(args)
+
+
+def run_flake8():
     # flake8
     flake8 = get_style_guide(exclude=['.tox', 'build'])
     report = flake8.check_files([BASE_DIR])
 
-    exit_code = print_report(report, flake8)
-    if exit_code > 0:
-        return exit_code
+    return print_report(report, flake8)
 
-    verbosity = 1
-    if '--verbose' in sys.argv:
-        verbosity += 1
 
-    # oath_toolkit unit tests only
-    # django_otp unit tests need to be run via Django's testrunner
+def run_core_tests(verbosity):
     suite = TestLoader().discover(TESTS_DIR, top_level_dir=BASE_UT_DIR)
     result = TextTestRunner(verbosity=verbosity).run(suite)
     if result.wasSuccessful():
@@ -55,5 +79,44 @@ def main():
     else:
         return 1
 
+
+def run_django_testrunner(prog, verbosity):
+    # django_otp unit tests need to be run via Django's testrunner
+    sys.path.append(THIS_DIR)
+    os.environ['DJANGO_SETTINGS_MODULE'] = 'test_django.settings'
+    argv = [
+        prog,
+        'test',
+        '--noinput',
+        '--verbosity={0}'.format(verbosity),
+        'oath_toolkit.django_otp.totp',
+        'oath_toolkit.django_otp.hotp',
+    ]
+    execute_from_command_line(argv)
+
+
+def main(argv):
+    prog = argv[0]
+    args = parse_args(prog, argv[1:])
+
+    if args.flake8:
+        exit_code = run_flake8()
+        if exit_code > 0:
+            return exit_code
+
+    verbosity = 1
+    if args.verbose:
+        verbosity += 1
+
+    # non-Django oath_toolkit unit tests only
+    if args.core:
+        exit_code = run_core_tests(verbosity)
+        if exit_code > 0:
+            return exit_code
+
+    if args.django:
+        run_django_testrunner(prog, verbosity)
+    return 0
+
 if __name__ == '__main__':
-    sys.exit(main())
+    sys.exit(main(sys.argv))
