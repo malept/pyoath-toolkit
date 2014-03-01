@@ -26,7 +26,7 @@ _py2 = sys.version_info < (3,)
 
 if _py2:  # pragma: no cover
     from urllib import quote as url_quote
-    integer_types = (int, long)  # flake8: noqa
+    integer_types = (int, long)  # noqa
     to_bytes = \
         lambda s, e='utf-8': s.encode(e) if isinstance(s, unicode) else s
     zip_longest = itertools.izip_longest
