@@ -70,7 +70,8 @@ with open('README.rst') as f:
     long_description = f.read()
 
 requires = []
-if not os.environ.get('READTHEDOCS'):
+READTHEDOCS = os.environ.get('READTHEDOCS')
+if not READTHEDOCS:
     requires = requires_from_req_txt('requirements.txt')
 extra_req = dict([(x, requires_from_req_txt('requirements-{0}.txt'.format(x)))
                   for x in ['django-otp', 'qrcode', 'wtforms']])
@@ -90,7 +91,8 @@ attrs = dict(name='pyoath-toolkit',
 SANS_CYTHON_FLAG = '--without-cython'
 sans_cython_flag_exists = SANS_CYTHON_FLAG in sys.argv
 with_cython = (python_implementation() != 'PyPy' and
-               not sans_cython_flag_exists)
+               not sans_cython_flag_exists and
+               not READTHEDOCS)
 if with_cython:
     src_ext = 'pyx' if cythonize else 'c'
     ext = Extension('oath_toolkit.impl_cython',
