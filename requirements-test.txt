@@ -1,4 +1,6 @@
 -r requirements.txt
 -r requirements-qrcode.txt
 -r requirements-wtforms.txt
+docutils
 flake8
+pygments
