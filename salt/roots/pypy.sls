@@ -1,3 +1,4 @@
+{% if grains['os'] == 'Ubuntu' %}
 pypy.ppa:
   pkgrepo.managed:
     - humanname: PyPy PPA
@@ -7,7 +8,8 @@ pypy.ppa:
     - keyid: "68854915"
     - keyserver: keyserver.ubuntu.com
     - require_in:
-      - pkg: pypy-dev
+      pkg: pypy-dev
+{% endif %}
 
 pypy-dev:
   pkg.installed

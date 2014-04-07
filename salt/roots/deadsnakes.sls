@@ -1,3 +1,4 @@
+{% if grains['os'] == 'Ubuntu' %}
 deadsnakes.ppa:
   pkgrepo.managed:
     - humanname: PyPy PPA
@@ -10,6 +11,7 @@ deadsnakes.ppa:
       pkg:
         - python2.6-dev
         - python3.3-dev
+{% endif %}
 
 python2.6-dev:
   pkg.installed

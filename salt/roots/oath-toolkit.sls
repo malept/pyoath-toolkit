@@ -1,4 +1,5 @@
-# vim: set ft=yaml ts=2 sts=2 sw=2 et :
+# vim: set ft=sls ts=2 sts=2 sw=2 et :
+{% if grains['os'] == 'Ubuntu' %}
 oath-toolkit.ppa:
   pkgrepo.managed:
     - humanname: OATH Toolkit PPA
@@ -9,6 +10,7 @@ oath-toolkit.ppa:
     - keyserver: keyserver.ubuntu.com
     - require_in:
       pkg: liboath-dev
+{% endif %}
 
 liboath-dev:
   pkg.installed
