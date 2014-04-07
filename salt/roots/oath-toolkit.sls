@@ -8,9 +8,9 @@ oath-toolkit.ppa:
     - keyid: D9DF6E2D
     - keyserver: keyserver.ubuntu.com
     - require_in:
-      pkg: liboath0
+      pkg: liboath-dev
 
-liboath0:
+liboath-dev:
   pkg.installed
 
 git:
