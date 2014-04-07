@@ -14,20 +14,21 @@ tracker`_ is the only one to use at the moment.
 
 A Vagrant_ environment is available for developing ``pyoath-toolkit``. Run
 the following command in the top-level source directory (once Vagrant
-is installed)::
+is installed):
+
+.. code-block:: shell-session
 
     $ vagrant up
 
-...and it will install all of the Python dependencies in a virtualenv_. You can
-then log into the virtual machine::
+...and it will install all of the Python dependencies in a virtualenv_. You
+can then log into the virtual machine and install the package in develop mode:
 
-    $ vagrant ssh
-    vagrant@vagrant $ source .virtualenv/bin/activate
-    vagrant@vagrant $ git clone /vagrant ~/pyoath-toolkit
+.. code-block:: shell-session
 
-The last line exists so that it is possible to run ``python setup.py sdist`` -
-VirtualBox's remote filesystem module does not support hardlinks, so it fails
-if you try to run that command or ``tox`` from the ``/vagrant`` directory.
+    user@host:gmusicprocurator$ vagrant ssh
+    # ...
+    vagrant@vagrant:~$ source .virtualenv/bin/activate
+    (.virtualenv)vagrant@vagrant:~$ pip install -e /vagrant
 
 .. _Vagrant: https://www.vagrantup.com
 .. _virtualenv: http://virtualenv.org/

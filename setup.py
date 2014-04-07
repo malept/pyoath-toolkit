@@ -1,6 +1,28 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+####
+# Dirty Monkeypatching Hacks
+####
+
+# distutils sdist for Vagrant
+#
+# Allow distutils sdist to work correctly when using Vagrant + VirtualBox
+# shared folders, where hard links are not implemented.
+#
+# See also: http://bugs.python.org/msg208792
+
+import os
+import sys
+
+if 'sdist' in sys.argv and os.environ.get('USER', '') == 'vagrant':
+    if hasattr(os, 'link'):
+        del os.link
+
+####
+# Your regularly scheduled setup file
+####
+
 try:
     from Cython.Build import cythonize
 except ImportError:
