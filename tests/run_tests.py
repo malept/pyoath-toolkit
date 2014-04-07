@@ -65,7 +65,7 @@ def parse_args(prog, args):
 
 def run_flake8():
     # flake8
-    flake8 = get_style_guide(exclude=['.tox', 'build'])
+    flake8 = get_style_guide(exclude=['.tox', 'build'], max_complexity=10)
     report = flake8.check_files([BASE_DIR])
 
     return print_report(report, flake8)
