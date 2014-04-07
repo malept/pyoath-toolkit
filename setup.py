@@ -19,6 +19,21 @@ if 'sdist' in sys.argv and os.environ.get('USER', '') == 'vagrant':
     if hasattr(os, 'link'):
         del os.link
 
+# distutils check ReST + pygments
+#
+# When the long description contains a code block, the distutils ``check -r``
+# will fail because the default options do not include ``syntax_highlight``.
+# Monkeypatch ``docutils.frontend.OptionParser`` to provide a default for
+# this option.
+
+if 'check' in sys.argv:
+    try:
+        from docutils.frontend import OptionParser
+    except ImportError:
+        pass  # docutils isn't installed, ignore
+    else:
+        OptionParser.settings_defaults['syntax_highlight'] = None
+
 ####
 # Your regularly scheduled setup file
 ####

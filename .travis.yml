@@ -17,6 +17,6 @@ install:
   - if [[ $TRAVIS_PYTHON_VERSION == '2.6' ]]; then pip install unittest2; fi
   - pip install .
 script:
-  - if [[ $TRAVIS_PYTHON_VERSION != '2.6' ]]; then python setup.py check; fi
+  - if [[ $TRAVIS_PYTHON_VERSION != '2.6' ]]; then python setup.py check --metadata --restructuredtext --strict; fi
   - if [[ $TRAVIS_PYTHON_VERSION == 'pypy' ]]; then ./tests/run_tests.py --verbose; else ./tests/run_tests.py; fi
   - ./examples/oathtool/run_tests.sh
