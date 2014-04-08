@@ -88,7 +88,7 @@ requires = []
 READTHEDOCS = os.environ.get('READTHEDOCS')
 if not READTHEDOCS:
     requires = requires_from_req_txt('requirements.txt')
-extra_req = dict([(x, requires_from_req_txt('requirements-{0}.txt'.format(x)))
+extra_req = dict([(x, requires_from_req_txt('requirements/{0}.txt'.format(x)))
                   for x in ['django-otp', 'qrcode', 'wtforms']])
 
 attrs = dict(name='pyoath-toolkit',

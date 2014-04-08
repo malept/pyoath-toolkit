@@ -1,3 +1,0 @@
-# Used by Read the Docs
--r requirements-django-otp.txt
--r requirements-wtforms.txt

@@ -1,6 +1,0 @@
--r requirements.txt
--r requirements-qrcode.txt
-# Not including requirements-django-otp.txt so we can have finer grained control of which Django
-# version is being installed.
-#
-# Please make sure to require django-otp and Django when using these requirements.

@@ -1,4 +1,5 @@
 include *.rst LICENSE* requirements*.txt tox.ini
+include requirements/*.txt
 include oath_toolkit/coath_toolkit.pxd oath_toolkit/impl_cython.pyx oath_toolkit/impl_cython.c
 graft docs
 prune docs/_build

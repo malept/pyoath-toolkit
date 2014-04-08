@@ -1,0 +1,5 @@
+-r qrcode.txt
+-r wtforms.txt
+docutils
+flake8
+pygments
