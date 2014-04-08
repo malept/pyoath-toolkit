@@ -101,7 +101,7 @@ attrs = dict(name='pyoath-toolkit',
              packages=find_packages(),
              install_requires=requires,
              extras_require=extra_req,
-             zip_safe=True,
+             zip_safe=False,
              classifiers=CLASSIFIERS)
 
 SANS_CYTHON_FLAG = '--without-cython'
@@ -110,7 +110,6 @@ with_cython = (python_implementation() != 'PyPy' and
                not sans_cython_flag_exists and
                not READTHEDOCS)
 if with_cython:
-    attrs['zip_safe'] = False
     src_ext = 'pyx' if cythonize else 'c'
     ext = Extension('oath_toolkit.impl_cython',
                     ['oath_toolkit/impl_cython.{0}'.format(src_ext)],
