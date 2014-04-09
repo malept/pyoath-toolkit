@@ -29,7 +29,7 @@ Pull Requests
 
 If you contribute code, please also create tests for your modifications,
 otherwise your request will not be accepted (I will most likely ask you to
-add tests). Please make sure your pull requests pass the continutous
+add tests). Please make sure your pull requests pass the continuous
 integration suite, by running ``tox`` before creating your submission. (Run
 ``pip install tox`` if it's not already installed.) The CI suite is
 automatically run for every pull request on GitHub, but at this time it's
