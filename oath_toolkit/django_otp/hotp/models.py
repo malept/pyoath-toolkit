@@ -20,7 +20,8 @@ from ..models import OToolkitDevice
 
 
 class OToolkitHOTPDevice(OToolkitDevice):
-    '''
+
+    """
     HOTP-based django-otp_ ``Device``, using :mod:`oath_toolkit`.
 
     .. _django-otp: https://pypi.python.org/pypi/django-otp
@@ -33,7 +34,8 @@ class OToolkitHOTPDevice(OToolkitDevice):
         Defaults to ``0``.
 
         :type: :class:`django.db.models.BigIntegerField`
-    '''
+    """
+
     select_name = __(u'HMAC-based OTP (HOTP) generator')
     oath_type = b'hotp'
 

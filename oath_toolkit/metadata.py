@@ -13,8 +13,9 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+"""Package metadata."""
 
 DESCRIPTION = 'Python bindings for the OATH Toolkit library.'
 VERSION = '1.0.dev10'
 
-__all__ = ['DESCRIPTION', 'VERSION']
+__all__ = ('DESCRIPTION', 'VERSION')

@@ -21,7 +21,8 @@ from ..models import OToolkitDevice
 
 
 class OToolkitTOTPDevice(OToolkitDevice):
-    '''
+
+    """
     TOTP-based django-otp_ ``Device``, using :mod:`oath_toolkit`.
 
     .. _django-otp: https://pypi.python.org/pypi/django-otp
@@ -45,7 +46,8 @@ class OToolkitTOTPDevice(OToolkitDevice):
         Defaults to ``0``.
 
         :type: :class:`django.db.models.BigIntegerField`
-    '''
+    """
+
     select_name = __(u'Time-based OTP (TOTP) generator')
     oath_type = b'totp'
 

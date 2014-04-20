@@ -15,7 +15,7 @@ cdef class OATHImpl:
         c.oath_done()
 
     property library_version:
-        '''The version of liboath being used.'''
+        """The version of liboath being used."""
 
         def __get__(self):
             return c.oath_check_version('0')
@@ -29,13 +29,15 @@ cdef class OATHImpl:
 
 
     def base32_decode(self, data):
-        '''
-        Decodes Base32 data. Unlike :func:`base64.b32decode`, it handles
-        human-readable Base32 strings. Requires liboath 2.0.
+        """
+        Decode Base32 data.
+
+        Unlike :func:`base64.b32decode`, it handles human-readable Base32
+        strings. Requires liboath 2.0.
 
         :param bytes data: The data to be decoded.
         :rtype: bytes
-        '''
+        """
         cdef char* output = NULL
         cdef size_t output_len = 0
         cdef bytes py_string
@@ -49,8 +51,8 @@ cdef class OATHImpl:
 
     def hotp_generate(self, secret, moving_factor, digits, add_checksum=False,
                       truncation_offset=None):
-        '''
-        Generates a one-time password using the HOTP algorithm (:rfc:`4226`).
+        """
+        Generate a one-time password using the HOTP algorithm (:rfc:`4226`).
 
         :param bytes secret: The secret string used to generate the one-time
                              password.
@@ -65,7 +67,7 @@ cdef class OATHImpl:
         :type truncation_offset: :func:`int` or :data:`None`
         :return: one-time password
         :rtype: :func:`bytes`
-        '''
+        """
         # TODO check to see if this leaks memory
         cdef char* generated = ''
         if truncation_offset is None:
@@ -78,8 +80,8 @@ cdef class OATHImpl:
         return <bytes>generated
 
     def hotp_validate(self, secret, start_moving_factor, window, otp):
-        '''
-        Validates a one-time password generated using the HOTP algorithm
+        """
+        Validate a one-time password generated using the HOTP algorithm
         (:rfc:`4226`).
 
         :param bytes secret: The secret used to generate the one-time password.
@@ -93,15 +95,15 @@ cdef class OATHImpl:
                  position.
         :rtype: :class:`oath_toolkit.types.OTPPosition`
         :raise: :class:`OATHError` if invalid
-        '''
+        """
         retval = c.oath_hotp_validate(secret, len(secret),
                                       start_moving_factor, window, otp)
         self._handle_retval(retval, True)
         return OTPPosition(absolute=None, relative=retval)
 
     def totp_generate(self, secret, now, time_step_size, time_offset, digits):
-        '''
-        Generates a one-time password using the TOTP algorithm (:rfc:`6238`).
+        """
+        Generate a one-time password using the TOTP algorithm (:rfc:`6238`).
 
         :param bytes secret: The secret string used to generate the one-time
                              password.
@@ -114,7 +116,7 @@ cdef class OATHImpl:
         :param int digits: The number of digits of the one-time password.
         :return: one-time password
         :rtype: :func:`bytes`
-        '''
+        """
         # TODO check to see if this leaks memory
         cdef char* generated = ''
         if time_step_size is None:
@@ -130,8 +132,8 @@ cdef class OATHImpl:
 
     def totp_validate(self, secret, now, time_step_size, start_offset, window,
                       otp):
-        '''
-        Validates a one-time password generated using the TOTP algorithm
+        """
+        Validate a one-time password generated using the TOTP algorithm
         (:rfc:`6238`).
 
         :param bytes secret: The secret used to generate the one-time password.
@@ -148,7 +150,7 @@ cdef class OATHImpl:
                  ``0`` is the first position.
         :rtype: :class:`oath_toolkit.types.OTPPosition`
         :raise: :class:`OATHError` if invalid
-        '''
+        """
         cdef int otp_pos
         cdef int* c_otp_pos = &otp_pos
         if time_step_size is None:
@@ -162,8 +164,8 @@ cdef class OATHImpl:
         return OTPPosition(absolute=retval, relative=otp_pos)
 
     def _handle_retval(self, retval, positive_ok=False):
-        '''
-        Handles the ``oath_rc`` return value from a ``liboath`` function call.
+        """
+        Handle the ``oath_rc`` return value from a ``liboath`` function call.
 
         :type retval: int
         :param bool positive_ok: Whether positive integers are acceptable (as
@@ -171,7 +173,7 @@ cdef class OATHImpl:
                                  exceptions.
         :raises: :class:`OATHError` containing error message on non-OK
                  return value.
-        '''
+        """
         if retval != c.OATH_OK and (not positive_ok or retval < 0):
             err_str = c.oath_strerror(retval)
             err = OATHError(err_str)

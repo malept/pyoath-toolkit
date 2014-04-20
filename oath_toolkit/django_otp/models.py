@@ -13,6 +13,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+"""Base models for OATH Toolkit-based OTP Devices."""
 
 from binascii import hexlify, unhexlify
 from django.contrib.sites.models import get_current_site
@@ -35,7 +36,8 @@ def _random_data():
 
 
 class OToolkitDevice(Device):
-    '''
+
+    """
     Abstract model for a :mod:`oath_toolkit`-based django-otp_ ``Device``.
 
     .. _django-otp: https://pypi.python.org/pypi/django-otp
@@ -69,7 +71,7 @@ class OToolkitDevice(Device):
         Defaults to ``6``.
 
         :type: :class:`django.db.models.PositiveSmallIntegerField`
-    '''
+    """
 
     secret = BinaryField(max_length=SECRET_SIZE, default=_random_data)
     window = PositiveSmallIntegerField(default=1)
@@ -79,11 +81,11 @@ class OToolkitDevice(Device):
         abstract = True
 
     def secret_qrcode(self, request):
-        '''
+        """
         QR code image based on the secret.
 
         :rtype: :class:`qrcode.image.base.BaseImage`
-        '''
+        """
         site = get_current_site(request)
         return qrcode.generate(self.oath_type, self.secret,
                                self.user.username, site.name,
@@ -91,11 +93,11 @@ class OToolkitDevice(Device):
 
     @property
     def secret_base32(self):
-        '''
+        """
         The secret, in a human-readable Base32-encoded string.
 
         :type: bytes
-        '''
+        """
         return self.oath.base32_encode(self.secret, human_readable=True)
 
     @secret_base32.setter
@@ -104,11 +106,11 @@ class OToolkitDevice(Device):
 
     @property
     def secret_hex(self):
-        '''
+        """
         The secret, in a hex-encoded string.
 
         :type: bytes
-        '''
+        """
         return hexlify(self.secret)
 
     @secret_hex.setter

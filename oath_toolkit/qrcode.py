@@ -24,8 +24,9 @@ if not os.environ.get('READTHEDOCS'):
 
 
 def generate(key_type, key, user, issuer, counter=None, **kwargs):
-    '''
-    Generates a QR code suitable for Google Authenticator.
+    r"""
+    Generate a QR code suitable for Google Authenticator.
+
     See: https://code.google.com/p/google-authenticator/wiki/KeyUriFormat
 
     :param str key_type: the auth type, either ``totp`` or ``hotp``
@@ -38,7 +39,7 @@ def generate(key_type, key, user, issuer, counter=None, **kwargs):
                        constructor
     :returns: an image object
     :rtype: :class:`qrcode.image.base.BaseImage`
-    '''
+    """
     qr = QRCode(**kwargs)
     oath_uri = uri.generate(key_type, key, user, issuer, counter)
     qr.add_data(oath_uri)

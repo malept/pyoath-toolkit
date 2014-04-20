@@ -21,8 +21,8 @@ URI = 'otpauth://{key_type}/{issuer}:{user}?secret={secret}&issuer={issuer}'
 
 
 def generate(key_type, key, user, issuer, counter=None):
-    '''
-    Generates a URI suitable for Google Authenticator.
+    """
+    Generate a URI suitable for Google Authenticator.
     See: https://code.google.com/p/google-authenticator/wiki/KeyUriFormat
 
     :param str key_type: the auth type, either ``totp`` or ``hotp``
@@ -33,7 +33,7 @@ def generate(key_type, key, user, issuer, counter=None):
     :type counter: :func:`int` or :data:`None`
     :returns: a URI
     :rtype: :func:`str`
-    '''
+    """
     if key_type == 'hotp' and counter is None:
         raise ValueError('Using the key_type "hotp" requires a counter')
     secret = b32encode(key)

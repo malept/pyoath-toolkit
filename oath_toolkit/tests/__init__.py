@@ -22,4 +22,4 @@ else:  # pragma: no cover
     unittest_mod = 'unittest'
 unittest = __import__(unittest_mod)
 
-__all__ = ['unittest']
+__all__ = ('unittest',)

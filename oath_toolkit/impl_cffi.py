@@ -13,14 +13,14 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-'''
+"""
 `CFFI`_-based bindings for OATH Toolkit.
 
 Most of the docs and declarations come from the OATH Toolkit `docs`_.
 
 .. _CFFI: http://cffi.readthedocs.org/
 .. _docs: http://www.nongnu.org/oath-toolkit/liboath-api/liboath-oath.html
-'''
+"""
 
 from __future__ import division
 
@@ -117,7 +117,8 @@ oath_rc      oath_totp_validate2         (const char *secret,
 
 
 class OATHImpl(object):
-    '''
+
+    """
     Wrapper for `liboath`_ using `CFFI`_.
 
     :param library: The name of the liboath C library to load, sans a file
@@ -127,7 +128,7 @@ class OATHImpl(object):
 
     .. _liboath: http://nongnu.org/oath-toolkit/liboath-api/liboath-oath.html
     .. _CFFI: http://cffi.readthedocs.org/
-    '''
+    """
 
     def __init__(self, library=None):
         if not library:
@@ -142,31 +143,33 @@ class OATHImpl(object):
 
     @property
     def library_version(self):
-        '''
+        """
         The version of liboath being used.
 
         :rtype: :func:`bytes`
-        '''
+        """
         return self._ffi.string(self.c.oath_check_version(b'0'))
 
     def check_library_version(self, version):
-        '''
-        Determines whether the library version is greater than or equal to the
+        """
+        Determine whether the library version is greater than or equal to the
         specified version.
 
         :param bytes version: The dotted version number to check
         :rtype: :func:`bool`
-        '''
+        """
         return self.c.oath_check_version(to_bytes(version)) != self._ffi.NULL
 
     def base32_decode(self, data):
-        '''
-        Decodes Base32 data. Unlike :func:`base64.b32decode`, it handles
-        human-readable Base32 strings. Requires liboath 2.0.
+        """
+        Decode Base32 data.
+
+        Unlike :func:`base64.b32decode`, it handles human-readable Base32
+        strings. Requires liboath 2.0.
 
         :param bytes data: The data to be decoded.
         :rtype: bytes
-        '''
+        """
         output = self._ffi.new('char **')
         output_len = self._ffi.new('size_t *')
         self._handle_retval(self.c.oath_base32_decode(to_bytes(data),
@@ -176,8 +179,8 @@ class OATHImpl(object):
 
     def hotp_generate(self, secret, moving_factor, digits, add_checksum=False,
                       truncation_offset=None):
-        '''
-        Generates a one-time password using the HOTP algorithm (:rfc:`4226`).
+        """
+        Generate a one-time password using the HOTP algorithm (:rfc:`4226`).
 
         :param bytes secret: The secret string used to generate the one-time
                              password.
@@ -194,7 +197,7 @@ class OATHImpl(object):
         :type truncation_offset: :func:`int` or :data:`None`
         :return: one-time password
         :rtype: :func:`bytes`
-        '''
+        """
         if truncation_offset is None:
             truncation_offset = (2 ** 32) - 1
         generated = self._ffi.new('char *')
@@ -206,8 +209,8 @@ class OATHImpl(object):
         return self._ffi.string(generated, digits)
 
     def hotp_validate(self, secret, start_moving_factor, window, otp):
-        '''
-        Validates a one-time password generated using the HOTP algorithm
+        """
+        Validate a one-time password generated using the HOTP algorithm
         (:rfc:`4226`).
 
         :param bytes secret: The secret used to generate the one-time password.
@@ -221,15 +224,15 @@ class OATHImpl(object):
                  position.
         :rtype: :class:`oath_toolkit.types.OTPPosition`
         :raise: :class:`OATHError` if invalid
-        '''
+        """
         retval = self.c.oath_hotp_validate(secret, len(secret),
                                            start_moving_factor, window, otp)
         self._handle_retval(retval, True)
         return OTPPosition(absolute=None, relative=retval)
 
     def totp_generate(self, secret, now, time_step_size, time_offset, digits):
-        '''
-        Generates a one-time password using the TOTP algorithm (:rfc:`6238`).
+        """
+        Generate a one-time password using the TOTP algorithm (:rfc:`6238`).
 
         :param bytes secret: The secret string used to generate the one-time
                              password.
@@ -242,7 +245,7 @@ class OATHImpl(object):
         :param int digits: The number of digits of the one-time password.
         :return: one-time password
         :rtype: :func:`bytes`
-        '''
+        """
         if time_step_size is None:
             time_step_size = 30  # self.c.OATH_TOTP_DEFAULT_TIME_STEP_SIZE
         generated = self._ffi.new('char *')
@@ -257,8 +260,8 @@ class OATHImpl(object):
 
     def totp_validate(self, secret, now, time_step_size, start_offset, window,
                       otp):
-        '''
-        Validates a one-time password generated using the TOTP algorithm
+        """
+        Validate a one-time password generated using the TOTP algorithm
         (:rfc:`6238`).
 
         :param bytes secret: The secret used to generate the one-time password.
@@ -275,7 +278,7 @@ class OATHImpl(object):
                  ``0`` is the first position.
         :rtype: :class:`oath_toolkit.types.OTPPosition`
         :raise: :class:`OATHError` if invalid
-        '''
+        """
         if time_step_size is None:
             time_step_size = 30  # self.c.OATH_TOTP_DEFAULT_TIME_STEP_SIZE
         addr_otp_pos = self._ffi.new('int *')
@@ -288,8 +291,8 @@ class OATHImpl(object):
         return OTPPosition(absolute=retval, relative=addr_otp_pos[0])
 
     def _handle_retval(self, retval, positive_ok=False):
-        '''
-        Handles the ``oath_rc`` return value from a ``liboath`` function call.
+        """
+        Handle the ``oath_rc`` return value from a ``liboath`` function call.
 
         :type retval: int
         :param bool positive_ok: Whether positive integers are acceptable (as
@@ -297,7 +300,7 @@ class OATHImpl(object):
                                  exceptions.
         :raises: :class:`OATHError` containing error message on non-OK
                  return value.
-        '''
+        """
         if retval != self.c.OATH_OK and (not positive_ok or retval < 0):
             errno = self._ffi.cast('oath_rc', retval)
             err_str = self._ffi.string(self.c.oath_strerror(errno))

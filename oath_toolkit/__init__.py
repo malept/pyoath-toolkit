@@ -34,48 +34,48 @@ class OATH(object):
 
     @property
     def library_version(self):
-        '''
+        """
         The version of liboath being used.
 
         :rtype: :func:`bytes`
-        '''
+        """
         return self._impl.library_version
 
     def check_library_version(self, version):
-        '''
-        Determines whether the library version is greater than or equal to the
+        """
+        Determine whether the library version is greater than or equal to the
         specified version.
 
         :param bytes version: The dotted version number to check
         :rtype: :func:`bool`
-        '''
+        """
         return self._impl.check_library_version(version)
 
     @staticmethod
     def _chunk_iterable(iterable, n, fillvalue=None):
-        '''
-        Collects data into fixed-length chunks or blocks.
+        """
+        Collect data into fixed-length chunks or blocks.
 
         >>> list(OATH._chunk_iterable('ABCDEFG', 3, 'x'))
         ['ABC', 'DEF', 'Gxx']
 
         Copied from the Python documentation in the itertools module.
-        '''
+        """
         from ._compat import zip_longest
         args = [iter(iterable)] * n
         return zip_longest(fillvalue=fillvalue, *args)
 
     def base32_encode(self, data, human_readable=False):
-        '''
-        Base32-encodes data.
+        """
+        Base32-encode data.
 
         :param data: The data to be encoded. Must be castable into a
                      :func:`bytes` object.
-        :param bool human_readable: if :data:`True`, transforms the Base32
+        :param bool human_readable: If :data:`True`, transforms the Base32
                                     string into space-separated chunks of 4
                                     characters, removing trailing ``=``.
         :rtype: bytes
-        '''
+        """
         from ._compat import bytify, to_bytes
         if not data:
             return b''
@@ -94,13 +94,13 @@ class OATH(object):
         return base64.b32decode(data)
 
     def base32_decode(self, data):
-        '''
-        Decodes Base32 data. Unlike :func:`base64.b32decode`, it handles
+        """
+        Decode Base32 data. Unlike :func:`base64.b32decode`, it handles
         human-readable Base32 strings.
 
         :param bytes data: The data to be decoded.
         :rtype: bytes
-        '''
+        """
         if not data:
             raise OATHError('Invalid base32 string')
         elif not (data.isupper() or data.islower()):
@@ -113,8 +113,8 @@ class OATH(object):
 
     def hotp_generate(self, secret, moving_factor, digits, add_checksum=False,
                       truncation_offset=None):
-        '''
-        Generates a one-time password using the HOTP algorithm (:rfc:`4226`).
+        """
+        Generate a one-time password using the HOTP algorithm (:rfc:`4226`).
 
         :param bytes secret: The secret string used to generate the one-time
                              password.
@@ -131,13 +131,13 @@ class OATH(object):
         :type truncation_offset: :func:`int` or :data:`None`
         :return: one-time password
         :rtype: :func:`bytes`
-        '''
+        """
         return self._impl.hotp_generate(secret, moving_factor, digits,
                                         add_checksum, truncation_offset)
 
     def hotp_validate(self, secret, start_moving_factor, window, otp):
-        '''
-        Validates a one-time password generated using the HOTP algorithm
+        """
+        Validate a one-time password generated using the HOTP algorithm
         (:rfc:`4226`).
 
         :param bytes secret: The secret used to generate the one-time password.
@@ -151,13 +151,13 @@ class OATH(object):
                  position.
         :rtype: int
         :raise: :class:`OATHError` if invalid
-        '''
+        """
         return self._impl.hotp_validate(secret, start_moving_factor,
                                         window, otp)
 
     def totp_generate(self, secret, now, time_step_size, time_offset, digits):
-        '''
-        Generates a one-time password using the TOTP algorithm (:rfc:`6238`).
+        """
+        Generate a one-time password using the TOTP algorithm (:rfc:`6238`).
 
         :param bytes secret: The secret string used to generate the one-time
                              password.
@@ -170,14 +170,14 @@ class OATH(object):
         :param int digits: The number of digits of the one-time password.
         :return: one-time password
         :rtype: :func:`bytes`
-        '''
+        """
         return self._impl.totp_generate(secret, now, time_step_size,
                                         time_offset, digits)
 
     def totp_validate(self, secret, now, time_step_size, start_offset, window,
                       otp):
-        '''
-        Validates a one-time password generated using the TOTP algorithm
+        """
+        Validate a one-time password generated using the TOTP algorithm
         (:rfc:`6238`).
 
         :param bytes secret: The secret used to generate the one-time password.
@@ -194,6 +194,6 @@ class OATH(object):
                  ``0`` is the first position.
         :rtype: :class:`oath_toolkit.types.OTPPosition`
         :raise: :class:`OATHError` if invalid
-        '''
+        """
         return self._impl.totp_validate(secret, now, time_step_size,
                                         start_offset, window, otp)

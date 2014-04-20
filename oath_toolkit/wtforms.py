@@ -13,11 +13,11 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-'''
+"""
 `WTForms`_-related code for one-time password fields.
 
 .. _WTForms: https://pypi.python.org/pypi/WTForms
-'''
+"""
 
 from __future__ import absolute_import
 
@@ -30,7 +30,8 @@ from wtforms import ValidationError
 
 
 class OTPValidator(object):
-    '''
+
+    """
     WTForms abstract base field validator for a OTP field.
 
     :param int digits: The expected number of digits in the OTP.
@@ -39,7 +40,7 @@ class OTPValidator(object):
     :param bool verbose_errors: Whether to raise verbose validation errors.
     :param callable get_secret: If specified, a callable which returns the
                                 OATH secret used to validate the OTP.
-    '''
+    """
 
     __metaclass__ = ABCMeta
 
@@ -51,13 +52,14 @@ class OTPValidator(object):
         self.get_secret = get_secret
 
     def get_oath_secret(self, form, field):
-        '''
-        Retrieves the OATH secret from a given form/field. Either uses the
-        callback passed in when creating the validator, or the ``oath_secret``
-        attribute of the ``user`` attribute of the ``form``.
+        """
+        Retrieve the OATH secret from a given form/field.
+
+        Either uses the callback passed in when creating the validator, or the
+        ``oath_secret`` attribute of the ``user`` attribute of the ``form``.
 
         :rtype: bytes
-        '''
+        """
         if self.get_secret:
             secret = self.get_secret(form, field)
         else:
@@ -66,12 +68,12 @@ class OTPValidator(object):
 
     @abstractmethod
     def otp_validate(self, form, field):
-        '''
+        """
         This should call the appropriate OTP validation method.
 
         :return: :data:`True` on success
         :raises: :class:`OATHError` on failure
-        '''
+        """
         raise NotImplementedError
 
     def _error_msg(self, field, msg):
@@ -95,7 +97,8 @@ class OTPValidator(object):
 
 
 class HOTPValidator(OTPValidator):
-    '''
+
+    """
     Validator for HOTP-based passwords.
 
     :param int digits: The expected number of digits in the OTP.
@@ -106,7 +109,8 @@ class HOTPValidator(OTPValidator):
     :param bool verbose_errors: Whether to raise verbose validation errors.
     :param callable get_secret: If specified, a callable which returns the
                                 OATH secret used to validate the OTP.
-    '''
+    """
+
     def __init__(self, digits, window, start_moving_factor,
                  verbose_errors=False, get_secret=None):
         super(HOTPValidator, self).__init__(digits, window, verbose_errors,
@@ -120,7 +124,8 @@ class HOTPValidator(OTPValidator):
 
 
 class TOTPValidator(OTPValidator):
-    '''
+
+    """
     Validator for TOTP-based passwords.
 
     :param int digits: The expected number of digits in the OTP.
@@ -134,7 +139,8 @@ class TOTPValidator(OTPValidator):
     :param time_step_size: Unsigned, the time step system parameter. If
                            set to :data:`None`, defaults to ``30``.
     :type time_step_size: :func:`int` or :data:`None`
-    '''
+    """
+
     def __init__(self, digits, window, verbose_errors=False, get_secret=None,
                  start_time=0, time_step_size=None):
         super(TOTPValidator, self).__init__(digits, window, verbose_errors,

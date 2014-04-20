@@ -44,9 +44,11 @@ class TOTPTest(TestCase):
     secret_hex = b'2a2bbba1092ffdd25a328ad1a0a5f5d61d7aacc4'
 
     def setUp(self):
-        '''
-        Create a device at the fourth time step. The current token is 154567.
-        '''
+        """
+        Create a device at the fourth time step.
+
+        The current token is 154567.
+        """
         self.factory = RequestFactory()
         try:
             self.alice = self.create_user('alice', 'password')

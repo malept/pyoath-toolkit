@@ -13,6 +13,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+"""Python 2.x/3.x compatibility code."""
 
 import itertools
 import sys
@@ -38,13 +39,13 @@ else:  # pragma: no cover
 
 
 def bytify(chunk):
-    '''
-    Transforms a tuple chunk of bytes data from :func:`itertools.izip_longest`
+    """
+    Transform a tuple chunk of bytes data from :func:`itertools.izip_longest`
     into a :func:`bytes` object.
-    '''
+    """
     if _py2:  # pragma: no cover
         return b''.join(chunk)
     else:  # pragma: no cover
         return bytes(chunk)
 
-__all__ = ['bytify', 'integer_types', 'to_bytes', 'url_quote', 'zip_longest']
+__all__ = ('bytify', 'integer_types', 'to_bytes', 'url_quote', 'zip_longest')
