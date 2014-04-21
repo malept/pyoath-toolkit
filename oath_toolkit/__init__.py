@@ -18,7 +18,7 @@ import base64
 import os
 if not os.environ.get('READTHEDOCS') and not os.environ.get('SETUP_PY'):
     try:  # pragma: no cover
-        from .impl_cython import oath
+        from . import impl_cython as oath
     except ImportError:  # pragma: no cover
         from .impl_cffi import oath
 from .exc import OATHError

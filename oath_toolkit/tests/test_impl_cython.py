@@ -16,7 +16,7 @@
 
 from .impl_base import ImplTestMixin
 try:  # pragma: no cover
-    from ..impl_cython import oath
+    from .. import impl_cython as oath
 except ImportError:  # pragma: no cover
     oath = None
 from . import unittest
