@@ -15,7 +15,7 @@
 # limitations under the License.
 
 try:  # pragma: no cover
-    from ..impl_cffi import oath
+    from .. import impl_cffi as oath
 except ImportError:  # pragma: no cover
     oath = None
 from . import unittest

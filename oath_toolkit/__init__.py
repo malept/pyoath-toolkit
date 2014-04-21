@@ -20,7 +20,7 @@ if not os.environ.get('READTHEDOCS') and not os.environ.get('SETUP_PY'):
     try:  # pragma: no cover
         from . import impl_cython as oath
     except ImportError:  # pragma: no cover
-        from .impl_cffi import oath
+        from . import impl_cffi as oath
 from .exc import OATHError
 from .metadata import DESCRIPTION, VERSION
 

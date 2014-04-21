@@ -14,9 +14,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """
-`CFFI`_-based bindings for OATH Toolkit.
+CFFI_-based bindings for OATH Toolkit.
 
-Most of the docs and declarations come from the OATH Toolkit `docs`_.
+Most of the docs and declarations come from the OATH Toolkit docs_.
 
 .. _CFFI: http://cffi.readthedocs.org/
 .. _docs: http://www.nongnu.org/oath-toolkit/liboath-api/liboath-oath.html
@@ -28,7 +28,11 @@ from ._compat import integer_types, to_bytes
 from .exc import OATHError
 from .types import OTPPosition
 
+import atexit
 from cffi import FFI
+import os
+
+LIBRARY_NAME = os.environ.get('LIBOATH_NAME', 'oath')
 
 declarations = '''
 typedef _Bool bool;
@@ -115,197 +119,168 @@ oath_rc      oath_totp_validate2         (const char *secret,
                                           const char *otp);
 '''
 
+_ffi = FFI()
+_ffi.cdef(declarations)
+c = _ffi.dlopen(LIBRARY_NAME)
 
-class OATHImpl(object):
 
+def _handle_retval(retval, positive_ok=False):
     """
-    Wrapper for `liboath`_ using `CFFI`_.
+    Handle the ``oath_rc`` return value from a ``liboath`` function call.
 
-    :param library: The name of the liboath C library to load, sans a file
-                    extension and the ``lib`` prefix. Defaults to ``oath``, if
-                    passed :data:`None`.
-    :type library: :func:`str` or :data:`None`
-
-    .. _liboath: http://nongnu.org/oath-toolkit/liboath-api/liboath-oath.html
-    .. _CFFI: http://cffi.readthedocs.org/
+    :type retval: int
+    :param bool positive_ok: Whether positive integers are acceptable (as is
+                             the case in validation functions), or throw
+                             exceptions.
+    :raises: :class:`OATHError` containing error message on non-OK
+             return value.
     """
+    if retval != c.OATH_OK and (not positive_ok or retval < 0):
+        errno = _ffi.cast('oath_rc', retval)
+        err_str = _ffi.string(c.oath_strerror(errno))
+        err = OATHError(err_str)
+        err.code = errno
+        raise err
 
-    def __init__(self, library=None):
-        if not library:
-            library = 'oath'
-        self._ffi = FFI()
-        self._ffi.cdef(declarations)
-        self.c = self._ffi.dlopen(library)
-        self._handle_retval(self.c.oath_init())
+_handle_retval(c.oath_init())
+atexit.register(c.oath_done)
+library_version = _ffi.string(c.oath_check_version(b'0'))
 
-    def __del__(self):  # pragma: no cover
-        self._handle_retval(self.c.oath_done())
 
-    @property
-    def library_version(self):
-        """
-        The version of liboath being used.
+def check_library_version(version):
+    """
+    Determine whether the library version is greater than or equal to the
+    specified version.
 
-        :rtype: :func:`bytes`
-        """
-        return self._ffi.string(self.c.oath_check_version(b'0'))
+    :param bytes version: The dotted version number to check
+    :rtype: :func:`bool`
+    """
+    return c.oath_check_version(to_bytes(version)) != _ffi.NULL
 
-    def check_library_version(self, version):
-        """
-        Determine whether the library version is greater than or equal to the
-        specified version.
 
-        :param bytes version: The dotted version number to check
-        :rtype: :func:`bool`
-        """
-        return self.c.oath_check_version(to_bytes(version)) != self._ffi.NULL
+def base32_decode(data):
+    """
+    Decode Base32 data.
 
-    def base32_decode(self, data):
-        """
-        Decode Base32 data.
+    Unlike :func:`base64.b32decode`, it handles human-readable Base32 strings.
+    Requires liboath 2.0.
 
-        Unlike :func:`base64.b32decode`, it handles human-readable Base32
-        strings. Requires liboath 2.0.
+    :param bytes data: The data to be decoded.
+    :rtype: bytes
+    """
+    output = _ffi.new('char **')
+    output_len = _ffi.new('size_t *')
+    _handle_retval(c.oath_base32_decode(to_bytes(data), len(data), output,
+                                        output_len))
+    return _ffi.string(output[0], output_len[0])
 
-        :param bytes data: The data to be decoded.
-        :rtype: bytes
-        """
-        output = self._ffi.new('char **')
-        output_len = self._ffi.new('size_t *')
-        self._handle_retval(self.c.oath_base32_decode(to_bytes(data),
-                                                      len(data), output,
-                                                      output_len))
-        return self._ffi.string(output[0], output_len[0])
 
-    def hotp_generate(self, secret, moving_factor, digits, add_checksum=False,
-                      truncation_offset=None):
-        """
-        Generate a one-time password using the HOTP algorithm (:rfc:`4226`).
+def hotp_generate(secret, moving_factor, digits, add_checksum=False,
+                  truncation_offset=None):
+    """
+    Generate a one-time password using the HOTP algorithm (:rfc:`4226`).
 
-        :param bytes secret: The secret string used to generate the one-time
-                             password.
-        :param int moving_factor: unsigned, can be :func:`long`, in theory. A
-                                  counter indicating where in OTP stream to
-                                  generate an OTP.
-        :param int digits: unsigned, the number of digits of the one-time
-                           password.
-        :param bool add_checksum: Whether to add a checksum digit (depending
-                                  on the version of ``liboath`` used, this may
-                                  be ignored).
-        :param truncation_offset: A truncation offset to use, if not set to
-                                  :data:`None`.
-        :type truncation_offset: :func:`int` or :data:`None`
-        :return: one-time password
-        :rtype: :func:`bytes`
-        """
-        if truncation_offset is None:
-            truncation_offset = (2 ** 32) - 1
-        generated = self._ffi.new('char *')
-        secret = to_bytes(secret)
-        retval = self.c.oath_hotp_generate(secret, len(secret), moving_factor,
-                                           digits, add_checksum,
-                                           truncation_offset, generated)
-        self._handle_retval(retval)
-        return self._ffi.string(generated, digits)
+    :param bytes secret: The secret string used to generate the one-time
+                         password.
+    :param int moving_factor: unsigned, can be :func:`long`, in theory. A
+                              counter indicating where in OTP stream to
+                              generate an OTP.
+    :param int digits: unsigned, the number of digits of the one-time
+                       password.
+    :param bool add_checksum: Whether to add a checksum digit (depending on the
+                              version of ``liboath`` used, this may be
+                              ignored).
+    :param truncation_offset: A truncation offset to use, if not set to
+                              :data:`None`.
+    :type truncation_offset: :func:`int` or :data:`None`
+    :return: one-time password
+    :rtype: :func:`bytes`
+    """
+    if truncation_offset is None:
+        truncation_offset = (2 ** 32) - 1
+    generated = _ffi.new('char *')
+    secret = to_bytes(secret)
+    retval = c.oath_hotp_generate(secret, len(secret), moving_factor, digits,
+                                  add_checksum, truncation_offset, generated)
+    _handle_retval(retval)
+    return _ffi.string(generated, digits)
 
-    def hotp_validate(self, secret, start_moving_factor, window, otp):
-        """
-        Validate a one-time password generated using the HOTP algorithm
-        (:rfc:`4226`).
 
-        :param bytes secret: The secret used to generate the one-time password.
-        :param int start_moving_factor: Unsigned, can be :func:`long`, in
-                                        theory. The start counter in the
-                                        OTP stream.
-        :param int window: The number of OTPs after the start offset OTP
-                           to test.
-        :param bytes otp: The one-time password to validate.
-        :return: The position in the OTP window, where ``0`` is the first
-                 position.
-        :rtype: :class:`oath_toolkit.types.OTPPosition`
-        :raise: :class:`OATHError` if invalid
-        """
-        retval = self.c.oath_hotp_validate(secret, len(secret),
-                                           start_moving_factor, window, otp)
-        self._handle_retval(retval, True)
-        return OTPPosition(absolute=None, relative=retval)
+def hotp_validate(secret, start_moving_factor, window, otp):
+    """
+    Validate a one-time password generated using the HOTP algorithm
+    (:rfc:`4226`).
 
-    def totp_generate(self, secret, now, time_step_size, time_offset, digits):
-        """
-        Generate a one-time password using the TOTP algorithm (:rfc:`6238`).
+    :param bytes secret: The secret used to generate the one-time password.
+    :param int start_moving_factor: Unsigned, can be :func:`long`, in theory.
+                                    The start counter in the OTP stream.
+    :param int window: The number of OTPs after the start offset OTP
+                       to test.
+    :param bytes otp: The one-time password to validate.
+    :return: The position in the OTP window, where ``0`` is the first position.
+    :rtype: :class:`oath_toolkit.types.OTPPosition`
+    :raise: :class:`OATHError` if invalid
+    """
+    retval = c.oath_hotp_validate(secret, len(secret), start_moving_factor,
+                                  window, otp)
+    _handle_retval(retval, True)
+    return OTPPosition(absolute=None, relative=retval)
 
-        :param bytes secret: The secret string used to generate the one-time
-                             password.
-        :param int now: The UNIX timestamp (usually the current one)
-        :param time_step_size: Unsigned, the time step system parameter. If
-                               set to :data:`None`, defaults to ``30``.
-        :type time_step_size: :func:`int` or :data:`None`
-        :param int time_offset: The UNIX timestamp of when to start counting
-                                time steps (usually should be ``0``).
-        :param int digits: The number of digits of the one-time password.
-        :return: one-time password
-        :rtype: :func:`bytes`
-        """
-        if time_step_size is None:
-            time_step_size = 30  # self.c.OATH_TOTP_DEFAULT_TIME_STEP_SIZE
-        generated = self._ffi.new('char *')
-        secret = to_bytes(secret)
-        if not isinstance(now, integer_types):
-            now = int(now)
-        retval = self.c.oath_totp_generate(secret, len(secret), now,
-                                           time_step_size, time_offset, digits,
-                                           generated)
-        self._handle_retval(retval)
-        return self._ffi.string(generated, digits)
 
-    def totp_validate(self, secret, now, time_step_size, start_offset, window,
-                      otp):
-        """
-        Validate a one-time password generated using the TOTP algorithm
-        (:rfc:`6238`).
+def totp_generate(secret, now, time_step_size, time_offset, digits):
+    """
+    Generate a one-time password using the TOTP algorithm (:rfc:`6238`).
 
-        :param bytes secret: The secret used to generate the one-time password.
-        :param int now: The UNIX timestamp (usually the current one)
-        :param time_step_size: Unsigned, the time step system parameter. If
-                               set to :data:`None`, defaults to ``30``.
-        :type time_step_size: :func:`int` or :data:`None`
-        :param int start_offset: The UNIX timestamp of when to start counting
-                                 time steps (usually should be ``0``).
-        :param int window: The number of OTPs before and after the start OTP
-                           to test.
-        :param bytes otp: The one-time password to validate.
-        :return: The absolute and relative positions in the OTP window, where
-                 ``0`` is the first position.
-        :rtype: :class:`oath_toolkit.types.OTPPosition`
-        :raise: :class:`OATHError` if invalid
-        """
-        if time_step_size is None:
-            time_step_size = 30  # self.c.OATH_TOTP_DEFAULT_TIME_STEP_SIZE
-        addr_otp_pos = self._ffi.new('int *')
-        if not isinstance(now, integer_types):
-            now = int(now)
-        retval = self.c.oath_totp_validate2(secret, len(secret), now,
-                                            time_step_size, start_offset,
-                                            window, addr_otp_pos, otp)
-        self._handle_retval(retval, True)
-        return OTPPosition(absolute=retval, relative=addr_otp_pos[0])
+    :param bytes secret: The secret string used to generate the one-time
+                         password.
+    :param int now: The UNIX timestamp (usually the current one)
+    :param time_step_size: Unsigned, the time step system parameter. If set to
+                           :data:`None`, defaults to ``30``.
+    :type time_step_size: :func:`int` or :data:`None`
+    :param int time_offset: The UNIX timestamp of when to start counting
+                            time steps (usually should be ``0``).
+    :param int digits: The number of digits of the one-time password.
+    :return: one-time password
+    :rtype: :func:`bytes`
+    """
+    if time_step_size is None:
+        time_step_size = 30  # c.OATH_TOTP_DEFAULT_TIME_STEP_SIZE
+    generated = _ffi.new('char *')
+    secret = to_bytes(secret)
+    if not isinstance(now, integer_types):
+        now = int(now)
+    retval = c.oath_totp_generate(secret, len(secret), now, time_step_size,
+                                  time_offset, digits, generated)
+    _handle_retval(retval)
+    return _ffi.string(generated, digits)
 
-    def _handle_retval(self, retval, positive_ok=False):
-        """
-        Handle the ``oath_rc`` return value from a ``liboath`` function call.
 
-        :type retval: int
-        :param bool positive_ok: Whether positive integers are acceptable (as
-                                 is the case in validation functions), or throw
-                                 exceptions.
-        :raises: :class:`OATHError` containing error message on non-OK
-                 return value.
-        """
-        if retval != self.c.OATH_OK and (not positive_ok or retval < 0):
-            errno = self._ffi.cast('oath_rc', retval)
-            err_str = self._ffi.string(self.c.oath_strerror(errno))
-            err = OATHError(err_str)
-            err.code = errno
-            raise err
+def totp_validate(secret, now, time_step_size, start_offset, window, otp):
+    """
+    Validate a one-time password generated using the TOTP algorithm
+    (:rfc:`6238`).
 
-oath = OATHImpl()
+    :param bytes secret: The secret used to generate the one-time password.
+    :param int now: The UNIX timestamp (usually the current one)
+    :param time_step_size: Unsigned, the time step system parameter. If set to
+                           :data:`None`, defaults to ``30``.
+    :type time_step_size: :func:`int` or :data:`None`
+    :param int start_offset: The UNIX timestamp of when to start counting time
+                             steps (usually should be ``0``).
+    :param int window: The number of OTPs before and after the start OTP
+                       to test.
+    :param bytes otp: The one-time password to validate.
+    :return: The absolute and relative positions in the OTP window, where ``0``
+             is the first position.
+    :rtype: :class:`oath_toolkit.types.OTPPosition`
+    :raise: :class:`OATHError` if invalid
+    """
+    if time_step_size is None:
+        time_step_size = 30  # c.OATH_TOTP_DEFAULT_TIME_STEP_SIZE
+    addr_otp_pos = _ffi.new('int *')
+    if not isinstance(now, integer_types):
+        now = int(now)
+    retval = c.oath_totp_validate2(secret, len(secret), now, time_step_size,
+                                   start_offset, window, addr_otp_pos, otp)
+    _handle_retval(retval, True)
+    return OTPPosition(absolute=retval, relative=addr_otp_pos[0])
