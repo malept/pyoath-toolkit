@@ -13,8 +13,27 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+"""
+Base API for handling one-time passwords.
 
+There are two API types: simple and advanced. The simple API (:class:`HOTP`
+and :class:`TOTP`) is based on the two-factor authentication API in the
+`Cryptography library`_. The advanced API (:class:`OATH`) is based on the
+functional API in OATH Toolkit's liboath_.
+
+When compared to the :class:`HOTP`/:class:`TOTP` classes:
+
+* :class:`OATH` has a more customizable set of parameters.
+* :class:`OATH` is more likely to add parameters to its method as OATH Toolkit
+  gains APIs.
+
+.. _Cryptography library: https://cryptography.io/
+.. _liboath: http://oath-toolkit.nongnu.org/liboath-api/liboath-oath.html
+"""
+
+from abc import ABCMeta
 import base64
+import hashlib
 import os
 if not os.environ.get('READTHEDOCS') and not os.environ.get('SETUP_PY'):
     try:  # pragma: no cover
@@ -27,10 +46,147 @@ from .metadata import DESCRIPTION, VERSION
 __description__ = DESCRIPTION
 __version__ = VERSION
 
+OTP_ALGORITHMS = (
+    hashlib.sha1,
+    # hashlib.sha256,
+    # hashlib.sha512,
+)
+
+
+class OTP(object):
+
+    """Base class for one-time password (OTP) implementations."""
+
+    __metaclass__ = ABCMeta
+    __slots__ = ['_algorithm']
+
+    def __init__(self, key, length, algorithm=None):
+        if not algorithm:
+            algorithm = hashlib.sha1
+        self.algorithm = algorithm
+
+        self.key = key
+        self.length = length
+
+    @property
+    def algorithm(self):
+        """
+        The hash algorithm used during OTP generation.
+
+        Not currently implemented (requires liboath >= 2.6.0).
+        """
+        return self._algorithm
+
+    @algorithm.setter
+    def algorithm(self, value):
+        if value not in OTP_ALGORITHMS:
+            raise ValueError('Unrecognized OTP algorithm')
+        self._algorithm = value
+
+
+class HOTP(OTP):
+
+    """
+    HMAC-based one-time password (HOTP) convenience implementation.
+
+    API based on :class:`cryptography.hazmat.primitives.twofactor.hotp.HOTP`.
+
+    :param bytes key: The secret key.
+    :param int length: The length of generated one-time passwords.
+    :param algorithm: The hash algorithm used during OTP generation. Not
+                      currently implemented (requires liboath >= 2.6.0).
+                      Defaults to HMAC-SHA1.
+    """
+
+    __slots__ = ['key', 'length', '_algorithm']
+
+    def __init__(self, key, length, algorithm=None):
+        super(HOTP, self).__init__(key, length, algorithm)
+
+    def generate(self, counter):
+        """
+        Generate an OTP at the specified offset in the OTP stream.
+
+        :param counter: The start counter in the OTP stream.
+        :type counter: :func:`int` or :func:`long`
+        :rtype: :func:`bytes`
+        """
+        return oath.hotp_generate(self.key, counter, self.length)
+
+    def verify(self, hotp, counter, window=0):
+        """
+        Verify that the given one-time password is within the range of
+        generated OTPs, given ``counter`` and ``window``.
+
+        :param bytes hotp: The OTP to verify.
+        :param counter: The start counter in the OTP stream.
+        :type counter: :func:`int` or :func:`long`
+        :param int window: The number of OTPs after the start counter to test.
+        :return: The position in the OTP window, where ``0`` is the first
+                 position.
+        :rtype: :func:`int`
+        :raise: :class:`OATHError` if invalid
+        """
+        return oath.hotp_validate(self.key, counter, window, hotp)
+
+
+class TOTP(OTP):
+
+    """
+    Time-based one-time password (TOTP) convenience implementation.
+
+    API based on :class:`cryptography.hazmat.primitives.twofactor.totp.TOTP`.
+
+    :param bytes key: The secret key.
+    :param int length: The length of generated one-time passwords.
+    :param algorithm: The hash algorithm used during OTP generation. Not
+                      currently implemented (requires liboath >= 2.6.0).
+                      Defaults to HMAC-SHA1.
+    """
+
+    __slots__ = ['key', 'length', '_algorithm', 'time_step']
+
+    def __init__(self, key, length, time_step, algorithm=None):
+        super(TOTP, self).__init__(key, length, algorithm)
+        self.time_step = time_step
+
+    def generate(self, time):
+        """
+        Generate an OTP for the given time value.
+
+        :param time: The UNIX timestamp-encoded time value.
+        :type time: :func:`int` or :func:`long`
+        :rtype: :func:`bytes`
+        """
+        return oath.totp_generate(self.key, time, self.time_step, 0,
+                                  self.length)
+
+    def verify(self, totp, time, window=0):
+        """
+        Verify that the given one-time password is within the range of
+        generated OTPs, given ``counter`` and ``window``.
+
+        :param bytes totp: The OTP to verify.
+        :param time: The UNIX timestamp-encoded time value.
+        :type time: :func:`int` or :func:`long`
+        :param int window: The number of OTPs before and after the start OTP
+                           to test.
+        :return: The position in the OTP window, where ``0`` is the first
+                 position.
+        :rtype: :func:`int`
+        :raise: :class:`OATHError` if invalid
+        """
+        return oath.totp_validate(self.key, time, self.time_step, 0, window,
+                                  totp)
+
 
 class OATH(object):
-    def __init__(self):
-        self._impl = oath
+
+    """
+    A convenience class that is a direct port of the OATH Toolkit API.
+    """
+
+    __slots__ = []
 
     @property
     def library_version(self):
@@ -39,7 +195,7 @@ class OATH(object):
 
         :rtype: :func:`bytes`
         """
-        return self._impl.library_version
+        return oath.library_version
 
     def check_library_version(self, version):
         """
@@ -49,7 +205,7 @@ class OATH(object):
         :param bytes version: The dotted version number to check
         :rtype: :func:`bool`
         """
-        return self._impl.check_library_version(version)
+        return oath.check_library_version(version)
 
     @staticmethod
     def _chunk_iterable(iterable, n, fillvalue=None):
@@ -107,7 +263,7 @@ class OATH(object):
             raise OATHError(
                 'Base32 string cannot be both upper- and lowercased')
         if self.check_library_version(b'2.0.0'):  # pragma: no cover
-            return self._impl.base32_decode(data)
+            return oath.base32_decode(data)
         else:  # pragma: no cover
             return self._py_base32_decode(data)
 
@@ -132,8 +288,8 @@ class OATH(object):
         :return: one-time password
         :rtype: :func:`bytes`
         """
-        return self._impl.hotp_generate(secret, moving_factor, digits,
-                                        add_checksum, truncation_offset)
+        return oath.hotp_generate(secret, moving_factor, digits, add_checksum,
+                                  truncation_offset)
 
     def hotp_validate(self, secret, start_moving_factor, window, otp):
         """
@@ -152,8 +308,7 @@ class OATH(object):
         :rtype: int
         :raise: :class:`OATHError` if invalid
         """
-        return self._impl.hotp_validate(secret, start_moving_factor,
-                                        window, otp)
+        return oath.hotp_validate(secret, start_moving_factor, window, otp)
 
     def totp_generate(self, secret, now, time_step_size, time_offset, digits):
         """
@@ -171,8 +326,8 @@ class OATH(object):
         :return: one-time password
         :rtype: :func:`bytes`
         """
-        return self._impl.totp_generate(secret, now, time_step_size,
-                                        time_offset, digits)
+        return oath.totp_generate(secret, now, time_step_size, time_offset,
+                                  digits)
 
     def totp_validate(self, secret, now, time_step_size, start_offset, window,
                       otp):
@@ -195,5 +350,5 @@ class OATH(object):
         :rtype: :class:`oath_toolkit.types.OTPPosition`
         :raise: :class:`OATHError` if invalid
         """
-        return self._impl.totp_validate(secret, now, time_step_size,
-                                        start_offset, window, otp)
+        return oath.totp_validate(secret, now, time_step_size, start_offset,
+                                  window, otp)

@@ -14,6 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from abc import ABCMeta
 from collections import namedtuple
 from itertools import chain
 from platform import python_implementation
@@ -45,7 +46,9 @@ TOTPVTestVector = namedtuple('TOTPVTestVector', [
 ])
 
 
-class ImplTestMixin(object):
+class OTPTestMixin(object):
+
+    __metaclass__ = ABCMeta
 
     secret = b'TestCase secret'
     otk_secret = b'\x31\x32\x33\x34\x35\x36\x37\x38\x39\x30' * 2
@@ -146,6 +149,65 @@ class ImplTestMixin(object):
         TOTPVTestVector(1111112000, 99, b"14050471", 29, -29, 37037037),
     ]
 
+    def assertEqualAtIndex(self, expected, actual, idx):
+        msg = '{0} (expected) != {1} (actual) @ index {2}'
+        self.assertEqual(expected, actual, msg.format(expected, actual, idx))
+
+    def hotp_vector_iterate(self):
+        for digits, otps in enumerate(self.hotp_vectors):
+            for moving_factor, otp in enumerate(otps):
+                yield digits, moving_factor, otp
+
+    def verify_hotp_for_otk_tests(self, digits, counter, window, otp):
+        raise NotImplementedError
+
+    def assertGeneratedHOTPEqual(self, secret, moving_factor, digits, otp):
+        raise NotImplementedError
+
+    def assertGeneratedHOTPsFromOTK(self):
+        self.assertGeneratedHOTPEqual(b'\x00', 1099511627776, 6, b'363425')
+
+        for digits, moving_factor, otp in self.hotp_vector_iterate():
+            self.assertGeneratedHOTPEqual(self.otk_secret, moving_factor,
+                                          digits, otp)
+
+    def assertValidatedHOTPsFromOTK(self):
+        counter = 0
+        window = 20
+        for digits, moving_factor, otp in self.hotp_vector_iterate():
+            result = self.verify_hotp_for_otk_tests(digits, counter, window,
+                                                    otp)
+            self.assertIsInstance(result, OTPPosition)
+            self.assertEqualAtIndex(moving_factor, result.relative, digits)
+
+    def generate_totp_for_otk_tests(self, time, digits, time_step):
+        raise NotImplementedError
+
+    def assertGeneratedTOTPsFromOTK(self):
+        time_step = 30
+        digits = 8
+        for i, tv in enumerate(self.totpg_vectors):
+            if tv.secs > sys.maxsize:  # pragma: no cover
+                # the timestamp is bigger than time_t for the arch, skip
+                continue
+            otp = self.generate_totp_for_otk_tests(tv.secs, digits, time_step)
+            self.assertEqualAtIndex(tv.otp, otp, i)
+
+    def verify_totp_for_otk_tests(self, time, time_step, window, otp):
+        raise NotImplementedError
+
+    def assertValidatedTOTPsFromOTK(self):
+        time_step = 30
+        for i, tv in enumerate(self.totpv_vectors):
+            result = self.verify_totp_for_otk_tests(tv.now, time_step,
+                                                    tv.window, tv.otp)
+            self.assertIsInstance(result, OTPPosition)
+            self.assertEqualAtIndex(tv.expected_rc, result.absolute, i)
+            self.assertEqualAtIndex(tv.otp_pos, result.relative, i)
+
+
+class ImplTestMixin(OTPTestMixin):
+
     def test_totp(self):
         now = time.time()
         time_step_size = None
@@ -167,33 +229,22 @@ class ImplTestMixin(object):
         self.assertIsInstance(result, OTPPosition)
         self.assertGreaterEqual(result.absolute, 0)
 
-    def assertEqualAtIndex(self, expected, actual, idx):
-        msg = '{0} (expected) != {1} (actual) @ index {2}'
-        self.assertEqual(expected, actual, msg.format(expected, actual, idx))
+    def generate_totp_for_otk_tests(self, time, digits, time_step):
+        start_offset = 0
+        return self.oath.totp_generate(self.otk_secret, time, time_step,
+                                       start_offset, digits)
 
     @skipIfPyPy
     def test_totp_generate_from_otk_tests(self):
-        time_step_size = 30
+        self.assertGeneratedTOTPsFromOTK()
+
+    def verify_totp_for_otk_tests(self, time, time_step, window, otp):
         start_offset = 0
-        digits = 8
-        for i, tv in enumerate(self.totpg_vectors):
-            if tv.secs > sys.maxsize:
-                # the timestamp is bigger than time_t for the arch, skip
-                continue
-            otp = self.oath.totp_generate(self.otk_secret, tv.secs,
-                                          time_step_size, start_offset, digits)
-            self.assertEqualAtIndex(tv.otp, otp, i)
+        return self.oath.totp_validate(self.otk_secret, time, time_step,
+                                       start_offset, window, otp)
 
     def test_totp_validate_from_otk_tests(self):
-        time_step_size = None
-        start_offset = 0
-        for i, tv in enumerate(self.totpv_vectors):
-            result = self.oath.totp_validate(self.otk_secret, tv.now,
-                                             time_step_size, start_offset,
-                                             tv.window, tv.otp)
-            self.assertIsInstance(result, OTPPosition)
-            self.assertEqualAtIndex(tv.expected_rc, result.absolute, i)
-            self.assertEqualAtIndex(tv.otp_pos, result.relative, i)
+        self.assertValidatedTOTPsFromOTK()
 
     def test_hotp(self):
         moving_factor = 12
@@ -220,13 +271,9 @@ class ImplTestMixin(object):
 
     @skipIfPyPy
     def test_hotp_generate_from_otk_tests(self):
-        self.assertGeneratedHOTPEqual(b'\x00', 1099511627776, 6, b'363425')
+        self.assertGeneratedHOTPsFromOTK()
 
-        for digits, otps in enumerate(self.hotp_vectors):
-            for moving_factor, otp in enumerate(otps):
-                self.assertGeneratedHOTPEqual(self.otk_secret, moving_factor,
-                                              digits, otp)
-
+        moving_factor = 0
         add_checksum = False
         truncation_offset = None
         for digits in chain(range(0, 6), range(9, 15)):
@@ -236,16 +283,12 @@ class ImplTestMixin(object):
                                         add_checksum,
                                         truncation_offset)
 
+    def verify_hotp_for_otk_tests(self, digits, counter, window, otp):
+        return self.oath.hotp_validate(self.otk_secret, counter,
+                                       window, otp)
+
     def test_hotp_validate_from_otk_tests(self):
-        start_moving_factor = 0
-        window = 20
-        for digits, otps in enumerate(self.hotp_vectors):
-            for moving_factor, otp in enumerate(otps):
-                result = self.oath.hotp_validate(self.otk_secret,
-                                                 start_moving_factor,
-                                                 window, otp)
-                self.assertIsInstance(result, OTPPosition)
-                self.assertEqualAtIndex(moving_factor, result.relative, digits)
+        self.assertValidatedHOTPsFromOTK()
 
     def test_hotp_fail(self):
         moving_factor = 12

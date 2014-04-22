@@ -14,14 +14,74 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from .. import OATH
+import hashlib
+from .. import HOTP, OATH, TOTP
 from ..exc import OATHError
 from . import unittest
-from .impl_base import ImplTestMixin
+from . import impl_base
 
 
-class OATHTestCase(ImplTestMixin, unittest.TestCase):
-    '''Tests the implementation-agnostic class.'''
+class OTPTestMixin(impl_base.OTPTestMixin):
+
+    def test_algorithm(self):
+        algorithm = hashlib.sha1
+        otp = self.create_otp(algorithm)
+        self.assertEqual(algorithm, otp.algorithm)
+        with self.assertRaises(ValueError):
+            self.create_otp(hashlib.md5)
+
+
+class HOTPTestCase(OTPTestMixin, unittest.TestCase):
+
+    """Tests the implementation-agnostic HOTP class."""
+
+    def create_otp(self, algorithm):
+        return HOTP(b'\x01', 6, algorithm)
+
+    def assertGeneratedHOTPEqual(self, secret, counter, digits, otp):
+        hotp = HOTP(secret, digits)
+        result = hotp.generate(counter)
+        idx = '[{0} Digits][Moving Factor {1}]'.format(digits, counter)
+        self.assertEqualAtIndex(otp, result, idx)
+
+    def verify_hotp_for_otk_tests(self, digits, counter, window, otp):
+        hotp = HOTP(self.otk_secret, digits)
+        return hotp.verify(otp, counter, window)
+
+    @impl_base.skipIfPyPy
+    def test_generate_from_otk_tests(self):
+        self.assertGeneratedHOTPsFromOTK()
+
+    def test_verify_from_otk_tests(self):
+        self.assertValidatedHOTPsFromOTK()
+
+
+class TOTPTestCase(OTPTestMixin, unittest.TestCase):
+
+    """Tests the implementation-agnostic TOTP class."""
+
+    def create_otp(self, algorithm):
+        return TOTP(b'\x01', 6, 30, algorithm)
+
+    @impl_base.skipIfPyPy
+    def generate_totp_for_otk_tests(self, time, digits, time_step):
+        totp = TOTP(self.otk_secret, digits, time_step)
+        return totp.generate(time)
+
+    def verify_totp_for_otk_tests(self, time, time_step, window, otp):
+        totp = TOTP(self.otk_secret, None, time_step)
+        return totp.verify(otp, time, window)
+
+    def test_generate_from_otk_tests(self):
+        self.assertGeneratedTOTPsFromOTK()
+
+    def test_verify_from_otk_tests(self):
+        self.assertValidatedTOTPsFromOTK()
+
+
+class OATHTestCase(impl_base.ImplTestMixin, unittest.TestCase):
+
+    """Tests the implementation-agnostic class."""
 
     @classmethod
     def setUpClass(cls):

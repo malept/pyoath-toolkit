@@ -58,11 +58,13 @@ Examples
 
 .. code-block:: python
 
-   from oath_toolkit import OATH
+   from oath_toolkit import TOTP
    from time import time
 
-   oath = OATH()
-   one_time_password = oath.totp_generate(b'hello world', time(), None, 0, 6)
+   digits = 6
+   time_step = 30
+   oath = TOTP(b'secret key', digits, time_step)
+   one_time_password = oath.generate(time())
 
 More complex examples can be found in the ``examples/`` directory, which
 includes a port of ``oathtool``, a sample Django project, and a simple Flask

@@ -121,6 +121,7 @@ pygments_style = 'sphinx'
 # intersphinx
 
 intersphinx_mapping = {
+    'cryptography': ('https://cryptography.io/en/latest/', None),
     'django': ('https://docs.djangoproject.com/en/1.6/',
                'https://docs.djangoproject.com/en/1.6/_objects/'),
     'djangootp': ('https://pythonhosted.org/django-otp/', None),

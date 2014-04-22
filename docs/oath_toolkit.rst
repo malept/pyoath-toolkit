@@ -2,8 +2,16 @@
 ========================
 
 .. automodule:: oath_toolkit
-    :members:
-    :show-inheritance:
+
+   .. autoclass:: oath_toolkit.HOTP
+      :members:
+
+   .. autoclass:: oath_toolkit.TOTP
+      :members:
+
+   .. autoclass:: oath_toolkit.OATH
+      :members:
+      :show-inheritance:
 
 :mod:`oath_toolkit.types`: Specialized Types
 --------------------------------------------
