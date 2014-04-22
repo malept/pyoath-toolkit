@@ -17,6 +17,7 @@
 from collections import namedtuple
 from itertools import chain
 from platform import python_implementation
+import sys
 import time
 from . import unittest
 from ..exc import OATHError
@@ -176,6 +177,9 @@ class ImplTestMixin(object):
         start_offset = 0
         digits = 8
         for i, tv in enumerate(self.totpg_vectors):
+            if tv.secs > sys.maxsize:
+                # the timestamp is bigger than time_t for the arch, skip
+                continue
             otp = self.oath.totp_generate(self.otk_secret, tv.secs,
                                           time_step_size, start_offset, digits)
             self.assertEqualAtIndex(tv.otp, otp, i)
