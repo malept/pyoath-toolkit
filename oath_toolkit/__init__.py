@@ -139,6 +139,11 @@ class TOTP(OTP):
 
     :param bytes key: The secret key.
     :param int length: The length of generated one-time passwords.
+    :param int time_step: The time step size, which is essentially the
+                          lifetime of a given OTP, in seconds. To be clear,
+                          this does not mean that the start of the lifetime is
+                          the ``time`` value given to a method of this object.
+                          It is recommended to set this value to ``30``.
     :param algorithm: The hash algorithm used during OTP generation. Not
                       currently implemented (requires liboath >= 2.6.0).
                       Defaults to HMAC-SHA1.
