@@ -1,24 +1,36 @@
 Python bindings for OATH Toolkit
 ================================
 
-This module is a set of Python bindings for the `OATH Toolkit`_ library.
+This package is a set of Python bindings for the `OATH Toolkit`_ library.
 Please note that it is *OATH* (open authentication, e.g., one-time passwords)
-and not *OAUTH* (an open standard for authorization).
+and not *OAuth* (an open standard for authorization).
 
-.. image:: https://travis-ci.org/malept/pyoath-toolkit.png?branch=master
+.. image:: https://travis-ci.org/malept/pyoath-toolkit.svg?branch=master
    :alt: Travis CI status, see https://travis-ci.org/malept/pyoath-toolkit
 
 .. _OATH Toolkit: http://www.nongnu.org/oath-toolkit/
 
-Installation
+Features
+--------
+
+* Runs on a variety of Python versions/implementations
+* `QR code`_ generator, compatible with apps like `Google Authenticator`_
+* Integration with WTForms_
+* Integration with Django via ``django-otp``
+
+.. _Google Authenticator: https://en.wikipedia.org/wiki/Google_Authenticator
+.. _QR code: https://en.wikipedia.org/wiki/QR_code
+
+Requirements
 ------------
 
-This module requires the following:
+The package requires the following:
 
 * ``liboath`` from OATH Toolkit. If you can't find it with your distribution's
   package manager, please consult the `OATH Toolkit download page`_. This
-  has been tested with 1.12.6.
-* Python 2.6, 2.7, 3.3, or PyPy >= 2.0.
+  has been tested with 1.12.6 and 2.0.2.
+* It is recommended that you use this package on a **64-bit architecture**.
+* Python 2.6, 2.7, 3.3, 3.4, or PyPy >= 2.0.
 * One of the following:
 
   + For CPython, a Cython_/C extension is available. In order to compile this,
@@ -28,10 +40,10 @@ This module requires the following:
 * For optional ``django-otp`` integration, the django-otp_ library is required.
   Additionally, the OTP models use a field that only exists in Django_ 1.6 and
   above.
-* For optional `QR code`_ support, the `Pillow`_ and `qrcode`_ libraries
+* For optional QR code support, the Pillow_ and qrcode_ libraries
   are required.
-* For optional WTForms integration, the `WTForms`_ library is required.
-* If you would like to build the documentation, install `Sphinx`_ and run
+* For optional WTForms integration, the WTForms_ library is required.
+* If you would like to build the documentation, install Sphinx_ and run
   ``python setup.py build_sphinx``.
 
 .. _OATH Toolkit download page: http://www.nongnu.org/oath-toolkit/download.html
@@ -39,19 +51,21 @@ This module requires the following:
 .. _CFFI: http://pypi.python.org/pypi/cffi
 .. _django-otp: https://pypi.python.org/pypi/django-otp
 .. _Django: https://www.djangoproject.com/
-.. _QR code: https://en.wikipedia.org/wiki/QR_code
 .. _Pillow: http://pypi.python.org/pypi/Pillow
 .. _qrcode: http://pypi.python.org/pypi/qrcode
 .. _WTForms: http://pypi.python.org/pypi/WTForms
 .. _Sphinx: http://sphinx-doc.org/
 
+Installation
+------------
+
 Basic installation from Git::
 
-    pip install git+git://github.com/malept/pyoath-toolkit.git#egg=pyoath-toolkit
+    pip install git+https://github.com/malept/pyoath-toolkit.git#egg=pyoath-toolkit
 
 Installation from Git with the ``qrcode`` feature::
 
-    pip install git+git://github.com/malept/pyoath-toolkit.git#egg=pyoath-toolkit[qrcode]
+    pip install git+https://github.com/malept/pyoath-toolkit.git#egg=pyoath-toolkit[qrcode]
 
 Examples
 --------
