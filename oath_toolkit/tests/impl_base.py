@@ -52,14 +52,14 @@ class OTPTestMixin(object):
 
     secret = b'TestCase secret'
     otk_secret = b'\x31\x32\x33\x34\x35\x36\x37\x38\x39\x30' * 2
-    hotp_vectors = [
-        [],  # 0 digits
-        [],  # 1 digit
-        [],  # 2 digits
-        [],  # 3 digits
-        [],  # 4 digits
-        [],  # 5 digits
-        [  # 6 digits
+    hotp_vectors = (
+        (),  # 0 digits
+        (),  # 1 digit
+        (),  # 2 digits
+        (),  # 3 digits
+        (),  # 4 digits
+        (),  # 5 digits
+        (  # 6 digits
             # The first ten of these match the values in RFC 4226.
             b"755224",
             b"287082",
@@ -81,8 +81,8 @@ class OTPTestMixin(object):
             b"447589",
             b"903435",
             b"578337",
-        ],
-        [  # 7 digits
+        ),
+        (  # 7 digits
             b"4755224",
             b"4287082",
             b"7359152",
@@ -103,8 +103,8 @@ class OTPTestMixin(object):
             b"4447589",
             b"1903435",
             b"1578337",
-        ],
-        [  # 8 digits
+        ),
+        (  # 8 digits
             b"84755224",
             b"94287082",
             b"37359152",
@@ -125,9 +125,9 @@ class OTPTestMixin(object):
             b"94447589",
             b"71903435",
             b"21578337",
-        ]
-    ]
-    totpg_vectors = [
+        )
+    )
+    totpg_vectors = (
         # From RFC 6238.
         TOTPGTestVector(59, 0x0000000000000001, b"94287082"),
         TOTPGTestVector(1111111109, 0x00000000023523EC, b"07081804"),
@@ -135,8 +135,8 @@ class OTPTestMixin(object):
         TOTPGTestVector(1234567890, 0x000000000273EF07, b"89005924"),
         TOTPGTestVector(2000000000, 0x0000000003F940AA, b"69279037"),
         TOTPGTestVector(20000000000, 0x0000000027BC86AA, b"65353130"),
-    ]
-    totpv_vectors = [
+    )
+    totpv_vectors = (
         # Derived from RFC 6238.
         TOTPVTestVector(0, 10, b"94287082", 1, 1, 1),
         TOTPVTestVector(1111111100, 10, b"07081804", 0, 0, 37037036),
@@ -147,7 +147,7 @@ class OTPTestMixin(object):
         TOTPVTestVector(1111111109, 10, b"14050471", 1, 1, 37037037),
         TOTPVTestVector(1111111000, 10, b"14050471", 4, 4, 37037037),
         TOTPVTestVector(1111112000, 99, b"14050471", 29, -29, 37037037),
-    ]
+    )
 
     def assertEqualAtIndex(self, expected, actual, idx):
         msg = '{0} (expected) != {1} (actual) @ index {2}'
