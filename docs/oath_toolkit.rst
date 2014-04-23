@@ -1,5 +1,9 @@
-``oath_toolkit`` Package
-========================
+=================
+API Documentation
+=================
+
+:mod:`oath_toolkit`: Core API
+-----------------------------
 
 .. automodule:: oath_toolkit
 
