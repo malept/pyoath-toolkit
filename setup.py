@@ -42,16 +42,16 @@ try:
     from Cython.Build import cythonize
 except ImportError:
     cythonize = None
-import os
 from platform import python_implementation
 import re
 from setuptools import find_packages, setup
 from setuptools.extension import Extension
-import sys
 
 os.environ['SETUP_PY'] = '1'
 
-sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
+THIS_DIR = os.path.abspath(os.path.dirname(__file__))
+
+sys.path.insert(0, THIS_DIR)
 from oath_toolkit import metadata
 
 CLASSIFIERS = [
@@ -74,14 +74,14 @@ RE_REQ_COMMENT = re.compile(r'#.*$')
 
 def requires_from_req_txt(filename):
     requires = []
-    with open(filename) as f:
+    with open(os.path.join(THIS_DIR, filename)) as f:
         for line in f:
             req = RE_REQ_COMMENT.sub('', line).strip()
             if req != '':
                 requires.append(req)
     return requires
 
-with open('README.rst') as f:
+with open(os.path.join(THIS_DIR, 'README.rst')) as f:
     long_description = f.read()
 
 requires = []
