@@ -53,24 +53,22 @@ To validate a HMAC-based one-time password (HOTP):
            return False
 
 For an explanation of terms like ``time_step`` and ``counter``, refer to the
-`API documentation <#docs>`_.
+`API documentation <#documentation>`_.
 
 More complex examples can be found in the ``examples/`` directory, which
 includes a port of ``oathtool``, a sample Django project, and a simple Flask
 app, which shows how WTForms integration works.
 
-.. _docs:
-
 Documentation
 -------------
 
-The documentation_ at `Read the Docs`_ contains information such as:
+The docs_ at `Read the Docs`_ contains information such as:
 
 * Requirements and installation instructions
 * API documentation
 * Contribution guidelines and a list of contributors
 
-.. _documentation: https://pyoath-toolkit.readthedocs.org/
+.. _docs: https://pyoath-toolkit.readthedocs.org/
 .. _Read the Docs: https://readthedocs.org/
 
 License
