@@ -12,6 +12,24 @@ from .types import OTPPosition
 c.oath_init()
 atexit.register(lambda: c.oath_done())
 
+cdef int _handle_retval(int retval, bint positive_ok) except -1:
+    """
+    Handle the ``oath_rc`` return value from a ``liboath`` function call.
+
+    :type retval: int
+    :param bool positive_ok: Whether positive integers are acceptable (as is
+                             the case in validation functions), or throw
+                             exceptions.
+    :raises: :class:`OATHError` containing error message on non-OK
+             return value.
+    """
+    if retval != c.OATH_OK and (not positive_ok or retval < 0):
+        err_str = c.oath_strerror(retval)
+        err = OATHError(err_str)
+        err.code = retval
+        raise err
+    return 0
+
 library_version = c.oath_check_version('0')
 
 def check_library_version(version):
@@ -31,8 +49,9 @@ def base32_decode(data):
     cdef char* output = NULL
     cdef size_t output_len = 0
     cdef bytes py_string
-    _handle_retval(c.oath_base32_decode(<bytes>data, len(data),
-                                                &output, &output_len))
+    _handle_retval(c.oath_base32_decode(<bytes>data, len(data), &output,
+                                        &output_len),
+                   False)
     try:
         py_string = <bytes>output[:output_len]
     finally:
@@ -40,7 +59,7 @@ def base32_decode(data):
     return py_string
 
 def hotp_generate(secret, moving_factor, digits, add_checksum=False,
-                    truncation_offset=None):
+                  truncation_offset=None):
     """
     Generate a one-time password using the HOTP algorithm (:rfc:`4226`).
 
@@ -63,10 +82,9 @@ def hotp_generate(secret, moving_factor, digits, add_checksum=False,
     if truncation_offset is None:
         truncation_offset = (2 ** 32) - 1
     secret = <bytes>secret
-    retval = c.oath_hotp_generate(secret, len(secret), moving_factor,
-                                    digits, add_checksum,
-                                    truncation_offset, generated)
-    _handle_retval(retval)
+    retval = c.oath_hotp_generate(secret, len(secret), moving_factor, digits,
+                                  add_checksum, truncation_offset, generated)
+    _handle_retval(retval, False)
     return <bytes>generated
 
 def hotp_validate(secret, start_moving_factor, window, otp):
@@ -86,8 +104,8 @@ def hotp_validate(secret, start_moving_factor, window, otp):
     :rtype: :class:`oath_toolkit.types.OTPPosition`
     :raise: :class:`OATHError` if invalid
     """
-    retval = c.oath_hotp_validate(secret, len(secret),
-                                    start_moving_factor, window, otp)
+    retval = c.oath_hotp_validate(secret, len(secret), start_moving_factor,
+                                  window, otp)
     _handle_retval(retval, True)
     return OTPPosition(absolute=None, relative=retval)
 
@@ -114,14 +132,12 @@ def totp_generate(secret, now, time_step_size, time_offset, digits):
     secret = <bytes>secret
     if not isinstance(now, integer_types):
         now = <int>now
-    retval = c.oath_totp_generate(secret, len(secret), now,
-                                    time_step_size, time_offset, digits,
-                                    generated)
-    _handle_retval(retval)
+    retval = c.oath_totp_generate(secret, len(secret), now, time_step_size,
+                                  time_offset, digits, generated)
+    _handle_retval(retval, False)
     return <bytes>generated
 
-def totp_validate(secret, now, time_step_size, start_offset, window,
-                    otp):
+def totp_validate(secret, now, time_step_size, start_offset, window, otp):
     """
     Validate a one-time password generated using the TOTP algorithm
     (:rfc:`6238`).
@@ -147,25 +163,7 @@ def totp_validate(secret, now, time_step_size, start_offset, window,
         time_step_size = c.OATH_TOTP_DEFAULT_TIME_STEP_SIZE
     if not isinstance(now, integer_types):
         now = <int>now
-    retval = c.oath_totp_validate2(secret, len(secret), now,
-                                    time_step_size, start_offset,
-                                    window, c_otp_pos, otp)
+    retval = c.oath_totp_validate2(secret, len(secret), now, time_step_size,
+                                   start_offset, window, c_otp_pos, otp)
     _handle_retval(retval, True)
     return OTPPosition(absolute=retval, relative=otp_pos)
-
-def _handle_retval(retval, positive_ok=False):
-    """
-    Handle the ``oath_rc`` return value from a ``liboath`` function call.
-
-    :type retval: int
-    :param bool positive_ok: Whether positive integers are acceptable (as
-                                is the case in validation functions), or throw
-                                exceptions.
-    :raises: :class:`OATHError` containing error message on non-OK
-                return value.
-    """
-    if retval != c.OATH_OK and (not positive_ok or retval < 0):
-        err_str = c.oath_strerror(retval)
-        err = OATHError(err_str)
-        err.code = retval
-        raise err

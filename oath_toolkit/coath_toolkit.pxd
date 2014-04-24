@@ -7,7 +7,6 @@ cdef extern from 'liboath/oath.h':
     cdef enum:
         OATH_VERSION_NUMBER
         OATH_TOTP_DEFAULT_TIME_STEP_SIZE = 30
-    #DEF VERSION_NUMBER = OATH_VERSION_NUMBER
 
     ctypedef enum oath_rc:
         OATH_OK = 0
