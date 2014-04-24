@@ -21,6 +21,9 @@ except ImportError:  # pragma: no cover
     oath = None
 from . import unittest
 
+skipUnlessBase32Decode = unittest.skipUnless(hasattr(oath, 'base32_decode'),
+                                             'base32_decode not compiled in')
+
 
 @unittest.skipIf(oath is None, 'Could not import Cython implementation')
 class CythonTestCase(ImplTestMixin, unittest.TestCase):
@@ -28,3 +31,6 @@ class CythonTestCase(ImplTestMixin, unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.oath = oath
+
+    test_base32_decode = \
+        skipUnlessBase32Decode(ImplTestMixin.test_base32_decode)
