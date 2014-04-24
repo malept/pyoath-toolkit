@@ -81,6 +81,16 @@ def requires_from_req_txt(filename):
                 requires.append(req)
     return requires
 
+
+def liboath_version():
+    import ctypes
+    # FIXME windows support
+    c = ctypes.cdll.LoadLibrary('liboath.so.0')
+    check_version = c.oath_check_version
+    check_version.argtypes = [ctypes.c_char_p]
+    check_version.restype = ctypes.c_char_p
+    return tuple(int(x) for x in check_version(b'0').split(b'.'))
+
 with open(os.path.join(THIS_DIR, 'README.rst')) as f:
     long_description = f.read()
 
@@ -115,10 +125,15 @@ if with_cython:
                     ['oath_toolkit/impl_cython.{0}'.format(src_ext)],
                     libraries=['oath'])
     if cythonize:
-        directives = {
-            'language_level': sys.version_info[0],
+        cy_kwargs = {
+            'compile_time_env': {
+                'LIBOATH_VERSION': liboath_version(),
+            },
+            'directives': {
+                'language_level': sys.version_info[0],
+            },
         }
-        attrs['ext_modules'] = cythonize([ext], compiler_directives=directives)
+        attrs['ext_modules'] = cythonize([ext], **cy_kwargs)
     else:
         attrs['ext_modules'] = [ext]
 elif sans_cython_flag_exists:

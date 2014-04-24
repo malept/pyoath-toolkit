@@ -36,27 +36,28 @@ def check_library_version(version):
     result = c.oath_check_version(version)
     return NULL != <const char*>result
 
-def base32_decode(data):
-    """
-    Decode Base32 data.
+IF LIBOATH_VERSION >= (2, 0, 0):
+    def base32_decode(data):
+        """
+        Decode Base32 data.
 
-    Unlike :func:`base64.b32decode`, it handles human-readable Base32
-    strings. Requires liboath 2.0.
+        Unlike :func:`base64.b32decode`, it handles human-readable Base32
+        strings. Requires liboath 2.0.
 
-    :param bytes data: The data to be decoded.
-    :rtype: bytes
-    """
-    cdef char* output = NULL
-    cdef size_t output_len = 0
-    cdef bytes py_string
-    _handle_retval(c.oath_base32_decode(<bytes>data, len(data), &output,
-                                        &output_len),
-                   False)
-    try:
-        py_string = <bytes>output[:output_len]
-    finally:
-        stdlib.free(output)
-    return py_string
+        :param bytes data: The data to be decoded.
+        :rtype: bytes
+        """
+        cdef char* output = NULL
+        cdef size_t output_len = 0
+        cdef bytes py_string
+        _handle_retval(c.oath_base32_decode(<bytes>data, len(data), &output,
+                                            &output_len),
+                    False)
+        try:
+            py_string = <bytes>output[:output_len]
+        finally:
+            stdlib.free(output)
+        return py_string
 
 def hotp_generate(secret, moving_factor, digits, add_checksum=False,
                   truncation_offset=None):
