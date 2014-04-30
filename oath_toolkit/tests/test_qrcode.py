@@ -20,6 +20,10 @@ from .. import qrcode as oath_qrcode
 from .._compat import url_quote
 from . import unittest
 import qrcode
+import sys
+
+skipIfPy34 = unittest.skipIf(sys.version_info[:2] == (3, 4),
+                             'Skipping on Python 3.4')
 
 
 class QRCodeTestCase(unittest.TestCase):
@@ -39,7 +43,8 @@ secret={0}&issuer=Example\
                                    'alice@google.com', 'Example')
         self.assertEqual(expected, list(img.getdata()))
 
-    def test_hotp(self):
+    @skipIfPy34
+    def test_hotp(self):  # pragma: no cover
         with self.assertRaises(ValueError):
             oath_qrcode.generate('hotp', self.key,
                                  'alice@google.com', 'Example')
