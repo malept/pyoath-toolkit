@@ -36,6 +36,13 @@ automatically run for every pull request on GitHub, but at this time it's
 faster to run it locally. It would probably also be in your best interests to
 add yourself to the ``AUTHORS.rst`` file if you have not done so already.
 
+As of version 1.0.0, this project uses the `Semantic Versioning`_ scheme. If
+your pull request makes incompatible API changes or adds new functionality in a
+backwards-compatible manner, please emphasize that in your pull request
+message.
+
+.. _Semantic Versioning: http://semver.org/
+
 Development Environment
 -----------------------
 
