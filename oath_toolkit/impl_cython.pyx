@@ -5,7 +5,6 @@ from libc cimport stdlib
 
 import atexit
 
-from ._compat import integer_types
 from .exc import OATHError
 from .types import OTPPosition
 
@@ -32,12 +31,12 @@ cdef int _handle_retval(int retval, bint positive_ok) except -1:
 
 library_version = c.oath_check_version('0')
 
-def check_library_version(version):
-    result = c.oath_check_version(version)
-    return NULL != <const char*>result
+cpdef bint check_library_version(bytes version):
+    cdef const char *result = c.oath_check_version(version)
+    return NULL != result
 
 IF LIBOATH_VERSION >= (2, 0, 0):
-    def base32_decode(data):
+    cpdef bytes base32_decode(bytes data):
         """
         Decode Base32 data.
 
@@ -59,36 +58,35 @@ IF LIBOATH_VERSION >= (2, 0, 0):
             stdlib.free(output)
         return py_string
 
-def hotp_generate(secret, moving_factor, digits, add_checksum=False,
-                  truncation_offset=None):
+cpdef bytes hotp_generate(bytes secret, unsigned long long moving_factor,
+                          unsigned int digits, bint add_checksum,
+                          int truncation_offset):
     """
     Generate a one-time password using the HOTP algorithm (:rfc:`4226`).
 
     :param bytes secret: The secret string used to generate the one-time
-                            password.
+                         password.
     :param int moving_factor: unsigned, can be :func:`long`, in theory.
     :param int digits: unsigned, the number of digits of the one-time
-                        password.
+                       password.
     :param bool add_checksum: Whether to add a checksum digit (depending
-                                on the version of ``liboath`` used, this may
-                                be ignored).
-    :param truncation_offset: A truncation offset to use, if not set to
-                                :data:`None`.
-    :type truncation_offset: :func:`int` or :data:`None`
+                              on the version of ``liboath`` used, this may
+                              be ignored).
+    :param int truncation_offset: A truncation offset to use, if not set to a
+                                  negative value (which means ``2^32 - 1``).
     :return: one-time password
     :rtype: :func:`bytes`
     """
-    # TODO check to see if this leaks memory
     cdef char* generated = ''
-    if truncation_offset is None:
+    if truncation_offset < 0:
         truncation_offset = (2 ** 32) - 1
-    secret = <bytes>secret
     retval = c.oath_hotp_generate(secret, len(secret), moving_factor, digits,
                                   add_checksum, truncation_offset, generated)
     _handle_retval(retval, False)
     return <bytes>generated
 
-def hotp_validate(secret, start_moving_factor, window, otp):
+cpdef hotp_validate(bytes secret, unsigned long long start_moving_factor,
+                    unsigned int window, bytes otp):
     """
     Validate a one-time password generated using the HOTP algorithm
     (:rfc:`4226`).
@@ -110,46 +108,42 @@ def hotp_validate(secret, start_moving_factor, window, otp):
     _handle_retval(retval, True)
     return OTPPosition(absolute=None, relative=retval)
 
-def totp_generate(secret, now, time_step_size, time_offset, digits):
+cpdef bytes totp_generate(bytes secret, unsigned long now, int time_step_size,
+                          unsigned long time_offset, unsigned int digits):
     """
     Generate a one-time password using the TOTP algorithm (:rfc:`6238`).
 
     :param bytes secret: The secret string used to generate the one-time
                             password.
     :param int now: The UNIX timestamp (usually the current one)
-    :param time_step_size: Unsigned, the time step system parameter. If
-                            set to :data:`None`, defaults to ``30``.
-    :type time_step_size: :func:`int` or :data:`None`
+    :param int time_step_size: Unsigned, the time step system parameter. If
+                               set to a negative value, defaults to ``30``.
     :param int time_offset: The UNIX timestamp of when to start counting
                             time steps (usually should be ``0``).
     :param int digits: The number of digits of the one-time password.
     :return: one-time password
     :rtype: :func:`bytes`
     """
-    # TODO check to see if this leaks memory
     cdef char* generated = ''
-    if time_step_size is None:
+    if time_step_size < 0:
         time_step_size = c.OATH_TOTP_DEFAULT_TIME_STEP_SIZE
-    secret = <bytes>secret
-    if not isinstance(now, integer_types):
-        now = <int>now
     retval = c.oath_totp_generate(secret, len(secret), now, time_step_size,
                                   time_offset, digits, generated)
     _handle_retval(retval, False)
     return <bytes>generated
 
-def totp_validate(secret, now, time_step_size, start_offset, window, otp):
+cpdef totp_validate(bytes secret, unsigned long now, int time_step_size,
+                    unsigned long start_offset, unsigned int window, bytes otp):
     """
     Validate a one-time password generated using the TOTP algorithm
     (:rfc:`6238`).
 
     :param bytes secret: The secret used to generate the one-time password.
     :param int now: The UNIX timestamp (usually the current one)
-    :param time_step_size: Unsigned, the time step system parameter. If
-                            set to :data:`None`, defaults to ``30``.
-    :type time_step_size: :func:`int` or :data:`None`
+    :param int time_step_size: Unsigned, the time step system parameter. If
+                               set to a negative value, defaults to ``30``.
     :param int start_offset: The UNIX timestamp of when to start counting
-                                time steps (usually should be ``0``).
+                             time steps (usually should be ``0``).
     :param int window: The number of OTPs before and after the start OTP
                         to test.
     :param bytes otp: The one-time password to validate.
@@ -160,10 +154,8 @@ def totp_validate(secret, now, time_step_size, start_offset, window, otp):
     """
     cdef int otp_pos
     cdef int* c_otp_pos = &otp_pos
-    if time_step_size is None:
+    if time_step_size < 0:
         time_step_size = c.OATH_TOTP_DEFAULT_TIME_STEP_SIZE
-    if not isinstance(now, integer_types):
-        now = <int>now
     retval = c.oath_totp_validate2(secret, len(secret), now, time_step_size,
                                    start_offset, window, c_otp_pos, otp)
     _handle_retval(retval, True)

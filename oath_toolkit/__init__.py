@@ -111,7 +111,7 @@ class HOTP(OTP):
         :type counter: :func:`int` or :func:`long`
         :rtype: :func:`bytes`
         """
-        return oath.hotp_generate(self.key, counter, self.length)
+        return oath.hotp_generate(self.key, counter, self.length, False, -1)
 
     def verify(self, hotp, counter, window=0):
         """
@@ -273,7 +273,7 @@ class OATH(object):
             return self._py_base32_decode(data)
 
     def hotp_generate(self, secret, moving_factor, digits, add_checksum=False,
-                      truncation_offset=None):
+                      truncation_offset=-1):
         """
         Generate a one-time password using the HOTP algorithm (:rfc:`4226`).
 
@@ -287,9 +287,9 @@ class OATH(object):
         :param bool add_checksum: Whether to add a checksum digit (depending
                                   on the version of ``liboath`` used, this may
                                   be ignored).
-        :param truncation_offset: A truncation offset to use, if not set to
-                                  :data:`None`.
-        :type truncation_offset: :func:`int` or :data:`None`
+        :param int truncation_offset: A truncation offset to use, if not set to
+                                      a negative value (which means
+                                      ``2^32 - 1``).
         :return: one-time password
         :rtype: :func:`bytes`
         """

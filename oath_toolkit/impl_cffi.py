@@ -37,7 +37,7 @@ LIBRARY_NAME = os.environ.get('LIBOATH_NAME', 'oath')
 declarations = '''
 typedef _Bool bool;
 /* cffi doesn't know about time_t */
-typedef long time_t;
+typedef unsigned long long time_t;
 
 /* defines */
 static char *const OATH_VERSION;
@@ -190,13 +190,12 @@ def hotp_generate(secret, moving_factor, digits, add_checksum=False,
     :param bool add_checksum: Whether to add a checksum digit (depending on the
                               version of ``liboath`` used, this may be
                               ignored).
-    :param truncation_offset: A truncation offset to use, if not set to
-                              :data:`None`.
-    :type truncation_offset: :func:`int` or :data:`None`
+    :param int truncation_offset: A truncation offset to use, if not set to a
+                                  negative value (which means ``2^32 - 1``).
     :return: one-time password
     :rtype: :func:`bytes`
     """
-    if truncation_offset is None:
+    if truncation_offset < 0:
         truncation_offset = (2 ** 32) - 1
     generated = _ffi.new('char *')
     secret = to_bytes(secret)
@@ -234,16 +233,15 @@ def totp_generate(secret, now, time_step_size, time_offset, digits):
     :param bytes secret: The secret string used to generate the one-time
                          password.
     :param int now: The UNIX timestamp (usually the current one)
-    :param time_step_size: Unsigned, the time step system parameter. If set to
-                           :data:`None`, defaults to ``30``.
-    :type time_step_size: :func:`int` or :data:`None`
+    :param int time_step_size: Unsigned, the time step system parameter. If
+                               set to a negative value, defaults to ``30``.
     :param int time_offset: The UNIX timestamp of when to start counting
                             time steps (usually should be ``0``).
     :param int digits: The number of digits of the one-time password.
     :return: one-time password
     :rtype: :func:`bytes`
     """
-    if time_step_size is None:
+    if time_step_size < 0:
         time_step_size = 30  # c.OATH_TOTP_DEFAULT_TIME_STEP_SIZE
     generated = _ffi.new('char *')
     secret = to_bytes(secret)
@@ -262,9 +260,8 @@ def totp_validate(secret, now, time_step_size, start_offset, window, otp):
 
     :param bytes secret: The secret used to generate the one-time password.
     :param int now: The UNIX timestamp (usually the current one)
-    :param time_step_size: Unsigned, the time step system parameter. If set to
-                           :data:`None`, defaults to ``30``.
-    :type time_step_size: :func:`int` or :data:`None`
+    :param int time_step_size: Unsigned, the time step system parameter. If
+                               set to a negative value, defaults to ``30``.
     :param int start_offset: The UNIX timestamp of when to start counting time
                              steps (usually should be ``0``).
     :param int window: The number of OTPs before and after the start OTP
@@ -275,7 +272,7 @@ def totp_validate(secret, now, time_step_size, start_offset, window, otp):
     :rtype: :class:`oath_toolkit.types.OTPPosition`
     :raise: :class:`OATHError` if invalid
     """
-    if time_step_size is None:
+    if time_step_size < 0:
         time_step_size = 30  # c.OATH_TOTP_DEFAULT_TIME_STEP_SIZE
     addr_otp_pos = _ffi.new('int *')
     if not isinstance(now, integer_types):

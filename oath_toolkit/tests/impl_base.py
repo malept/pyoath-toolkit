@@ -210,7 +210,7 @@ class ImplTestMixin(OTPTestMixin):
 
     def test_totp(self):
         now = time.time()
-        time_step_size = None
+        time_step_size = -1
         time_offset = 0
         otp = self.oath.totp_generate(self.secret, now, time_step_size,
                                       time_offset, DIGITS)
@@ -248,12 +248,15 @@ class ImplTestMixin(OTPTestMixin):
 
     def test_hotp(self):
         moving_factor = 12
-        otp = self.oath.hotp_generate(self.secret, moving_factor, DIGITS)
+        otp = self.oath.hotp_generate(self.secret, moving_factor, DIGITS,
+                                      False, -1)
         self.assertEqual(DIGITS, len(otp))
-        otp2 = self.oath.hotp_generate(self.secret, moving_factor, DIGITS)
+        otp2 = self.oath.hotp_generate(self.secret, moving_factor, DIGITS,
+                                       False, -1)
         self.assertEqual(DIGITS, len(otp2))
         self.assertEqual(otp, otp2)
-        otp3 = self.oath.hotp_generate(self.secret, moving_factor + 1, DIGITS)
+        otp3 = self.oath.hotp_generate(self.secret, moving_factor + 1, DIGITS,
+                                       False, -1)
         self.assertEqual(DIGITS, len(otp3))
         self.assertNotEqual(otp, otp3)
         result = self.oath.hotp_validate(self.secret, moving_factor,
@@ -263,7 +266,7 @@ class ImplTestMixin(OTPTestMixin):
         self.assertGreaterEqual(result.relative, 0)
 
     def assertGeneratedHOTPEqual(self, secret, moving_factor, digits, otp,
-                                 add_checksum=False, truncation_offset=None):
+                                 add_checksum=False, truncation_offset=-1):
         result = self.oath.hotp_generate(secret, moving_factor, digits,
                                          add_checksum, truncation_offset)
         idx = '[{0} Digits][Moving Factor {1}]'.format(digits, moving_factor)
@@ -275,7 +278,7 @@ class ImplTestMixin(OTPTestMixin):
 
         moving_factor = 0
         add_checksum = False
-        truncation_offset = None
+        truncation_offset = -1
         for digits in chain(range(0, 6), range(9, 15)):
             with self.assertRaises(OATHError):
                 self.oath.hotp_generate(self.otk_secret,
@@ -292,7 +295,8 @@ class ImplTestMixin(OTPTestMixin):
 
     def test_hotp_fail(self):
         moving_factor = 12
-        otp = self.oath.hotp_generate(self.secret, moving_factor + 1, DIGITS)
+        otp = self.oath.hotp_generate(self.secret, moving_factor + 1, DIGITS,
+                                      False, -1)
         with self.assertRaises(OATHError):  # outside of window
             self.oath.hotp_validate(self.secret, moving_factor, 0, otp)
 
@@ -300,7 +304,7 @@ class ImplTestMixin(OTPTestMixin):
         now = time.time()
         otp = self.oath.totp_generate(self.secret, now, 30, 0, DIGITS)
         with self.assertRaises(OATHError):  # outside of window
-            self.oath.totp_validate(self.secret, now + 60, None, 30, 0, otp)
+            self.oath.totp_validate(self.secret, now + 60, -1, 30, 0, otp)
 
     def test_library_version(self):
         version = self.oath.library_version
