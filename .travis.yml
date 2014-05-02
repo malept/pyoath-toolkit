@@ -17,3 +17,6 @@ script:
   - if [[ $TRAVIS_PYTHON_VERSION != '2.6' ]]; then python setup.py check --metadata --restructuredtext --strict; fi
   - ./tests/run_tests.py --verbose
   - ./examples/oathtool/run_tests.sh
+matrix:
+  allow_failures:
+    - python: "3.4"
