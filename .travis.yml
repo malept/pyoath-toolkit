@@ -10,8 +10,7 @@ before_install:
   - sudo add-apt-repository --yes ppa:malept/oath-toolkit
   - sudo apt-get update -qq
   - sudo apt-get install -qq liboath0
-  - if [[ $TRAVIS_PYTHON_VERSION == 'pypy' ]]; then sudo apt-get install -qq tcl8.5 tk8.5; fi
-  - if [[ $TRAVIS_PYTHON_VERSION != 'pypy' ]]; then sudo apt-get install -qq liboath-dev; fi
+  - if [[ $TRAVIS_PYTHON_VERSION == 'pypy' ]]; then EXTRA_PACKAGES="tcl8.5 tk8.5"; else EXTRA_PACKAGES=liboath-dev; fi; sudo apt-get install -qq $EXTRA_PACKAGES;
 install:
   - pip install -r requirements/test.txt -r requirements/django-otp.txt -r examples/oathtool/requirements.txt cffi
   - if [[ $TRAVIS_PYTHON_VERSION != 'pypy' ]]; then pip install Cython; fi
