@@ -12,7 +12,7 @@ TEST=tst_oathtool.sh
 TEST_PATH="$DOWNLOAD_DIR/$TEST"
 
 if [[ ! -f "$TEST_PATH" ]]; then
-    wget -O "$TEST_PATH" "http://git.savannah.gnu.org/cgit/oath-toolkit.git/plain/oathtool/tests/$TEST?id=$GIT_TAG"
+    wget -O "$TEST_PATH" "https://raw.githubusercontent.com/malept/oath-toolkit/$GIT_TAG/oathtool/tests/$TEST"
 
     echo "$SHA1  $TEST_PATH" > "$TEST_PATH".sha1sum
 
