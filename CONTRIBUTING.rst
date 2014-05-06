@@ -52,14 +52,14 @@ is installed):
 
 .. code-block:: shell-session
 
-    $ vagrant up
+    user@host:pyoath-toolkit$ vagrant up
 
 ...and it will install all of the Python dependencies in a virtualenv_. You
 can then log into the virtual machine and install the package in develop mode:
 
 .. code-block:: shell-session
 
-    user@host:gmusicprocurator$ vagrant ssh
+    user@host:pyoath-toolkit$ vagrant ssh
     # ...
     vagrant@vagrant:~$ source .virtualenv/bin/activate
     (.virtualenv)vagrant@vagrant:~$ pip install -e /vagrant
