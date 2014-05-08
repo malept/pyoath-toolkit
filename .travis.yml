@@ -7,7 +7,7 @@ python:
   - "pypy"
 # tcl8.5/tk8.5 is required for pillow + pypy
 before_install:
-  - sudo add-apt-repository --yes ppa:malept/oath-toolkit
+  - sudo add-apt-repository --yes ppa:malept/$OATH_PPA
   - sudo apt-get update -qq
   - sudo apt-get install -qq liboath0
   - if [[ $TRAVIS_PYTHON_VERSION == 'pypy' ]]; then EXTRA_PACKAGES="tcl8.5 tk8.5"; else EXTRA_PACKAGES=liboath-dev; fi; sudo apt-get install -qq $EXTRA_PACKAGES;
@@ -17,6 +17,10 @@ script:
   - if [[ $TRAVIS_PYTHON_VERSION != '2.6' ]]; then python setup.py check --metadata --restructuredtext --strict; fi
   - ./tests/run_tests.py --verbose
   - ./examples/oathtool/run_tests.sh
+env:
+  matrix:
+    - OATH_PPA=oath-toolkit
+    - OATH_PPA=oath-toolkit-2
 matrix:
   allow_failures:
     - python: "3.4"
