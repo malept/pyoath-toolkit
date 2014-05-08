@@ -113,5 +113,5 @@ Specifically:
   license.
 
 The documentation is licensed under the Creative Commons
-Attribution-ShareAlike 3.0 Unported License; see the ``LICENSE.docs``
+Attribution-ShareAlike 4.0 International License; see the ``LICENSE.docs``
 file for details.

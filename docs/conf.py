@@ -32,9 +32,8 @@ SUMMARY = oath_toolkit.__description__
 SHORT_COPYRIGHT = u'2013, 2014, {0}. Some Rights Reserved.'.format(AUTHORS)
 COPYRIGHT = u'''{0}
 This work is licensed under a
-Creative Commons Attribution-ShareAlike 3.0
-Unported License'''.format(SHORT_COPYRIGHT)
-
+Creative Commons Attribution-ShareAlike 4.0
+International License'''.format(SHORT_COPYRIGHT)
 
 # If your documentation needs a minimal Sphinx version, state it here.
 # needs_sphinx = '1.0'

@@ -84,11 +84,11 @@ Specifically:
 * ``examples/django/example/forms.py`` is originally licensed under the MIT
   license.
 
-The documentation is licensed under the `Creative Commons
-Attribution-ShareAlike 3.0 Unported License`_.
+The documentation is licensed under the Creative Commons
+Attribution-ShareAlike 4.0 International License (`CC BY-SA 4.0`_).
 
 .. _Apache License 2.0: https://www.apache.org/licenses/LICENSE-2.0
-.. _Creative Commons Attribution-ShareAlike 3.0 Unported License: https://creativecommons.org/licenses/by-sa/3.0/
+.. _CC BY-SA 4.0: https://creativecommons.org/licenses/by-sa/4.0/
 
 .. ifconfig:: builder == 'html'
 
