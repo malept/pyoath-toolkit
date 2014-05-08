@@ -10,6 +10,9 @@ and not *OAuth* (an open standard for authorization).
 
 .. _OATH Toolkit: http://www.nongnu.org/oath-toolkit/
 
+.. contents:: Table of Contents
+   :local:
+
 Features
 --------
 
@@ -21,6 +24,28 @@ Features
 .. _Google Authenticator: https://en.wikipedia.org/wiki/Google_Authenticator
 .. _QR code: https://en.wikipedia.org/wiki/QR_code
 .. _WTForms: http://pypi.python.org/pypi/WTForms
+
+Quick Install
+-------------
+
+.. note:: For a more detailed set of installation instructions, including
+   optional feature prerequisites and installing from Git, please consult the
+   `installation docs`_.
+
+.. _installation docs:
+   https://pyoath-toolkit.readthedocs.org/en/latest/install.html
+
+1. Make sure CPython 2.6, 2.7, 3.3, 3.4, or PyPy ≥ 2.0 is installed.
+2. Make sure `pip is installed`_.
+3. If you're using CPython, it's recommended that a C compiler and Python
+   development headers/libraries are available.
+4. Run the following:
+
+   .. code-block:: shell-session
+
+      user@host:~$ pip install pyoath-toolkit
+
+.. _pip is installed: https://pip.pypa.io/en/latest/installing.html
 
 Usage
 -----
