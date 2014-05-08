@@ -56,8 +56,8 @@ For an explanation of terms like ``time_step`` and ``counter``, refer to the
 :doc:`API documentation <oath_toolkit>`.
 
 More complex examples can be found in the ``examples/`` directory, which
-includes a port of ``oathtool``, a sample Django project, and a simple Flask
-app, which shows how WTForms integration works.
+includes a port of the command-line app ``oathtool``, a sample Django project,
+and a simple Flask app which shows how WTForms integration works.
 
 
 Table of Contents
