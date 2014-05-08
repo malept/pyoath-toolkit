@@ -37,9 +37,11 @@ Quick Install
 
 1. Make sure CPython 2.6, 2.7, 3.3, 3.4, or PyPy ≥ 2.0 is installed.
 2. Make sure `pip is installed`_.
-3. If you're using CPython, it's recommended that a C compiler and Python
+3. Make sure ``liboath`` from `oath-toolkit is installed
+   <http://nongnu.org/oath-toolkit/download.html>`_.
+4. If you're using CPython, it's recommended that a C compiler and Python
    development headers/libraries are available.
-4. Run the following:
+5. Run the following:
 
    .. code-block:: shell-session
 
