@@ -16,6 +16,6 @@
 """Package metadata."""
 
 DESCRIPTION = 'Python bindings for the OATH Toolkit library.'
-VERSION = '1.0.dev12'
+VERSION = '2.0.dev1'
 
 __all__ = ('DESCRIPTION', 'VERSION')
