@@ -59,20 +59,24 @@ class WTFormsTestCase(unittest.TestCase):
         hotp_validator = HOTPValidator(6, 0, 0,
                                        get_secret=lambda fm, fd: b'\x00\x00')
         self.assert_validation_passes(hotp_validator, b'328482')
+        self.assert_validation_passes(hotp_validator, u'328482')
         self.assert_validation_fails(hotp_validator, b'')
         self.assert_validation_fails(hotp_validator, b'invalid')
         self.assert_validation_fails(hotp_validator, b'hello!')
         self.assert_validation_fails(hotp_validator, b'123456')
+        self.assert_validation_fails(hotp_validator, u'✓✓✓✓✓✓')
 
     def test_totp_validation(self):
         totp_validator = TOTPValidator(6, 0, verbose_errors=True,
                                        start_time=time(),
                                        time_step_size=300)
         self.assert_validation_passes(totp_validator, b'328482')
+        self.assert_validation_passes(totp_validator, u'328482')
         self.assert_validation_fails(totp_validator, b'')
         self.assert_validation_fails(totp_validator, b'invalid')
         self.assert_validation_fails(totp_validator, b'hello!')
         self.assert_validation_fails(totp_validator, b'123456')
+        self.assert_validation_fails(totp_validator, u'✓✓✓✓✓✓')
 
     def validate_value(self, validator, value):
         return validator(self.form, DummyField(value))
