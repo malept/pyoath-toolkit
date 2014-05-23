@@ -58,25 +58,13 @@ class WTFormsTestCase(unittest.TestCase):
     def test_hotp_validation(self):
         hotp_validator = HOTPValidator(6, 0, 0,
                                        get_secret=lambda fm, fd: b'\x00\x00')
-        self.assert_validation_passes(hotp_validator, b'328482')
-        self.assert_validation_passes(hotp_validator, u'328482')
-        self.assert_validation_fails(hotp_validator, b'')
-        self.assert_validation_fails(hotp_validator, b'invalid')
-        self.assert_validation_fails(hotp_validator, b'hello!')
-        self.assert_validation_fails(hotp_validator, b'123456')
-        self.assert_validation_fails(hotp_validator, u'✓✓✓✓✓✓')
+        self.assert_validations(hotp_validator)
 
     def test_totp_validation(self):
         totp_validator = TOTPValidator(6, 0, verbose_errors=True,
                                        start_time=time(),
                                        time_step_size=300)
-        self.assert_validation_passes(totp_validator, b'328482')
-        self.assert_validation_passes(totp_validator, u'328482')
-        self.assert_validation_fails(totp_validator, b'')
-        self.assert_validation_fails(totp_validator, b'invalid')
-        self.assert_validation_fails(totp_validator, b'hello!')
-        self.assert_validation_fails(totp_validator, b'123456')
-        self.assert_validation_fails(totp_validator, u'✓✓✓✓✓✓')
+        self.assert_validations(totp_validator)
 
     def validate_value(self, validator, value):
         return validator(self.form, DummyField(value))
@@ -87,3 +75,12 @@ class WTFormsTestCase(unittest.TestCase):
     def assert_validation_fails(self, validator, value):
         with self.assertRaises(ValidationError):
             self.validate_value(validator, value)
+
+    def assert_validations(self, validator):
+        self.assert_validation_passes(validator, b'328482')
+        self.assert_validation_passes(validator, u'328482')
+        self.assert_validation_fails(validator, b'')
+        self.assert_validation_fails(validator, b'invalid')
+        self.assert_validation_fails(validator, b'hello!')
+        self.assert_validation_fails(validator, b'123456')
+        self.assert_validation_fails(validator, u'✓✓✓✓✓✓')
