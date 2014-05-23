@@ -17,6 +17,7 @@
 from __future__ import absolute_import
 
 from . import unittest
+from .._compat import to_bytes
 from ..wtforms import HOTPValidator, TOTPValidator
 from time import time
 from wtforms import ValidationError
@@ -60,6 +61,13 @@ class WTFormsTestCase(unittest.TestCase):
                                        get_secret=lambda fm, fd: b'\x00\x00')
         self.assert_validations(hotp_validator)
 
+    def test_totp_validation_with_defaults(self):
+        digits = 6
+        totp_validator = TOTPValidator(digits, 0)
+        secret = DummyUser.oath_secret
+        otp = totp_validator.oath.totp_generate(secret, time(), 30, 0, digits)
+        self.assert_validations(totp_validator, otp.decode('utf-8'))
+
     def test_totp_validation(self):
         totp_validator = TOTPValidator(6, 0, verbose_errors=True,
                                        start_time=time(),
@@ -76,9 +84,9 @@ class WTFormsTestCase(unittest.TestCase):
         with self.assertRaises(ValidationError):
             self.validate_value(validator, value)
 
-    def assert_validations(self, validator):
-        self.assert_validation_passes(validator, b'328482')
-        self.assert_validation_passes(validator, u'328482')
+    def assert_validations(self, validator, valid_otp=u'328482'):
+        self.assert_validation_passes(validator, valid_otp)
+        self.assert_validation_passes(validator, to_bytes(valid_otp))
         self.assert_validation_fails(validator, b'')
         self.assert_validation_fails(validator, b'invalid')
         self.assert_validation_fails(validator, b'hello!')

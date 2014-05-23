@@ -136,13 +136,12 @@ class TOTPValidator(OTPValidator):
                                 OATH secret used to validate the OTP.
     :param int start_time: The UNIX timestamp of when to start counting
                            time steps (usually should be ``0``).
-    :param time_step_size: Unsigned, the time step system parameter. If
-                           set to :data:`None`, defaults to ``30``.
-    :type time_step_size: :func:`int` or :data:`None`
+    :param int time_step_size: Unsigned, the time step system parameter. If
+                               set to a negative value, defaults to ``30``.
     """
 
     def __init__(self, digits, window, verbose_errors=False, get_secret=None,
-                 start_time=0, time_step_size=None):
+                 start_time=0, time_step_size=30):
         super(TOTPValidator, self).__init__(digits, window, verbose_errors,
                                             get_secret)
         self.start_time = int(start_time)
