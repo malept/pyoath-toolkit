@@ -33,10 +33,15 @@ from django.db import IntegrityError
 from django.test.client import RequestFactory
 from django_otp.tests import TestCase
 from qrcode.image.base import BaseImage
+import sys
 from time import time
+from unittest import skipIf
 from .models import OToolkitTOTPDevice
 
+skipIfPy32 = skipIf(sys.version_info[:2] == (3, 2), 'Skipping on Python 3.2')
 
+
+@skipIfPy32
 class TOTPTest(TestCase):
     # The next ten tokens
     tokens = [b'179225', b'656163', b'839400', b'154567', b'346912',
@@ -69,6 +74,7 @@ class TOTPTest(TestCase):
             user=self.alice, secret_base32=secret_base32)
         self.assertEqual(secret_base32, device.secret_base32)
 
+    @skipIfPy32
     def test_secret_qrcode(self):
         request = self.factory.get('/')
         qrcode = self.device.secret_qrcode(request)

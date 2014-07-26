@@ -22,10 +22,14 @@ from . import unittest
 import qrcode
 import sys
 
+
+skipIfPy32 = unittest.skipIf(sys.version_info[:2] == (3, 2),
+                             'Skipping on Python 3.2')
 skipIfPy34 = unittest.skipIf(sys.version_info[:2] == (3, 4),
                              'Skipping on Python 3.4')
 
 
+@skipIfPy32
 @skipIfPy34
 class QRCodeTestCase(unittest.TestCase):
 
