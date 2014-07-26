@@ -235,8 +235,10 @@ latex_elements = {
     # The font size ('10pt', '11pt' or '12pt').
     # 'pointsize': '10pt',
 
-    # Additional stuff for the LaTeX preamble - needed for special UTF8 chars.
-    'preamble': '\usepackage[utf8x]{inputenc}',
+    # Additional stuff for the LaTeX preamble.
+    # 'preamble': '',
+
+    'inputenc': r'\usepackage[utf8x]{inputenc}'
 }
 
 # Grouping the document tree into LaTeX files. List of tuples
