@@ -32,13 +32,14 @@
 from django.db import IntegrityError
 from django.test.client import RequestFactory
 from django_otp.tests import TestCase
+from oath_toolkit.tests import unittest
 from qrcode.image.base import BaseImage
 import sys
 from time import time
-from unittest import skipIf
 from .models import OToolkitTOTPDevice
 
-skipIfPy32 = skipIf(sys.version_info[:2] == (3, 2), 'Skipping on Python 3.2')
+skipIfPy32 = unittest.skipIf(sys.version_info[:2] == (3, 2),
+                             'Skipping on Python 3.2')
 
 
 @skipIfPy32
