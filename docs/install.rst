@@ -31,6 +31,7 @@ The package requires the following:
 .. _Django: https://www.djangoproject.com/
 .. _Pillow: http://pypi.python.org/pypi/Pillow
 .. _qrcode: http://pypi.python.org/pypi/qrcode
+.. _WTForms: http://pypi.python.org/pypi/WTForms
 .. _Sphinx: http://sphinx-doc.org/
 
 Installation
