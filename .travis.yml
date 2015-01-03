@@ -11,7 +11,7 @@ before_install:
   - sudo add-apt-repository --yes ppa:malept/$OATH_PPA
   - sudo apt-get update -qq
   - sudo apt-get install -qq liboath0
-  - if [[ $TRAVIS_PYTHON_VERSION == 'pypy' ]]; then EXTRA_PACKAGES="tcl8.5 tk8.5"; else EXTRA_PACKAGES=liboath-dev; fi; sudo apt-get install -qq $EXTRA_PACKAGES;
+  - if [[ $TRAVIS_PYTHON_VERSION != 'pypy' ]] && [[ $TRAVIS_PYTHON_VERSION != 'pypy3' ]]; then sudo apt-get install -qq liboath-dev; fi;
 install:
   - PYPACKAGES="cffi"; if [[ $TRAVIS_PYTHON_VERSION != 'pypy' ]]; then PYPACKAGES="$PYPACKAGES Cython"; fi; if [[ $TRAVIS_PYTHON_VERSION == '2.6' ]]; then PYPACKAGES="$PYPACKAGES ordereddict unittest2"; fi; pip install -r requirements/test.txt -r requirements/django-otp.txt -r examples/oathtool/requirements.txt $PYPACKAGES .
 script:
