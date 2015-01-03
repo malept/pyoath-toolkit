@@ -5,6 +5,7 @@ python:
   - "2.7"
   - "2.6"
   - "pypy"
+  - "pypy3"
 # tcl8.5/tk8.5 is required for pillow + pypy
 before_install:
   - sudo add-apt-repository --yes ppa:malept/$OATH_PPA
