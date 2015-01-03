@@ -129,9 +129,7 @@ if with_cython:
             'compile_time_env': {
                 'LIBOATH_VERSION': liboath_version(),
             },
-            'directives': {
-                'language_level': sys.version_info[0],
-            },
+            'language_level': sys.version_info[0],
         }
         attrs['ext_modules'] = cythonize([ext], **cy_kwargs)
     else:
