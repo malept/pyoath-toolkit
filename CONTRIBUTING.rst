@@ -19,6 +19,8 @@ When filing a bug, please include the following information:
 * Operating system name and version. If on Linux, please also include the
   distribution name.
 * System architecture. For example, ``x86``, ``x86-64``, ``ARM7``.
+* The version of OATH Toolkit installed, and the method that it was installed
+  (for example, from source or via package manager).
 * Python version, by running ``python -V``.
 * Installed Python packages, by running ``pip freeze``.
 * A detailed list of steps to reproduce the bug.
