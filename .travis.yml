@@ -24,4 +24,5 @@ env:
     - OATH_PPA=oath-toolkit-2
 matrix:
   allow_failures:
+    - python: "2.6"
     - python: "3.4"
