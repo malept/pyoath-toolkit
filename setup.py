@@ -42,10 +42,17 @@ try:
     from Cython.Build import cythonize
 except ImportError:
     cythonize = None
+from functools import partial
 from platform import python_implementation
 import re
 from setuptools import find_packages, setup
 from setuptools.extension import Extension
+
+if sys.version_info >= (3,):
+    utf8_open = partial(open, encoding='utf-8')
+else:
+    import codecs
+    utf8_open = partial(codecs.open, encoding='utf-8')
 
 os.environ['SETUP_PY'] = '1'
 
@@ -91,7 +98,7 @@ def liboath_version():
     check_version.restype = ctypes.c_char_p
     return tuple(int(x) for x in check_version(b'0').split(b'.'))
 
-with open(os.path.join(THIS_DIR, 'README.rst')) as f:
+with utf8_open(os.path.join(THIS_DIR, 'README.rst')) as f:
     long_description = f.read()
 
 requires = []
