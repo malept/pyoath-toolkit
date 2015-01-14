@@ -40,8 +40,8 @@ Quick Install
 3. Make sure ``liboath`` from `oath-toolkit is installed
    <http://nongnu.org/oath-toolkit/download.html>`_.
 4. If you're using CPython, it's recommended that a C compiler, Python
-   development headers/libraries, and ``liboath`` development headers/libraries
-   are available.
+   development headers/libraries, ``liboath`` development headers/libraries,
+   and Cython_ are available.
 5. Run the following:
 
    .. code-block:: shell-session
@@ -49,6 +49,7 @@ Quick Install
       user@host:~$ pip install pyoath-toolkit
 
 .. _pip is installed: https://pip.pypa.io/en/latest/installing.html
+.. _Cython: http://cython.org/
 
 Usage
 -----
