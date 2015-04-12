@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Copyright 2013, 2014 Mark Lee
+# Copyright 2013, 2014, 2015 Mark Lee
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ from .. import HOTP, OATH, TOTP
 from ..exc import OATHError
 from . import unittest
 from . import impl_base
+from .fixtures import OTK_SECRET
 
 
 class OTPTestMixin(impl_base.OTPTestMixin):
@@ -45,7 +46,7 @@ class HOTPTestCase(OTPTestMixin, unittest.TestCase):
         self.assertEqualAtIndex(otp, result, idx)
 
     def verify_hotp_for_otk_tests(self, digits, counter, window, otp):
-        hotp = HOTP(self.otk_secret, digits)
+        hotp = HOTP(OTK_SECRET, digits)
         return hotp.verify(otp, counter, window)
 
     @impl_base.skipIfPyPy
@@ -65,11 +66,11 @@ class TOTPTestCase(OTPTestMixin, unittest.TestCase):
 
     @impl_base.skipIfPyPy
     def generate_totp_for_otk_tests(self, time, digits, time_step):
-        totp = TOTP(self.otk_secret, digits, time_step)
+        totp = TOTP(OTK_SECRET, digits, time_step)
         return totp.generate(time)
 
     def verify_totp_for_otk_tests(self, time, time_step, window, otp):
-        totp = TOTP(self.otk_secret, None, time_step)
+        totp = TOTP(OTK_SECRET, None, time_step)
         return totp.verify(otp, time, window)
 
     def test_generate_from_otk_tests(self):
