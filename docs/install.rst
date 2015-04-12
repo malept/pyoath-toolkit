@@ -18,7 +18,7 @@ The package requires the following:
   Additionally, the OTP models use a field that only exists in Django_ 1.6 and
   above.
 * For optional QR code support, the Pillow_ and qrcode_ libraries
-  are required. This feature does not work with PyPy3 2.3.1, as ``qrcode``
+  are required. This feature does not work with PyPy3 2.4.0, as ``qrcode``
   requires at least one Python 3.3 feature.
 * For optional WTForms integration, the WTForms_ library is required.
 * If you would like to build the documentation, install Sphinx_ and run
