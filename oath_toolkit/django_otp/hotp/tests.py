@@ -4,7 +4,7 @@
 # * django_otp/plugins/otp_hotp/tests.py
 #
 # Copyright (c) 2012, Peter Sagerson
-# Copyright (c) 2014, Mark Lee
+# Copyright (c) 2014, 2015, Mark Lee
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -47,26 +47,22 @@ class HOTPTest(TestCase):
                 secret_hex=b'd2e8a68036f68960b1c30532bb6c56da5934d879',
                 digits=6, window=1, counter=0)
 
-    def test_normal(self):
-        valid = self.device.verify_token(self.tokens[0])
-
-        self.assertTrue(valid)
+    def assert_token_verified(self, token):
+        self.assertTrue(self.device.verify_token(token))
         self.assertEqual(self.device.counter, 1)
 
-    def test_normal_drift(self):
-        valid = self.device.verify_token(self.tokens[1])
+    def assert_token_not_verified(self, token):
+        self.assertFalse(self.device.verify_token(token))
+        self.assertEqual(self.device.counter, 0)
 
-        self.assertTrue(valid)
-        self.assertEqual(self.device.counter, 2)
+    def test_normal(self):
+        self.assert_token_verified(self.tokens[0])
+
+    def test_normal_drift(self):
+        self.assert_token_verified(self.tokens[1])
 
     def test_excessive_drift(self):
-        valid = self.device.verify_token(self.tokens[2])
-
-        self.assertFalse(valid)
-        self.assertEqual(self.device.counter, 0)
+        self.assert_token_not_verified(self.tokens[2])
 
     def test_bad_value(self):
-        valid = self.device.verify_token(b'123456')
-
-        self.assertFalse(valid)
-        self.assertEqual(self.device.counter, 0)
+        self.assert_token_not_verified(b'123456')
