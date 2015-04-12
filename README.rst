@@ -6,7 +6,16 @@ Please note that it is *OATH* (open authentication, e.g., one-time passwords)
 and not *OAuth* (an open standard for authorization).
 
 .. image:: https://travis-ci.org/malept/pyoath-toolkit.svg?branch=master
-   :alt: Travis CI status, see https://travis-ci.org/malept/pyoath-toolkit
+   :target: https://travis-ci.org/malept/pyoath-toolkit
+   :alt: [Travis CI]
+
+.. image:: https://codeclimate.com/github/malept/pyoath-toolkit/badges/gpa.svg
+   :target: https://codeclimate.com/github/malept/pyoath-toolkit
+   :alt: [CodeClimate]
+
+.. image:: https://readthedocs.org/projects/pyoath-toolkit/badge/
+   :target: https://pyoath-toolkit.readthedocs.org/
+   :alt: [Read The Docs]
 
 .. _OATH Toolkit: http://www.nongnu.org/oath-toolkit/
 
