@@ -13,7 +13,8 @@ The package requires the following:
   + For CPython, a Cython_/C extension is available. In order to compile this,
     the development/header files for ``liboath`` and a C compiler are
     required. If installing from Git, Cython 0.18 or higher is also required.
-  + The `CFFI`_ package (this is included with PyPy/PyPy3).
+  + The `CFFI`_ package (this is included with PyPy/PyPy3, otherwise requires
+    ``libffi`` development/header files).
 * For optional ``django-otp`` integration, the django-otp_ library is required.
   Additionally, the OTP models use a field that only exists in Django_ 1.6 and
   above.
