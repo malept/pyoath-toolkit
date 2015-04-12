@@ -47,19 +47,19 @@ class HOTPTest(TestCase):
                 secret_hex=b'd2e8a68036f68960b1c30532bb6c56da5934d879',
                 digits=6, window=1, counter=0)
 
-    def assert_token_verified(self, token):
+    def assert_token_verified(self, token, count):
         self.assertTrue(self.device.verify_token(token))
-        self.assertEqual(self.device.counter, 1)
+        self.assertEqual(self.device.counter, count)
 
     def assert_token_not_verified(self, token):
         self.assertFalse(self.device.verify_token(token))
         self.assertEqual(self.device.counter, 0)
 
     def test_normal(self):
-        self.assert_token_verified(self.tokens[0])
+        self.assert_token_verified(self.tokens[0], 1)
 
     def test_normal_drift(self):
-        self.assert_token_verified(self.tokens[1])
+        self.assert_token_verified(self.tokens[1], 2)
 
     def test_excessive_drift(self):
         self.assert_token_not_verified(self.tokens[2])
