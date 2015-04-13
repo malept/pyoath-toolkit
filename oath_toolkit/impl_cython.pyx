@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-cimport coath_toolkit as c
+from oath_toolkit cimport coath_toolkit as c
 from libc cimport stdlib
 
 import atexit
